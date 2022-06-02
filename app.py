@@ -1,11 +1,10 @@
+from datetime import datetime
 import json
 
 import altair as alt
 import boto3
 import gspread_pandas
 import pandas as pd
-from st_aggrid import AgGrid, GridOptionsBuilder
-from st_aggrid.shared import GridUpdateMode
 import streamlit as st
 import streamlit_authenticator as stauth
 
@@ -32,44 +31,10 @@ with st.sidebar:
 name, authentication_status, username = authenticator.login('Login', 'main')
 
 
-def aggrid_interactive_table(df: pd.DataFrame) -> AgGrid:
-    """
-    Creates an ``st-aggrid`` interactive table based on the input DataFrame.
-
-    Parameters
-    ----------
-    df: pd.DataFrame
-
-    Returns
-    -------
-    selection: st_aggrid.AgGrid
-
-    """
-    options = GridOptionsBuilder.from_dataframe(
-        dataframe=df, enableRowGroup=True, enableValue=True, enablePivot=True,
-    )
-
-    options.configure_side_bar()
-
-    options.configure_selection('single')
-
-    selection = AgGrid(
-        dataframe=df,
-        enable_enterprise_modules=True,
-        gridOptions=options.build(),
-        update_mode=GridUpdateMode.MODEL_CHANGED,
-        allow_unsafe_jscode=True,
-    )
-
-    return selection
-
-
 def upload_file_and_update_tracker(uploaded_file: st.uploaded_file_manager.UploadedFile) -> None:
     """TODO."""
     with open('aws_credentials.json', 'r') as fp:
         aws_credentials_dict = json.load(fp)
-
-    print(f'uploads/{uploaded_file.name}')
 
     (
         boto3
@@ -94,7 +59,11 @@ def upload_file_and_update_tracker(uploaded_file: st.uploaded_file_manager.Uploa
 
     # uploaded, sent, recieved, notes
     asset_tracker_df = asset_tracker_df.append(
-        other=pd.Series({'Filename': uploaded_file.name, 'Status': 'Uploaded'}),
+        other=pd.Series({
+            'Filename': uploaded_file.name,
+            'Date Submitted': datetime.today().strftime('%m/%d/%Y'),
+            'Status': 'Uploaded',
+        }),
         ignore_index=True,
     )
 
@@ -106,9 +75,32 @@ def upload_file_and_update_tracker(uploaded_file: st.uploaded_file_manager.Uploa
         replace=True,
     )
 
-    # ``uploaded_file`` is of type ``io.BytesIO``, basically
-    st.write(f'Uploaded filename: {uploaded_file.name} ({uploaded_file.type})')
+    st.write(f"""
+        Your asset `{uploaded_file.name}` has been uploaded and we'll begin work on it soon. It
+        should now show up in the "Track Your Asset" page.
 
+        In the meantime, please view the qualitative discussion guide on driving
+        DEI into both the production and performance review below.
+
+        **Production**:
+        * What steps are we taking to be inclusive, representative and equitable
+            in director and production partner search?
+        * For every every triple bid, can we include one underrepresented maker
+            in the mix?
+        * Can we offer veterans on-set opportunities as PA's for US productions?
+        * Can we commit to DOUBLE THE LINE, and agree to double 1 role to give
+            an opportunity to an underrepresented maker?
+        * How can we authentically embrace diverse casting and locations
+            representative of our DE&I objectives?
+
+        **Performance Review**:
+        * How is our work being received by different DE&I communities?
+        * How can we optimize our campaigns against these learnings?
+        * How can we use the Geena Davis Institute learnings to improve DE&I
+            portfolio-wide?
+    """)
+
+    # ``uploaded_file`` is of type ``io.BytesIO``, basically
     # bytes_data = uploaded_file.read()
 
 
@@ -124,13 +116,17 @@ def read_google_spreadsheet(spread: str, sheet: int = 0) -> pd.DataFrame:
     return sheet.sheet_to_df(index=None)
 
 
-def plot_color_map(df: pd.DataFrame) -> alt.vegalite.v4.api.Chart:
+def plot_color_maps(df: pd.DataFrame) -> alt.vegalite.v4.api.Chart:
     """TODO."""
+    if len(df) == 0:
+        st.write("We couldn't find any existing assets to view yet - sorry!")
+        return
+
     df = df.rename(columns={
         'Product ': 'Product',
         'TOTAL (GENDER)': 'GENDER',
         'TOTAL (RACE)': 'RACE',
-        'TOTAL (LGBTQ)': 'LGBTQ+',
+        'TOTAL (LGBTQ)': 'LGBTQ+ ',  # the space is intentional, sadly
         'TOTAL (Disability)': 'DISABILITY',
         'TOTAL (50+)': 'AGE',
         'TOTAL (Fat)': 'BODY SIZE',
@@ -140,107 +136,70 @@ def plot_color_map(df: pd.DataFrame) -> alt.vegalite.v4.api.Chart:
         'Ad Name',
         'Brand',
         'Product',
+        'Content Type',
+        'Date Submitted',
+        'Qual Notes',
         'GENDER',
         'RACE',
-        'LGBTQ+',
+        'LGBTQ+ ',
         'DISABILITY',
         'AGE',
         'BODY SIZE',
-    ]
-
-    df_to_plot = (
-        df[cols_to_select_subset]
-        .set_index(['Ad Name', 'Brand', 'Product'])
-        .stack()
-        .reset_index()
-        .rename(columns={0: 'Score', 'level_3': 'Variable'})
-    )
-
-    filter_by = st.selectbox(
-        label='Filter visualization by...',
-        options=['None', 'Ad Name', 'Brand', 'Product'],
-    )
-
-    field_selected = None
-
-    if filter_by != 'None':
-        field_selected = st.multiselect(
-            label='Choose a field to compare against',
-            options=sorted(df_to_plot[filter_by].unique()),
-            default=sorted(df_to_plot[filter_by].unique()),
-        )
-
-    st.write('')
-
-    if filter_by != 'None' and field_selected:
-        df_to_plot = df_to_plot[df_to_plot[filter_by].isin(field_selected)]
-
-    df_to_plot['color'] = [
-        '#81c675' if float(x) >= 80
-        else '#fbf28d' if 60 <= float(x) < 80
-        else '#f2766e'
-        for x in df_to_plot['Score']
-    ]
-
-    sort = [
-        'GENDER',
-        'RACE',
-        'LGBTQ+',
-        'DISABILITY',
-        'AGE',
-        'BODY SIZE',
-    ]
-
-    return (
-        alt
-        .Chart(df_to_plot)
-        .mark_rect(size=100, stroke='black', strokeWidth=0.5)
-        .encode(
-            alt.X(
-                shorthand='Variable',
-                sort=sort,
-                axis=alt.Axis(
-                    orient='top',
-                    labelAngle=-45,
-                    tickSize=0,
-                    labelPadding=10,
-                    title=None,
-                )
-            ),
-            alt.Y(shorthand='Ad Name', axis=alt.Axis(tickSize=0, labelPadding=10, titlePadding=20)),
-            color=alt.Color('color', scale=None),
-            tooltip=['Ad Name', 'Brand', 'Product', 'Variable', 'Score'],
-        ).properties(
-            height=300,
-        ).configure_axis(
-            labelFontSize=15,
-            labelFontWeight=alt.FontWeight('bold'),
-            titleFontSize=15,
-            titleFontWeight=alt.FontWeight('normal'),
-        )
-    )
-
-
-def plot_color_map_overall(df: pd.DataFrame) -> alt.vegalite.v4.api.Chart:
-    """TODO."""
-    df = df.rename(columns={
-        'Product ': 'Product',
-    })
-
-    cols_to_select_subset = [
-        'Ad Name',
-        'Brand',
-        'Product',
         'Ad Total Score',
     ]
 
     df_to_plot = (
         df[cols_to_select_subset]
-        .set_index(['Ad Name', 'Brand', 'Product'])
+        .set_index(['Ad Name', 'Brand', 'Product', 'Content Type', 'Date Submitted', 'Qual Notes'])
         .stack()
         .reset_index()
-        .rename(columns={0: 'Score', 'level_3': 'Ad Total Score'})
+        .rename(columns={0: 'Score', 'level_6': 'Variable'})
     )
+
+    df_to_plot['Date Submitted'] = pd.to_datetime(df_to_plot['Date Submitted']).dt.date
+
+    filter_by = st.selectbox(
+        label='Filter visualization by...',
+        options=['None', 'Ad Name', 'Brand', 'Product', 'Content Type', 'Date Submitted'],
+    )
+
+    field_selected = None
+    min_date = None
+    max_date = None
+
+    if filter_by != 'None':
+        if filter_by == 'Date Submitted':
+            col_1, col_2 = st.columns(2)
+
+            with col_1:
+                min_date = st.date_input(
+                    label='Earliest submitted date to consider',
+                    value=df_to_plot['Date Submitted'].min(),
+                )
+
+            with col_2:
+                max_date = st.date_input(label='Latest submitted date to consider')
+        else:
+            field_selected = st.multiselect(
+                label='Choose a field to compare against',
+                options=sorted(df_to_plot[filter_by].unique()),
+                default=sorted(df_to_plot[filter_by].unique()),
+            )
+
+    st.write('')
+
+    if filter_by != 'None' and (field_selected or min_date or max_date):
+        if filter_by == 'Date Submitted':
+            df_to_plot = df_to_plot[
+                (df_to_plot['Date Submitted'] >= min_date)
+                & (df_to_plot['Date Submitted'] <= max_date)
+            ]
+        else:
+            df_to_plot = df_to_plot[df_to_plot[filter_by].isin(field_selected)]
+
+    if len(df_to_plot) == 0:
+        st.write("We couldn't find any existing assets with those filters applied!")
+        return
 
     df_to_plot['color'] = [
         '#81c675' if float(x) >= 80
@@ -249,13 +208,24 @@ def plot_color_map_overall(df: pd.DataFrame) -> alt.vegalite.v4.api.Chart:
         for x in df_to_plot['Score']
     ]
 
-    return (
+    overall_df_to_plot = df_to_plot[df_to_plot['Variable'] == 'Ad Total Score']
+    subset_df_to_plot = df_to_plot[df_to_plot['Variable'] != 'Ad Total Score']
+
+    base = (
         alt
-        .Chart(df_to_plot)
+        .Chart(overall_df_to_plot)
+        .encode(
+            x='Variable',
+            y='Ad Name',
+        )
+    )
+
+    chart = (
+        base
         .mark_rect(size=100, stroke='black', strokeWidth=0.5)
         .encode(
             alt.X(
-                shorthand='Ad Total Score',
+                shorthand='Variable',
                 axis=alt.Axis(
                     orient='top',
                     labelAngle=-45,
@@ -269,13 +239,161 @@ def plot_color_map_overall(df: pd.DataFrame) -> alt.vegalite.v4.api.Chart:
             tooltip=['Ad Name', 'Brand', 'Product', 'Score'],
         ).properties(
             height=300,
-        ).configure_axis(
+        )
+    )
+
+    text = base.mark_text().encode(text='Score')
+
+    full_plot = (
+        (chart + text)
+        .configure_axis(
             labelFontSize=15,
             labelFontWeight=alt.FontWeight('bold'),
             titleFontSize=15,
             titleFontWeight=alt.FontWeight('normal'),
         )
     )
+
+    st.altair_chart(full_plot, use_container_width=True)
+
+    st.write('-----')
+
+    if st.checkbox('Break down by identity'):
+        sort = [
+            'GENDER',
+            'RACE',
+            'LGBTQ+ ',
+            'DISABILITY',
+            'AGE',
+            'BODY SIZE',
+        ]
+
+        subset_base = (
+            alt
+            .Chart(subset_df_to_plot)
+            .encode(
+                alt.X(
+                    shorthand='Variable',
+                    sort=sort,
+                    axis=alt.Axis(
+                        orient='top',
+                        labelAngle=-45,
+                        tickSize=0,
+                        labelPadding=10,
+                        title=None,
+                    )
+                ),
+                alt.Y(
+                    shorthand='Ad Name',
+                    axis=alt.Axis(tickSize=0, labelPadding=10, titlePadding=20)
+                ),
+            )
+        )
+
+        subset_chart = (
+            subset_base
+            .mark_rect(size=100, stroke='black', strokeWidth=0.5)
+            .encode(
+                color=alt.Color('color', scale=None),
+                tooltip=['Ad Name', 'Brand', 'Product', 'Variable', 'Score'],
+            ).properties(
+                height=300,
+            )
+        )
+
+        subset_text = subset_base.mark_text().encode(text='Score')
+
+        subset_plot = (
+            (subset_chart + subset_text)
+            .configure_axis(
+                labelFontSize=15,
+                labelFontWeight=alt.FontWeight('bold'),
+                titleFontSize=15,
+                titleFontWeight=alt.FontWeight('normal'),
+            )
+        )
+
+        st.altair_chart(subset_plot, use_container_width=True)
+
+        st.write('-----')
+
+    if st.checkbox('Show rep score progress'):
+        x_axis = st.selectbox(
+            label='Select field to view by',
+            options=['Content Type', 'Date Submitted'],
+        )
+
+        if x_axis == 'Date Submitted':
+            x_axis = 'Date Submitted Month Year'
+
+        st.write('')
+
+        progress_df = st.session_state.data_explorer_df[
+            st.session_state.data_explorer_df[['Ad Name', 'Brand', 'Product ']]
+            .duplicated(keep=False)
+        ]
+
+        progress_df = progress_df[[
+            'Content Type',
+            'Ad Total Score',
+            'Ad Name',
+            'Brand',
+            'Product ',
+            'Date Submitted',
+        ]]
+
+        progress_df['Ad Total Score'] = progress_df['Ad Total Score'].astype(float)
+        progress_df['Date Submitted Month Year'] = (
+            pd
+            .to_datetime(progress_df['Date Submitted'])
+            .dt
+            .date
+            .apply(lambda x: x.strftime('%b %Y'))
+        )
+
+        progress_chart = (
+            alt
+            .Chart(progress_df)
+            .mark_line(point=True)
+            .encode(
+                x=alt.X(
+                    shorthand=x_axis,
+                    sort=['Storyboard', 'Working Cut', 'Final Cut'],
+                    axis=alt.Axis(
+                        labelAngle=-45,
+                        labelPadding=5,
+                    )
+                ),
+                y='Ad Total Score',
+                color='Ad Name',
+                strokeDash='Ad Name',
+                tooltip=['Ad Name', 'Brand', 'Product ', 'Date Submitted', 'Ad Total Score'],
+            ).properties(
+                height=500,
+            ).configure_point(
+                size=100,
+            )
+        )
+
+        st.altair_chart(progress_chart, use_container_width=True)
+
+        st.write('-----')
+
+    if st.checkbox('Show qualitative notes'):
+        notes_df = df_to_plot.copy()
+
+        notes_df = notes_df.drop_duplicates(
+            subset=['Ad Name', 'Brand', 'Product', 'Content Type', 'Date Submitted', 'Qual Notes']
+        )
+
+        for _, row in notes_df.iterrows():
+            with st.expander(f'"{row["Ad Name"]}" Notes', expanded=False):
+                notes = 'No notes! 🎉'
+
+                if row['Qual Notes']:
+                    notes = row['Qual Notes']
+
+                st.write(notes)
 
 
 if authentication_status is False:
@@ -285,12 +403,12 @@ elif authentication_status is None:
     st.warning('Please enter your username and password.')
     st.stop()
 else:
-    st.markdown('# Rep Score UI Prototype')
+    st.markdown('# Rep Score Prototype')
 
     with st.sidebar:
         sidebar_radio = st.radio(
-            label='Choose a page to view',
-            options=('Import Your Asset', 'Track Your Asset', 'Explore Your Data'),
+            label='Select a page to view',
+            options=('Start the Process', 'Track Your Asset', 'Explore Your Data'),
         )
 
         st.markdown('<br>', unsafe_allow_html=True)
@@ -310,32 +428,8 @@ else:
 
         authenticator.logout('Logout', 'main')
 
-    if sidebar_radio == 'Track Your Asset':
-        st.markdown('## Asset Tracker')
-
-        asset_tracker_df = read_google_spreadsheet(
-            spread='https://docs.google.com/spreadsheets/d/1OR5Tj63Kzmq9AJX7XFGCzjQ7M9BEv15TkpkitXC1DgI/edit',  # noqa: E501
-            sheet=0,
-        )
-
-        # CSS to inject contained in a string
-        hide_table_row_index = ("""
-            <style>
-            tbody th {display:none}
-            .blank {display:none}
-            </style>
-        """)
-
-        # inject CSS with Markdown
-        st.markdown(hide_table_row_index, unsafe_allow_html=True)
-
-        # gradient light blue to dark blue
-        # uploaded, in progress, complete
-
-        st.table(data=asset_tracker_df)
-
-    elif sidebar_radio == 'Import Your Asset':
-        st.markdown('## Asset Import')
+    if sidebar_radio == 'Start the Process':
+        st.markdown('## Start the Process')
 
         st.write(
             'Use this portal to upload your content (advertisement, storyboard, working cut, '
@@ -366,7 +460,7 @@ else:
             with st.expander(
                 (
                     f'{prefix if not should_we_expand_marketing else ""}'
-                    'Infuse DE&I provocations into the Marketing Brief'
+                    'Marketing Brief'
                 ),
                 expanded=True,
             ):
@@ -401,7 +495,7 @@ else:
             with st.expander(
                 (
                     f'{prefix if not should_we_expand_agency else ""}'
-                    'Infuse DE&I provocations into the Agency Creative Brief'
+                    'Agency Creative Brief'
                 ),
                 expanded=not should_we_expand_marketing,
             ):
@@ -409,17 +503,17 @@ else:
                     'We have considered where we are sourcing data and inspiration for this project'
                 )
                 st.session_state.agency_creative_2 = st.checkbox(
-                    'We are getting a full picture of the audience - we get a more diverse '
+                    'We are getting a full picture of the audience, getting a more diverse '
                     'perspective'
                 )
                 st.session_state.agency_creative_3 = st.checkbox(
-                    'There are relevant stereotypes about the audience that we should dispel'
+                    'We dispel any relevant stereotypes about the audience'
                 )
                 st.session_state.agency_creative_4 = st.checkbox(
                     'We are gaining input or inspiration from the audience'
                 )
                 st.session_state.agency_creative_5 = st.checkbox(
-                    'Our creative references and thought starters are as diverse, equal and '
+                    'Our creative references and thought starters are as diverse, equal, and '
                     'inclusive as the work we hope to make'
                 )
 
@@ -447,7 +541,7 @@ else:
                 expanded=not should_we_expand_marketing and not should_we_expand_agency,
             ):
                 st.session_state.creative_review_1 = st.checkbox(
-                    'We can reasonably make the work more inclusive, equitable and representative '
+                    'We can reasonably make the work more inclusive, equitable, and representative '
                     'at this stage'
                 )
                 st.session_state.creative_review_2 = st.checkbox(
@@ -458,7 +552,7 @@ else:
                 )
                 st.session_state.creative_review_4 = st.checkbox(
                     'We are inclusive with regard to age, body type, disability, ethnicity, '
-                    'gender, sexual orientation'
+                    'gender, and sexual orientation'
                 )
                 st.session_state.creative_review_5 = st.checkbox(
                     'We, and our clients, made choices that lead to more inclusive and equitable '
@@ -485,33 +579,42 @@ else:
                     with st.spinner(text='Uploading file...'):
                         upload_file_and_update_tracker(uploaded_file=uploaded_file)
 
-                        st.write("""
-                            Your asset has been uploaded and we'll begin work on it soon. It should
-                            not show up in the tracker table in the "Track Your Asset" page.
+    elif sidebar_radio == 'Track Your Asset':
+        st.markdown('## Track Your Asset')
 
-                            In the meantime, please view the qualitative discussion guide on driving
-                            DEI in the production and into the performance review.
+        asset_tracker_df = read_google_spreadsheet(
+            spread='https://docs.google.com/spreadsheets/d/1OR5Tj63Kzmq9AJX7XFGCzjQ7M9BEv15TkpkitXC1DgI/edit',  # noqa: E501
+            sheet=0,
+        )
 
-                            **Production**:
-                            * What steps are we taking to be inclusive, representative and equitable
-                              in director and production partner search?
-                            * For every every triple bid, can we include one underrepresented maker
-                              in the mix?
-                            * Can we offer veterans on-set opportunities as PA’s for US productions?
-                            * Can we commit to DOUBLE THE LINE, and agree to double 1 role to give
-                              an opportunity to an underrepresented maker?
-                            * How can we authentically embrace diverse casting and locations
-                              representative of our DE&I objectives?
+        # CSS to inject contained in a string
+        hide_table_row_index = ("""
+            <style>
+            tbody th {display:none}
+            .blank {display:none}
+            </style>
+        """)
 
-                            **Performance Review**:
-                            * How is our work being received by different DE&I communities?
-                            * How can we optimize our campaigns against these learnings?
-                            * How can we use the Geena Davis Institute learnings to improve DE&I
-                              portfolio-wide?
-                        """)
+        # inject CSS with Markdown to hide the table index
+        st.markdown(hide_table_row_index, unsafe_allow_html=True)
+
+        def color_survived(x: str) -> str:
+            if x == 'Uploaded':
+                color = 'black'
+                background_color = '#9EC2FF'
+            elif x == 'In progress':
+                color = 'white'
+                background_color = '#4259C3'
+            elif x == 'Complete':
+                color = 'white'
+                background_color = '#03018C'
+
+            return f'color: {color}; background-color: {background_color}'
+
+        st.table(data=asset_tracker_df.style.applymap(color_survived, subset=['Status']))
 
     elif sidebar_radio == 'Explore Your Data':
-        st.markdown('## Data Explorer')
+        st.markdown('## Explore Your Data')
 
         if not isinstance(st.session_state.get('data_explorer_df'), pd.DataFrame):
             data_explorer_df = read_google_spreadsheet(
@@ -521,48 +624,17 @@ else:
 
             data_explorer_df = data_explorer_df[data_explorer_df['Cat No. '].str.len() > 0]
 
-            cols_to_select = [
-                'Ad Name',
-                'Brand',
-                'Product ',
-                'TOTAL (GENDER)',
-                'TOTAL (RACE)',
-                'TOTAL (LGBTQ)',
-                'TOTAL (Disability)',
-                'TOTAL (50+)',
-                'TOTAL (Fat)',
-                'Presence Sum',
-                'Prominence Total',
-                'Stereotypes Total',
-                'Ad Total Score',
-            ]
-
-            data_explorer_df = data_explorer_df[cols_to_select]
-
             st.session_state.data_explorer_df = data_explorer_df
 
-        st.caption('Select a row below for more details')
-
-        # selection = aggrid_interactive_table(df=st.session_state.data_explorer_df)
-
-        # if selection and selection['selected_rows']:
-        #     st.write('Row selected:')
-        #     st.json(selection['selected_rows'])
+            st.session_state.data_explorer_df_no_duplicates = (
+                data_explorer_df
+                .sort_values(by=['Date Submitted'])
+                .drop_duplicates(subset=['Ad Name', 'Brand', 'Product '], keep='last')
+            )
 
         # TODOs:
-        # add number to squares, maybe make it an option
-        # make the filtering options for the visualization global to affect both
-        # add line chart to plot score over time / drafts
+        # clear session state data on reload and upload
+        # write smart df caching system
+        # add date submitted to asset tracking table
 
-        st.altair_chart(
-            plot_color_map_overall(df=st.session_state.data_explorer_df),
-            use_container_width=True,
-        )
-
-        st.write('-----')
-
-        if st.checkbox('Break down by identity'):
-            st.altair_chart(
-                plot_color_map(df=st.session_state.data_explorer_df),
-                use_container_width=True,
-            )
+        plot_color_maps(df=st.session_state.data_explorer_df_no_duplicates)
