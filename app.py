@@ -1,6 +1,8 @@
 from datetime import datetime
 import json
 import os
+import random
+import string
 
 import altair as alt
 import boto3
@@ -8,6 +10,11 @@ import gspread_pandas
 import pandas as pd
 import streamlit as st
 import streamlit_authenticator as stauth
+
+from footer import display_footer
+
+
+st.set_page_config(page_title='Rep Score Portal', page_icon='🌀')
 
 
 hide_streamlit_style = """
@@ -17,24 +24,39 @@ hide_streamlit_style = """
     </style>
 """
 
-# st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-authenticator = stauth.Authenticate(names=['Test User'],
-                                    usernames=['user'],
-                                    passwords=stauth.Hasher(['test']).generate(),
-                                    cookie_name='trp_rep_score_cookie',
-                                    key='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9-wiaWF0IjoxNTE2MjM5DI',
-                                    cookie_expiry_days=7)
+
+random.seed(42)
+
+authenticator = stauth.Authenticate(
+    names=['Test User'],
+    usernames=['user'],
+    passwords=stauth.Hasher(['test']).generate(),
+    cookie_name='trp_rep_score_cookie',
+    key=''.join(random.choices(string.ascii_letters + string.digits, k=50)),
+    cookie_expiry_days=7,
+)
 
 with st.sidebar:
-    st.image('https://therepproject.org/wp-content/uploads/2020/05/Asset-1@3x.png')
+    st.markdown('<br>', unsafe_allow_html=True)
+    st.markdown('<br>', unsafe_allow_html=True)
+    st.markdown('<br>', unsafe_allow_html=True)
+
+    _, col_2, _ = st.columns([1, 30, 1])
+
+    with col_2:
+        st.image('images/Mars Petcare Logo Square.png', use_column_width=True)
+
+    st.markdown('<br>', unsafe_allow_html=True)
+
 
 name, authentication_status, username = authenticator.login('Login', 'main')
 
 
 def upload_file_and_update_tracker(uploaded_file: st.uploaded_file_manager.UploadedFile) -> None:
     """TODO."""
-    with open('aws_credentials.json', 'r') as fp:
+    with open('credentials/aws_credentials.json', 'r') as fp:
         aws_credentials_dict = json.load(fp)
 
     uploaded_filename, uploaded_file_extension = os.path.splitext(uploaded_file.name)
@@ -60,7 +82,7 @@ def upload_file_and_update_tracker(uploaded_file: st.uploaded_file_manager.Uploa
         spread='https://docs.google.com/spreadsheets/d/1OR5Tj63Kzmq9AJX7XFGCzjQ7M9BEv15TkpkitXC1DgI/edit',  # noqa: E501
         sheet=0,
         config=(
-            gspread_pandas.conf.get_config(conf_dir='.', file_name='credentials.json')
+            gspread_pandas.conf.get_config(conf_dir='.', file_name='credentials/credentials.json')
         ),
     )
 
@@ -97,7 +119,10 @@ def read_google_spreadsheet(spread: str, sheet: int = 0) -> pd.DataFrame:
     sheet = gspread_pandas.spread.Spread(
         spread=spread,
         sheet=sheet,
-        config=gspread_pandas.conf.get_config(conf_dir='.', file_name='credentials.json'),
+        config=gspread_pandas.conf.get_config(
+            conf_dir='.',
+            file_name='credentials/credentials.json',
+        ),
     )
 
     return sheet.sheet_to_df(index=None)
@@ -119,149 +144,117 @@ def plot_color_maps(df: pd.DataFrame) -> alt.vegalite.v4.api.Chart:
         'TOTAL (Fat)': 'BODY SIZE',
     })
 
-    cols_to_select_subset = [
-        'Ad Name',
-        'Brand',
-        'Product',
-        'Content Type',
-        'Date Submitted',
-        'Qual Notes',
-        'GENDER',
-        'RACE',
-        'LGBTQ+ ',
-        'DISABILITY',
-        'AGE',
-        'BODY SIZE',
-        'Ad Total Score',
-    ]
-
-    df_to_plot = (
-        df[cols_to_select_subset]
-        .set_index(['Ad Name', 'Brand', 'Product', 'Content Type', 'Date Submitted', 'Qual Notes'])
-        .stack()
-        .reset_index()
-        .rename(columns={0: 'Score', 'level_6': 'Variable'})
-    )
-
-    df_to_plot['Date Submitted'] = pd.to_datetime(df_to_plot['Date Submitted']).dt.date
-
-    filter_by = st.selectbox(
-        label='Filter visualization by...',
-        options=['None', 'Ad Name', 'Brand', 'Product', 'Content Type', 'Date Submitted'],
-    )
-
-    field_selected = None
-    min_date = None
-    max_date = None
-
-    if filter_by != 'None':
-        if filter_by == 'Date Submitted':
-            col_1, col_2 = st.columns(2)
-
-            with col_1:
-                min_date = st.date_input(
-                    label='Earliest submitted date to consider',
-                    value=df_to_plot['Date Submitted'].min(),
-                )
-
-            with col_2:
-                max_date = st.date_input(label='Latest submitted date to consider')
-        else:
-            field_selected = st.multiselect(
-                label='Choose a field to compare against',
-                options=sorted(df_to_plot[filter_by].unique()),
-                default=sorted(df_to_plot[filter_by].unique()),
-            )
-
-    st.write('')
-
-    if filter_by != 'None' and (field_selected or min_date or max_date):
-        if filter_by == 'Date Submitted':
-            df_to_plot = df_to_plot[
-                (df_to_plot['Date Submitted'] >= min_date)
-                & (df_to_plot['Date Submitted'] <= max_date)
-            ]
-        else:
-            df_to_plot = df_to_plot[df_to_plot[filter_by].isin(field_selected)]
-
-    if len(df_to_plot) == 0:
-        st.write("We couldn't find any existing assets with those filters applied!")
-        return
-
-    df_to_plot['color'] = [
-        '#81c675' if float(x) >= 80
-        else '#fbf28d' if 60 <= float(x) < 80
-        else '#f2766e'
-        for x in df_to_plot['Score']
-    ]
-
-    overall_df_to_plot = df_to_plot[df_to_plot['Variable'] == 'Ad Total Score']
-    subset_df_to_plot = df_to_plot[df_to_plot['Variable'] != 'Ad Total Score']
-
-    base = (
-        alt
-        .Chart(overall_df_to_plot)
-        .encode(
-            x='Variable',
-            y='Ad Name',
-        )
-    )
-
-    chart = (
-        base
-        .mark_rect(size=100, stroke='black', strokeWidth=0.5)
-        .encode(
-            alt.X(
-                shorthand='Variable',
-                axis=alt.Axis(
-                    orient='top',
-                    labelAngle=-45,
-                    tickSize=0,
-                    labelPadding=10,
-                    title=None,
-                )
-            ),
-            alt.Y(shorthand='Ad Name', axis=alt.Axis(tickSize=0, labelPadding=10, titlePadding=20)),
-            color=alt.Color('color', scale=None),
-            tooltip=['Ad Name', 'Brand', 'Product', 'Score'],
-        ).properties(
-            height=300,
-        )
-    )
-
-    text = base.mark_text().encode(text='Score')
-
-    full_plot = (
-        (chart + text)
-        .configure_axis(
-            labelFontSize=15,
-            labelFontWeight=alt.FontWeight('bold'),
-            titleFontSize=15,
-            titleFontWeight=alt.FontWeight('normal'),
-        )
-    )
-
-    st.altair_chart(full_plot, use_container_width=True)
-
-    st.write('-----')
-
-    if st.checkbox('Break down by identity'):
-        sort = [
+    if st.session_state.sidebar_data_explorer_radio == 'Score Heatmap':
+        cols_to_select_subset = [
+            'Ad Name',
+            'Brand',
+            'Product',
+            'Content Type',
+            'Date Submitted',
+            'Qual Notes',
             'GENDER',
             'RACE',
             'LGBTQ+ ',
             'DISABILITY',
             'AGE',
             'BODY SIZE',
+            'Ad Total Score',
         ]
 
-        subset_base = (
+        df_to_plot = (
+            df[cols_to_select_subset]
+            .set_index(
+                ['Ad Name', 'Brand', 'Product', 'Content Type', 'Date Submitted', 'Qual Notes']
+            )
+            .stack()
+            .reset_index()
+            .rename(columns={0: 'Score', 'level_6': 'Variable'})
+        )
+
+        df_to_plot['Date Submitted'] = pd.to_datetime(df_to_plot['Date Submitted']).dt.date
+
+        filter_by = st.selectbox(
+            label='Filter visualization by...',
+            options=['None', 'Ad Name', 'Brand', 'Product', 'Content Type', 'Date Submitted'],
+        )
+
+        field_selected = None
+        min_date = None
+        max_date = None
+
+        text_area_color_css = ("""
+            <style>
+            .stSelectbox > div > div {
+                background-color: #FFFFFF;
+                border-bottom-color: #000000;
+                border-top-color: #000000;
+                border-right-color: #000000;
+                border-left-color: #000000;
+            }
+            </style>
+        """)
+
+        st.markdown(text_area_color_css, unsafe_allow_html=True)
+
+        if filter_by != 'None':
+            if filter_by == 'Date Submitted':
+                col_1, col_2 = st.columns(2)
+
+                with col_1:
+                    min_date = st.date_input(
+                        label='Earliest submitted date to consider',
+                        value=df_to_plot['Date Submitted'].min(),
+                    )
+
+                with col_2:
+                    max_date = st.date_input(label='Latest submitted date to consider')
+            else:
+                field_selected = st.multiselect(
+                    label='Choose a field to compare against',
+                    options=sorted(df_to_plot[filter_by].unique()),
+                    default=sorted(df_to_plot[filter_by].unique()),
+                )
+
+        st.write('')
+
+        if filter_by != 'None' and (field_selected or min_date or max_date):
+            if filter_by == 'Date Submitted':
+                df_to_plot = df_to_plot[
+                    (df_to_plot['Date Submitted'] >= min_date)
+                    & (df_to_plot['Date Submitted'] <= max_date)
+                ]
+            else:
+                df_to_plot = df_to_plot[df_to_plot[filter_by].isin(field_selected)]
+
+        if len(df_to_plot) == 0:
+            st.write("We couldn't find any existing assets with those filters applied!")
+            return
+
+        df_to_plot['color'] = [
+            '#7ED957' if float(x) >= 80
+            else '#FFDE59' if 60 <= float(x) < 80
+            else '#EA3423'
+            for x in df_to_plot['Score']
+        ]
+
+        overall_df_to_plot = df_to_plot[df_to_plot['Variable'] == 'Ad Total Score']
+        subset_df_to_plot = df_to_plot[df_to_plot['Variable'] != 'Ad Total Score']
+
+        base = (
             alt
-            .Chart(subset_df_to_plot)
+            .Chart(overall_df_to_plot)
+            .encode(
+                x='Variable',
+                y='Ad Name',
+            )
+        )
+
+        chart = (
+            base
+            .mark_rect(size=100, stroke='black', strokeWidth=0.5)
             .encode(
                 alt.X(
                     shorthand='Variable',
-                    sort=sort,
                     axis=alt.Axis(
                         orient='top',
                         labelAngle=-45,
@@ -274,24 +267,17 @@ def plot_color_maps(df: pd.DataFrame) -> alt.vegalite.v4.api.Chart:
                     shorthand='Ad Name',
                     axis=alt.Axis(tickSize=0, labelPadding=10, titlePadding=20)
                 ),
-            )
-        )
-
-        subset_chart = (
-            subset_base
-            .mark_rect(size=100, stroke='black', strokeWidth=0.5)
-            .encode(
                 color=alt.Color('color', scale=None),
-                tooltip=['Ad Name', 'Brand', 'Product', 'Variable', 'Score'],
+                tooltip=['Ad Name', 'Brand', 'Product', 'Score'],
             ).properties(
                 height=300,
             )
         )
 
-        subset_text = subset_base.mark_text().encode(text='Score')
+        text = base.mark_text().encode(text='Score')
 
-        subset_plot = (
-            (subset_chart + subset_text)
+        full_plot = (
+            (chart + text)
             .configure_axis(
                 labelFontSize=15,
                 labelFontWeight=alt.FontWeight('bold'),
@@ -300,11 +286,74 @@ def plot_color_maps(df: pd.DataFrame) -> alt.vegalite.v4.api.Chart:
             )
         )
 
-        st.altair_chart(subset_plot, use_container_width=True)
+        st.altair_chart(full_plot, use_container_width=True)
+
+        st.caption(
+            '\\* Note that when multiple versions of an asset have been submitted, the most-recent '
+            'version will be displayed above. To see multiple versions plotted over time, click '
+            '"Rep Score Progress" on the left sidebar.'
+        )
 
         st.write('-----')
 
-    if st.checkbox('Show rep score progress'):
+        if st.checkbox('Break down by identity'):
+            sort = [
+                'GENDER',
+                'RACE',
+                'LGBTQ+ ',
+                'DISABILITY',
+                'AGE',
+                'BODY SIZE',
+            ]
+
+            subset_base = (
+                alt
+                .Chart(subset_df_to_plot)
+                .encode(
+                    alt.X(
+                        shorthand='Variable',
+                        sort=sort,
+                        axis=alt.Axis(
+                            orient='top',
+                            labelAngle=-45,
+                            tickSize=0,
+                            labelPadding=10,
+                            title=None,
+                        )
+                    ),
+                    alt.Y(
+                        shorthand='Ad Name',
+                        axis=alt.Axis(tickSize=0, labelPadding=10, titlePadding=20)
+                    ),
+                )
+            )
+
+            subset_chart = (
+                subset_base
+                .mark_rect(size=100, stroke='black', strokeWidth=0.5)
+                .encode(
+                    color=alt.Color('color', scale=None),
+                    tooltip=['Ad Name', 'Brand', 'Product', 'Variable', 'Score'],
+                ).properties(
+                    height=300,
+                )
+            )
+
+            subset_text = subset_base.mark_text().encode(text='Score')
+
+            subset_plot = (
+                (subset_chart + subset_text)
+                .configure_axis(
+                    labelFontSize=15,
+                    labelFontWeight=alt.FontWeight('bold'),
+                    titleFontSize=15,
+                    titleFontWeight=alt.FontWeight('normal'),
+                )
+            )
+
+            st.altair_chart(subset_plot, use_container_width=True)
+
+    elif st.session_state.sidebar_data_explorer_radio == 'Rep Score Progress':
         x_axis = st.selectbox(
             label='Select field to view by',
             options=['Content Type', 'Date Submitted'],
@@ -366,8 +415,8 @@ def plot_color_maps(df: pd.DataFrame) -> alt.vegalite.v4.api.Chart:
 
         st.write('-----')
 
-    if st.checkbox('Show qualitative notes'):
-        notes_df = df_to_plot.copy()
+    elif st.session_state.sidebar_data_explorer_radio == 'Qualitative Notes':
+        notes_df = df.copy()
 
         notes_df = notes_df.drop_duplicates(
             subset=['Ad Name', 'Brand', 'Product', 'Content Type', 'Date Submitted', 'Qual Notes']
@@ -392,19 +441,6 @@ def home_page():
                 spread='https://docs.google.com/spreadsheets/d/1OR5Tj63Kzmq9AJX7XFGCzjQ7M9BEv15TkpkitXC1DgI/edit',  # noqa: E501
                 sheet=0,
             )
-
-    progress_bar_css = ("""
-        <style>
-        .stProgress > div > div > div {
-            background-color: gray;
-        }
-        .stProgress > div > div > div > div {
-            background-color: green;
-        }
-        </style>
-    """)
-
-    st.markdown(progress_bar_css, unsafe_allow_html=True)
 
     if st.session_state.asset_information.get('name'):
         st.markdown('### In Progress Assets')
@@ -446,7 +482,7 @@ def home_page():
                 st.progress((4/6) / 3)
             else:
                 # TODO: no 5/9?
-                st.progress((5/6) / 3)
+                st.progress((1/3))
 
         st.write('-----')
 
@@ -473,13 +509,9 @@ def home_page():
 
 
 def page_one():
-    # st.progress((0/5))
-    _, col_2, _ = st.columns([1, 15, 1])
+    st.image('images/Stage 1.png', use_column_width=True)
 
-    with col_2:
-        st.image('images/Stage 1.svg', width=2000)
-
-    st.markdown('## Asset Information')
+    st.markdown('## Start the Process')
 
     asset_name = st.text_input(label='Asset Name', placeholder='Ex: Pierre')
     asset_brand = st.text_input(label='Brand', placeholder='Ex: Mars')
@@ -503,12 +535,7 @@ def page_one():
 
 
 def page_two():
-    # st.progress((1/5))
-
-    _, col_2, _ = st.columns([1, 15, 1])
-
-    with col_2:
-        st.image('images/Stage 2.svg', width=2000)
+    st.image('images/Stage 2.png', use_column_width=True)
 
     st.markdown('## Marketing Brief')
 
@@ -537,11 +564,7 @@ def page_two():
 
 
 def page_three():
-    # st.progress((2/5))
-    _, col_2, _ = st.columns([1, 15, 1])
-
-    with col_2:
-        st.image('images/Stage 3.svg', width=2000)
+    st.image('images/Stage 3.png', use_column_width=True)
 
     st.markdown('## Agency Creative Brief')
 
@@ -575,11 +598,7 @@ def page_three():
 
 
 def page_four():
-    # st.progress((3/5))
-    _, col_2, _ = st.columns([1, 15, 1])
-
-    with col_2:
-        st.image('images/Stage 4.svg', width=2000)
+    st.image('images/Stage 4.png', use_column_width=True)
 
     st.markdown('## DE&I Discussion in the Creative Reviews')
 
@@ -614,11 +633,7 @@ def page_four():
 
 
 def page_five():
-    # st.progress((4/5))
-    _, col_2, _ = st.columns([1, 15, 1])
-
-    with col_2:
-        st.image('images/Stage 5.svg', width=2000)
+    st.image('images/Stage 5.png', use_column_width=True)
 
     st.markdown('## Upload Asset')
 
@@ -649,7 +664,7 @@ def page_five():
     )
     asset_version = st.number_input(label='Version', min_value=1)
 
-    asset_notes = st.text_area(label='Notes', height=200)  # , placeholder='Ex: Grapey'
+    asset_notes = st.text_area(label='Notes', height=200)
 
     if uploaded_file:
         if st.button('Upload!'):
@@ -669,22 +684,29 @@ def page_five():
 
 
 def page_six():
-    # st.progress((5/5))
-    _, col_2, _ = st.columns([1, 15, 1])
+    st.image('images/Stage 6.png', use_column_width=True)
 
-    with col_2:
-        st.image('images/Stage 6.svg', width=2000)
-
-    st.markdown('## Asset Review')
+    st.markdown('## Summary')
 
     asset_name = st.session_state.asset_information['name']
-
-    clear_session_state_asset_information()
 
     st.write(f"""
         Your asset `{asset_name}` has been uploaded and we'll begin work on it soon. It should now
         show up in the "Asset Overview" page.
+    """)
 
+    with st.expander(label=st.session_state.asset_information.get('name'), expanded=True):
+        st.write(f"**Asset Name**: {st.session_state.asset_information.get('name')}")
+        st.write(f"**Brand**: {st.session_state.asset_information.get('brand')}")
+        st.write(f"**Product**: {st.session_state.asset_information.get('product')}")
+        st.write(f"**Content Type**: {st.session_state.asset_information.get('content_type')}")
+        st.write(f"**Version**: {st.session_state.asset_information.get('version')}")
+
+        st.caption('<p style="text-align:right;">Uploaded</p>', unsafe_allow_html=True)
+
+        st.progress((1/3))
+
+    st.write("""
         In the meantime, please view the qualitative discussion guide on driving
         DEI into both the production and performance review below.
 
@@ -705,7 +727,6 @@ def page_six():
     """)
 
     if st.button('Back to home page'):
-        clear_session_state_progress()
         st.session_state.refresh_app = True
         st.session_state.clear_radio = True
         main()
@@ -731,19 +752,21 @@ def page_seven():
             .drop_duplicates(subset=['Ad Name', 'Brand', 'Product '], keep='last')
         )
 
-    # TODOs:
-    # write smart df caching system
-
     plot_color_maps(df=st.session_state.data_explorer_df_no_duplicates)
 
 
 def main():
+    if st.session_state.get('clear_radio'):
+        del st.session_state.clear_radio
+
+        st.session_state.sidebar_radio = 'Asset Overview'
+
     if st.session_state.get('refresh_app'):
         del st.session_state.refresh_app
 
         st.experimental_rerun()
 
-    if st.session_state.sidebar_radio == 'Start the Process':
+    if st.session_state.get('sidebar_radio') == 'Submit an Asset':
         if 'page_five_complete' in st.session_state.progress:
             page_six()
         elif 'page_four_complete' in st.session_state.progress:
@@ -756,9 +779,13 @@ def main():
             page_two()
         else:
             page_one()
-    elif st.session_state.sidebar_radio == 'Explore Your Data':
+    elif st.session_state.get('sidebar_radio') == 'Explore Your Data':
         page_seven()
     else:
+        if 'page_five_complete' in st.session_state.progress:
+            clear_session_state_asset_information()
+            clear_session_state_progress()
+
         home_page()
 
 
@@ -785,7 +812,7 @@ else:
 
         <style>
             @import url(//db.onlinewebfonts.com/c/542bb456af90c620bc50b375166d10b4?family=Lemon/Milk);
-            @font-face {font-family: "LemonMilk"; src: url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.eot"); src: url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.woff") format("woff"), url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.svg#Lemon/Milk") format("svg"); }
+            @font-face {font-family: "LemonMilk"; src: url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.eot"); src: url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.woff") format("woff"), url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.png#Lemon/Milk") format("png"); }
 
             h1,h2,h3,h4,h5,h6 {
                 font-family: 'LemonMilk';
@@ -796,7 +823,19 @@ else:
 
     st.markdown(body=font_css, unsafe_allow_html=True,)
 
-    st.image('images/Rep Score Portal (950 × 300 px).png')
+    s = ("""
+        <style>
+            div.stButton > button:first-child {
+                background-color: #2A2526;
+                color: #FAF4EB;
+                font-size: 22px;
+            }
+        <style>
+    """)
+
+    st.markdown(s, unsafe_allow_html=True)
+
+    st.image('images/Rep Score Portal Banner.png')
 
     if 'important' not in st.session_state:
         st.session_state.important = dict()
@@ -812,48 +851,50 @@ else:
         clear_session_state_asset_information()
 
     with st.sidebar:
-        st.session_state.sidebar_radio = st.empty()
+        st.markdown('')
 
-        if st.session_state.get('clear_radio'):
-            del st.session_state.clear_radio
+        asset_overview_col_1, asset_overview_col_2 = st.columns([0.1, 300])
+        explore_your_data_col_1, explore_your_data_col_2 = st.columns([0.1, 300])
+        start_the_process_col_1, start_the_process_col_2 = st.columns([0.1, 300])
 
-            st.session_state.important['run_id'] += 1
+        with asset_overview_col_2:
+            asset_overview_button = st.button('Asset Overview')
+        with explore_your_data_col_2:
+            explore_your_data_button = st.button('Explore Your Data')
+        with start_the_process_col_2:
+            start_the_process_button = st.button('Submit an Asset')
 
-        st.session_state.sidebar_radio = st.radio(
-            label='Select a page to view',
-            options=('Asset Overview', 'Explore Your Data', 'Start the Process'),
-            index=0,
-            key=st.session_state.important['run_id'],  # soooooo hacky, but ¯\_(ツ)_/¯
-        )
+        if explore_your_data_button:
+            st.session_state.sidebar_radio = 'Explore Your Data'
+        elif start_the_process_button:
+            st.session_state.sidebar_radio = 'Submit an Asset'
+        elif asset_overview_button:
+            st.session_state.sidebar_radio = 'Asset Overview'
 
-        # st.markdown('Select a page to view')
-        # st.session_state.asset_overview_button = st.button('Asset Overview')
-        # st.session_state.explore_your_data_button = st.button('Explore Your Data')
-        # st.session_state.start_the_process_button = st.button('Start the Process')
-
-        # s = """
-        #     <style>
-        #         div.stButton > button:first-child {
-        #             border: 5px solid blue; border-radius:20px 20px 20px 20px;
-        #         }
-        #     <style>
-        # """
-        # st.markdown(s, unsafe_allow_html=True)
+        if st.session_state.get('sidebar_radio') == 'Explore Your Data':
+            with explore_your_data_col_1:
+                st.markdown('*')
+        elif st.session_state.get('sidebar_radio') == 'Submit an Asset':
+            with start_the_process_col_1:
+                st.markdown('*')
+        else:
+            with asset_overview_col_1:
+                st.markdown('*')
 
         st.markdown('<br>', unsafe_allow_html=True)
 
-        if st.session_state.sidebar_radio == 'Start the Process':
+        if st.session_state.get('sidebar_radio') == 'Submit an Asset':
             # TODO: clean this up a bit
             if (
                 'page_one_complete' not in st.session_state.progress
             ):
                 navigation_string = ("""
-                    <p style="color:#fff;">1. Asset Information</p>
-                    <p>2. Marketing Brief DEI Checklist<p>
-                    <p>3. Agency Creative Brief DEI Checklist<p>
-                    <p>4. Creative Reviews DEI Checklist<p>
+                    <p style="color:#fff;">1. Start the Process</p>
+                    <p>2. DEI Checklist: Marketing Brief<p>
+                    <p>3. DEI Checklist: Agency Creative Brief<p>
+                    <p>4. DEI Checklist: Creative Reviews<p>
                     <p>5. Upload Asset<p>
-                    <p>6. Asset Review<p>
+                    <p>6. Summary<p>
                 """)
                 st.markdown(navigation_string, unsafe_allow_html=True)
             elif (
@@ -861,12 +902,12 @@ else:
                 and 'page_two_complete' not in st.session_state.progress
             ):
                 navigation_string = ("""
-                    <p>1. Asset Information</p>
-                    <p style="color:#fff;">2. Marketing Brief DEI Checklist</p>
-                    <p>3. Agency Creative Brief DEI Checklist<p>
-                    <p>4. Creative Reviews DEI Checklist<p>
+                    <p>1. Start the Process</p>
+                    <p style="color:#fff;">2. DEI Checklist: Marketing Brief</p>
+                    <p>3. DEI Checklist: Agency Creative Brief<p>
+                    <p>4. DEI Checklist: Creative Reviews<p>
                     <p>5. Upload Asset<p>
-                    <p>6. Asset Review<p>
+                    <p>6. Summary<p>
                 """)
                 st.markdown(navigation_string, unsafe_allow_html=True)
             elif (
@@ -874,12 +915,12 @@ else:
                 and 'page_three_complete' not in st.session_state.progress
             ):
                 navigation_string = ("""
-                    <p>1. Asset Information</p>
-                    <p>2. Marketing Brief DEI Checklist</p>
-                    <p style="color:#fff;">3. Agency Creative Brief DEI Checklist</p>
-                    <p>4. Creative Reviews DEI Checklist<p>
+                    <p>1. Start the Process</p>
+                    <p>2. DEI Checklist: Marketing Brief</p>
+                    <p style="color:#fff;">3. DEI Checklist: Agency Creative Brief</p>
+                    <p>4. DEI Checklist: Creative Reviews<p>
                     <p>5. Upload Asset<p>
-                    <p>6. Asset Review<p>
+                    <p>6. Summary<p>
                 """)
                 st.markdown(navigation_string, unsafe_allow_html=True)
             elif (
@@ -887,12 +928,12 @@ else:
                 and 'page_four_complete' not in st.session_state.progress
             ):
                 navigation_string = ("""
-                    <p>1. Asset Information</p>
-                    <p>2. Marketing Brief DEI Checklist</p>
-                    <p>3. Agency Creative Brief DEI Checklist</p>
-                    <p style="color:#fff;">4. Creative Reviews DEI Checklist</p>
+                    <p>1. Start the Process</p>
+                    <p>2. DEI Checklist: Marketing Brief</p>
+                    <p>3. DEI Checklist: Agency Creative Brief</p>
+                    <p style="color:#fff;">4. DEI Checklist: Creative Reviews</p>
                     <p>5. Upload Asset<p>
-                    <p>6. Asset Review<p>
+                    <p>6. Summary<p>
                 """)
                 st.markdown(navigation_string, unsafe_allow_html=True)
             elif (
@@ -900,40 +941,40 @@ else:
                 and 'page_five_complete' not in st.session_state.progress
             ):
                 navigation_string = ("""
-                    <p>1. Asset Information</p>
-                    <p>2. Marketing Brief DEI Checklist</p>
-                    <p>3. Agency Creative Brief DEI Checklist</p>
-                    <p>4. Creative Reviews DEI Checklist</p>
+                    <p>1. Start the Process</p>
+                    <p>2. DEI Checklist: Marketing Brief</p>
+                    <p>3. DEI Checklist: Agency Creative Brief</p>
+                    <p>4. DEI Checklist: Creative Reviews</p>
                     <p style="color:#fff;">5. Upload Asset</p>
-                    <p>6. Asset Review<p>
+                    <p>6. Summary<p>
                 """)
                 st.markdown(navigation_string, unsafe_allow_html=True)
             else:
                 navigation_string = ("""
-                    <p>1. Asset Information</p>
-                    <p>2. Marketing Brief DEI Checklist</p>
-                    <p>3. Agency Creative Brief DEI Checklist</p>
-                    <p>4. Creative Reviews DEI Checklist</p>
+                    <p>1. Start the Process</p>
+                    <p>2. DEI Checklist: Marketing Brief</p>
+                    <p>3. DEI Checklist: Agency Creative Brief</p>
+                    <p>4. DEI Checklist: Creative Reviews</p>
                     <p>5. Upload Asset</p>
-                    <p style="color:#fff;">6. Asset Review</p>
+                    <p style="color:#fff;">6. Summary</p>
                 """)
                 st.markdown(navigation_string, unsafe_allow_html=True)
         else:
             navigation_string = ("""
-                <p>1. Asset Information</p>
-                <p>2. Marketing Brief DEI Checklist<p>
-                <p>3. Agency Creative Brief DEI Checklist<p>
-                <p>4. Creative Reviews DEI Checklist<p>
+                <p>1. Start the Process</p>
+                <p>2. DEI Checklist: Marketing Brief<p>
+                <p>3. DEI Checklist: Agency Creative Brief<p>
+                <p>4. DEI Checklist: Creative Reviews<p>
                 <p>5. Upload Asset<p>
-                <p>6. Asset Review<p>
+                <p>6. Summary<p>
             """)
             st.markdown(navigation_string, unsafe_allow_html=True)
 
-        if st.session_state.sidebar_radio == 'Explore Your Data':
+        if st.session_state.get('sidebar_radio') == 'Explore Your Data':
             st.markdown('<br>', unsafe_allow_html=True)
 
             st.session_state.sidebar_data_explorer_radio = st.radio(
-                label='Select a page to view',
+                label='Select a visualization to view',
                 options=('Score Heatmap', 'Rep Score Progress', 'Qualitative Notes'),
                 index=0,
             )
@@ -953,10 +994,10 @@ else:
 
         st.markdown('<br>', unsafe_allow_html=True)
 
-        col_1, col_2, _ = st.columns([12, 12, 10])
+        col_1, col_2 = st.columns(2)
 
         with col_1:
-            if st.session_state.sidebar_radio == 'Start the Process':
+            if st.session_state.get('sidebar_radio') == 'Submit an Asset':
                 if st.button('Start over'):
                     clear_session_state_progress()
                     clear_session_state_asset_information()
@@ -978,8 +1019,33 @@ else:
         with col_2:
             authenticator.logout('Logout', 'main')
 
+    progress_bar_css = ("""
+        <style>
+        .stProgress > div > div > div {
+            background-color: gray;
+        }
+        .stProgress > div > div > div > div {
+            background-color: green;
+        }
+        </style>
+    """)
+
+    st.markdown(progress_bar_css, unsafe_allow_html=True)
+
+    text_area_color_css = ("""
+        <style>
+        .streamlit-expanderHeader {
+            font-size: 16px;
+            color: #EA3423;
+            font-weight: bold;
+        }
+        </style>
+    """)
+
+    st.markdown(text_area_color_css, unsafe_allow_html=True)
+
+    display_footer()
+
     main()
 
-# TODO: add the following
-# make the sidebar closer to buttons rather than the radio
-# fix using LemonMilk font
+# TODO: write smart df caching system

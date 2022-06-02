@@ -1,5 +1,5 @@
 FROM python:3.9
-MAINTAINER data-science@themomproject.com
+LABEL maintainer nathancooperjones@gmail.com
 
 RUN apt-get update \
     && apt-get install -y vim \
@@ -8,17 +8,14 @@ RUN apt-get update \
     && apt-get clean
 
 USER root
-WORKDIR /nerds_qa
+WORKDIR /rep_score_portal
 
 # copy files to container
 COPY requirements.txt ./
 
-ARG CODEARTIFACT_AUTH_TOKEN
-
 # install libraries
 RUN \
   pip3 install -U pip && \
-  pip3 config set global.index-url "https://aws:$CODEARTIFACT_AUTH_TOKEN@datascience-670623442388.d.codeartifact.us-east-1.amazonaws.com/pypi/ds_libraries/simple/" && \
   pip3 install -r requirements.txt
 
 # copy the rest of the files over

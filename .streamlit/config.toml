@@ -1,0 +1,35 @@
+[server]
+# Max size, in megabytes, for files uploaded with the file_uploader.
+# Default: 200
+maxUploadSize = 200
+
+runOnSave = true
+
+[browser]
+gatherUsageStats = false
+
+[runner]
+# Handle script rerun requests immediately, rather than waiting for script execution to reach a yield point. Enabling this will make Streamlit much more responsive to user interaction, but it can lead to race conditions in apps that mutate session_state data outside of explicit session_state assignment statements.
+fastReruns = true
+
+[theme]
+base="light"
+
+# Primary accent color for interactive elements.
+# primaryColor="#003749"
+primaryColor="#000000"
+
+# Background color for the main content area.
+# backgroundColor="#FAF4EB"
+backgroundColor="#FFFFFF"
+
+# Background color used for the sidebar and most interactive widgets.
+# secondaryBackgroundColor="#e85e60"
+secondaryBackgroundColor="#EA3423"
+
+# Color used for almost all text.
+# textColor="#003749"
+textColor="#000000"
+
+# Font family for all text in the app, except code blocks. One of "sans serif", "serif", or "monospace".
+#font =
