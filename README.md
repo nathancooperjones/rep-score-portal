@@ -2,9 +2,12 @@
 
 TBD on a better description for this repo... 😬
 
+<img width="1178" alt="Screen Shot 2022-06-05 at 11 59 31 PM" src="https://user-images.githubusercontent.com/31417712/172097833-b8b1f34f-79cb-439d-ac6d-6dc726d0ff7c.png">
+
 ## Installation
 ### Local Installation
 ```bash
+
 # build the image
 docker build --build-arg CODEARTIFACT_AUTH_TOKEN -t rep_score_portal .
 
