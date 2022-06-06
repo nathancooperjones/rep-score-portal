@@ -26,7 +26,7 @@ def layout(*args):
         id='myFooter',
         style=styles(
             margin=px(0, 0, 0, 0),
-            padding=px(0, 5, 10, 0),
+            padding=px(0, 5, 12, 0),
             font_size='0.8rem',
             color='rgb(51,51,51)',
         ),
@@ -49,7 +49,7 @@ def display_footer():
         image(
             src_as_string='https://nathancooperjones.com/wp-content/uploads/2022/06/BBDO_and_Rep_Logos-e1654094195618.png',  # noqa: E501
             # width=px(25),
-            height=px(18),
+            height=px(20),
         ),
     ]
     layout(*myargs)

@@ -18,9 +18,50 @@ st.set_page_config(page_title='Rep Score Portal', page_icon='🌀')
 
 
 hide_streamlit_style = """
+    <link href="http://fonts.cdnfonts.com/css/lemon-milk" rel="stylesheet">
     <style>
         #MainMenu {visibility: hidden;}
-        footer {visibility: hidden;}
+        footer {
+            visibility: hidden;
+        }
+        [title='View fullscreen'] {
+            visibility: hidden;
+        }
+
+        .stRadio > label {
+            font-size: 16px;
+        }
+
+        p {
+            margin-bottom: 0.75rem;
+        }
+
+        @import url('http://fonts.cdnfonts.com/css/lemon-milk');
+
+        h1,h2,h3,h4,h5,h6 {
+            font-family: 'LEMON MILK', sans-serif;
+        }
+
+        .stProgress > div > div > div {
+            background-color: gray;
+            height: 1.5rem;
+            margin-top: -0.5rem;
+        }
+
+        .stProgress > div > div > div > div {
+            background-color: green;
+        }
+
+        .streamlit-expanderHeader {
+            font-size: 16px;
+            color: #EA3423;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .streamlit-expanderContent > div {
+            line-height: 1.3rem;
+        }
     </style>
 """
 
@@ -43,7 +84,7 @@ with st.sidebar:
     st.markdown('<br>', unsafe_allow_html=True)
     st.markdown('<br>', unsafe_allow_html=True)
 
-    _, col_2, _ = st.columns([1, 30, 1])
+    _, col_2, _ = st.columns([1, 27, 1])
 
     with col_2:
         st.image('images/Mars Petcare Logo Square.png', use_column_width=True)
@@ -447,7 +488,7 @@ def home_page():
 
         with st.expander(label=st.session_state.asset_information.get('name'), expanded=True):
             # TODO: handle nulls better here
-            st.write(f"**Asset Name**: {st.session_state.asset_information.get('name')}")
+            # st.write(f"**Asset Name**: {st.session_state.asset_information.get('name')}")
             st.write(f"**Brand**: {st.session_state.asset_information.get('brand')}")
             st.write(f"**Product**: {st.session_state.asset_information.get('product')}")
             st.write(f"**Content Type**: {st.session_state.asset_information.get('content_type')}")
@@ -492,7 +533,7 @@ def home_page():
 
     for _, row in st.session_state.asset_tracker_df.iterrows():
         with st.expander(label=row['Asset Name'], expanded=True):
-            st.write(f"**Asset Name**: {row['Asset Name']}")
+            # st.write(f"**Asset Name**: {row['Asset Name']}")
             st.write(f"**Brand**: {row['Brand']}")
             st.write(f"**Product**: {row['Product']}")
             st.write(f"**Content Type**: {row['Content Type']}")
@@ -806,34 +847,22 @@ elif authentication_status is None:
     st.warning('Please enter your username and password.')
     st.stop()
 else:
-    font_css = (
-        """
-        <link href="//db.onlinewebfonts.com/c/542bb456af90c620bc50b375166d10b4?family=Lemon/Milk" rel="stylesheet" type="text/css"/>
-
-        <style>
-            @import url(//db.onlinewebfonts.com/c/542bb456af90c620bc50b375166d10b4?family=Lemon/Milk);
-            @font-face {font-family: "LemonMilk"; src: url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.eot"); src: url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.woff") format("woff"), url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/542bb456af90c620bc50b375166d10b4.png#Lemon/Milk") format("png"); }
-
-            h1,h2,h3,h4,h5,h6 {
-                font-family: 'LemonMilk';
-            }
-        </style>
-        """  # noqa: E501
-    )
-
-    st.markdown(body=font_css, unsafe_allow_html=True,)
-
-    s = ("""
+    button_css = ("""
         <style>
             div.stButton > button:first-child {
                 background-color: #2A2526;
                 color: #FAF4EB;
-                font-size: 22px;
+                font-size: 20px;
+            }
+            div.stButton > button:focus:not(:active) {
+                background-color: #2A2526;
+                color: #FAF4EB;
+                font-size: 20px;
             }
         <style>
     """)
 
-    st.markdown(s, unsafe_allow_html=True)
+    st.markdown(button_css, unsafe_allow_html=True)
 
     st.image('images/Rep Score Portal Banner.png')
 
@@ -889,7 +918,7 @@ else:
                 'page_one_complete' not in st.session_state.progress
             ):
                 navigation_string = ("""
-                    <p style="color:#fff;">1. Start the Process</p>
+                    <p style="color:#fff;"><strong>1. Start the Process</strong></p>
                     <p>2. DEI Checklist: Marketing Brief<p>
                     <p>3. DEI Checklist: Agency Creative Brief<p>
                     <p>4. DEI Checklist: Creative Reviews<p>
@@ -903,7 +932,7 @@ else:
             ):
                 navigation_string = ("""
                     <p>1. Start the Process</p>
-                    <p style="color:#fff;">2. DEI Checklist: Marketing Brief</p>
+                    <p style="color:#fff;"><strong>2. DEI Checklist: Marketing Brief</strong></p>
                     <p>3. DEI Checklist: Agency Creative Brief<p>
                     <p>4. DEI Checklist: Creative Reviews<p>
                     <p>5. Upload Asset<p>
@@ -917,7 +946,7 @@ else:
                 navigation_string = ("""
                     <p>1. Start the Process</p>
                     <p>2. DEI Checklist: Marketing Brief</p>
-                    <p style="color:#fff;">3. DEI Checklist: Agency Creative Brief</p>
+                    <p style="color:#fff;"><strong>3. DEI Checklist: Agency Creative Brief</strong></p>
                     <p>4. DEI Checklist: Creative Reviews<p>
                     <p>5. Upload Asset<p>
                     <p>6. Summary<p>
@@ -931,7 +960,7 @@ else:
                     <p>1. Start the Process</p>
                     <p>2. DEI Checklist: Marketing Brief</p>
                     <p>3. DEI Checklist: Agency Creative Brief</p>
-                    <p style="color:#fff;">4. DEI Checklist: Creative Reviews</p>
+                    <p style="color:#fff;"><strong>4. DEI Checklist: Creative Reviews</strong></p>
                     <p>5. Upload Asset<p>
                     <p>6. Summary<p>
                 """)
@@ -945,7 +974,7 @@ else:
                     <p>2. DEI Checklist: Marketing Brief</p>
                     <p>3. DEI Checklist: Agency Creative Brief</p>
                     <p>4. DEI Checklist: Creative Reviews</p>
-                    <p style="color:#fff;">5. Upload Asset</p>
+                    <p style="color:#fff;"><strong>5. Upload Asset</strong></p>
                     <p>6. Summary<p>
                 """)
                 st.markdown(navigation_string, unsafe_allow_html=True)
@@ -956,7 +985,7 @@ else:
                     <p>3. DEI Checklist: Agency Creative Brief</p>
                     <p>4. DEI Checklist: Creative Reviews</p>
                     <p>5. Upload Asset</p>
-                    <p style="color:#fff;">6. Summary</p>
+                    <p style="color:#fff;"><strong>6. Summary</strong></p>
                 """)
                 st.markdown(navigation_string, unsafe_allow_html=True)
         else:
@@ -974,7 +1003,7 @@ else:
             st.markdown('<br>', unsafe_allow_html=True)
 
             st.session_state.sidebar_data_explorer_radio = st.radio(
-                label='Select a visualization to view',
+                label='Select a visualization to view:',
                 options=('Score Heatmap', 'Rep Score Progress', 'Qualitative Notes'),
                 index=0,
             )
@@ -1019,33 +1048,9 @@ else:
         with col_2:
             authenticator.logout('Logout', 'main')
 
-    progress_bar_css = ("""
-        <style>
-        .stProgress > div > div > div {
-            background-color: gray;
-        }
-        .stProgress > div > div > div > div {
-            background-color: green;
-        }
-        </style>
-    """)
-
-    st.markdown(progress_bar_css, unsafe_allow_html=True)
-
-    text_area_color_css = ("""
-        <style>
-        .streamlit-expanderHeader {
-            font-size: 16px;
-            color: #EA3423;
-            font-weight: bold;
-        }
-        </style>
-    """)
-
-    st.markdown(text_area_color_css, unsafe_allow_html=True)
-
     display_footer()
 
     main()
 
-# TODO: write smart df caching system
+# TODO: add caption to submit an assest saying check all to continue
+# TODO: get rid of header links anchors
