@@ -5,7 +5,7 @@ if ! [ -x "$(command -v docker-compose)" ]; then
   exit 1
 fi
 
-domains=(marspetcare.repscoreportal.org www.marspetcare.repscoreportal.org)
+domains=(repscoreportal.org www.repscoreportal.org)
 rsa_key_size=4096
 data_path="./data/certbot"
 email="nate@therepproject.org" # Adding a valid address is strongly recommended
