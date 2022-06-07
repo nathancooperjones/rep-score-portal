@@ -1,5 +1,4 @@
 from datetime import datetime
-import json
 import os
 import random
 import string
@@ -70,17 +69,19 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 random.seed(42)
 
+usernames = list(st.secrets['logins'].keys())
+passwords = list(st.secrets['logins'].values())
+
 authenticator = stauth.Authenticate(
-    names=['Test User'],
-    usernames=['user'],
-    passwords=stauth.Hasher(['test']).generate(),
+    names=usernames,
+    usernames=usernames,
+    passwords=stauth.Hasher(passwords).generate(),
     cookie_name='trp_rep_score_cookie',
     key=''.join(random.choices(string.ascii_letters + string.digits, k=50)),
     cookie_expiry_days=7,
 )
 
 with st.sidebar:
-    st.markdown('<br>', unsafe_allow_html=True)
     st.markdown('<br>', unsafe_allow_html=True)
     st.markdown('<br>', unsafe_allow_html=True)
 
@@ -92,14 +93,13 @@ with st.sidebar:
     st.markdown('<br>', unsafe_allow_html=True)
 
 
+st.image('images/Rep Score Portal Banner.png')
+
 name, authentication_status, username = authenticator.login('Login', 'main')
 
 
 def upload_file_and_update_tracker(uploaded_file: st.uploaded_file_manager.UploadedFile) -> None:
     """TODO."""
-    with open('credentials/aws_credentials.json', 'r') as fp:
-        aws_credentials_dict = json.load(fp)
-
     uploaded_filename, uploaded_file_extension = os.path.splitext(uploaded_file.name)
     full_filename = (
         uploaded_filename
@@ -112,19 +112,32 @@ def upload_file_and_update_tracker(uploaded_file: st.uploaded_file_manager.Uploa
         boto3
         .client(
             's3',
-            aws_access_key_id=aws_credentials_dict['aws_access_key_id'],
-            aws_secret_access_key=aws_credentials_dict['aws_secret_access_key'],
+            aws_access_key_id=st.secrets['aws']['access_key_id'],
+            aws_secret_access_key=st.secrets['aws']['secret_access_key'],
         )
         .upload_fileobj(uploaded_file, 'trp-rep-score-assets', f'uploads/{full_filename}')
     )
+
+    # try to trigger garbage collection early
+    uploaded_file.close()
+    del uploaded_file
 
     # set up Google API client
     sheet = gspread_pandas.spread.Spread(
         spread='https://docs.google.com/spreadsheets/d/1OR5Tj63Kzmq9AJX7XFGCzjQ7M9BEv15TkpkitXC1DgI/edit',  # noqa: E501
         sheet=0,
-        config=(
-            gspread_pandas.conf.get_config(conf_dir='.', file_name='credentials/credentials.json')
-        ),
+        config={
+            'type': st.secrets['gcp']['type'],
+            'project_id': st.secrets['gcp']['project_id'],
+            'private_key_id': st.secrets['gcp']['private_key_id'],
+            'private_key': st.secrets['gcp']['private_key'],
+            'client_email': st.secrets['gcp']['client_email'],
+            'client_id': st.secrets['gcp']['client_id'],
+            'auth_uri': st.secrets['gcp']['auth_uri'],
+            'token_uri': st.secrets['gcp']['token_uri'],
+            'auth_provider_x509_cert_url': st.secrets['gcp']['auth_provider_x509_cert_url'],
+            'client_x509_cert_url': st.secrets['gcp']['client_x509_cert_url'],
+        },
     )
 
     asset_tracker_df = sheet.sheet_to_df(index=None)
@@ -160,10 +173,18 @@ def read_google_spreadsheet(spread: str, sheet: int = 0) -> pd.DataFrame:
     sheet = gspread_pandas.spread.Spread(
         spread=spread,
         sheet=sheet,
-        config=gspread_pandas.conf.get_config(
-            conf_dir='.',
-            file_name='credentials/credentials.json',
-        ),
+        config={
+            'type': st.secrets['gcp']['type'],
+            'project_id': st.secrets['gcp']['project_id'],
+            'private_key_id': st.secrets['gcp']['private_key_id'],
+            'private_key': st.secrets['gcp']['private_key'],
+            'client_email': st.secrets['gcp']['client_email'],
+            'client_id': st.secrets['gcp']['client_id'],
+            'auth_uri': st.secrets['gcp']['auth_uri'],
+            'token_uri': st.secrets['gcp']['token_uri'],
+            'auth_provider_x509_cert_url': st.secrets['gcp']['auth_provider_x509_cert_url'],
+            'client_x509_cert_url': st.secrets['gcp']['client_x509_cert_url'],
+        },
     )
 
     return sheet.sheet_to_df(index=None)
@@ -580,6 +601,8 @@ def page_two():
 
     st.markdown('## Marketing Brief')
 
+    st.caption('Please check all boxes below to continue')
+
     marketing_1 = st.checkbox(
         'DE&I can be reflected in our High Value Communities or audience definitions'
     )
@@ -608,6 +631,8 @@ def page_three():
     st.image('images/Stage 3.png', use_column_width=True)
 
     st.markdown('## Agency Creative Brief')
+
+    st.caption('Please check all boxes below to continue')
 
     agency_creative_1 = st.checkbox(
         'We have considered where we are sourcing data and inspiration for this project'
@@ -642,6 +667,8 @@ def page_four():
     st.image('images/Stage 4.png', use_column_width=True)
 
     st.markdown('## DE&I Discussion in the Creative Reviews')
+
+    st.caption('Please check all boxes below to continue')
 
     creative_review_1 = st.checkbox(
         'We can reasonably make the work more inclusive, equitable, and representative at this '
@@ -864,8 +891,6 @@ else:
 
     st.markdown(button_css, unsafe_allow_html=True)
 
-    st.image('images/Rep Score Portal Banner.png')
-
     if 'important' not in st.session_state:
         st.session_state.important = dict()
 
@@ -1052,5 +1077,4 @@ else:
 
     main()
 
-# TODO: add caption to submit an assest saying check all to continue
 # TODO: get rid of header links anchors

@@ -1,5 +1,5 @@
-# Credentials & secrets files
-*credentials.json
+# Secrets file
+secrets.toml
 
 # MacOS generated files
 .DS_Store
