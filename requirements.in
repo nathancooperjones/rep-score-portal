@@ -3,6 +3,5 @@ boto3
 gspread_pandas
 htbuilder
 pandas
-psutil==5.8.0  # AWS installation issue
 streamlit
 streamlit_authenticator
