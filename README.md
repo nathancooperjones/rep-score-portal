@@ -6,9 +6,9 @@ TBD on a better description for this repo... 😬
 
 ## Building and Running the PRD Container
 ```bash
-./init-letsencrypt.sh
+sudo bash init-letsencrypt.sh
 
-docker-compose up
+sudo docker-compose up
 ```
 
 ## Installation
