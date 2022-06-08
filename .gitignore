@@ -1,6 +1,10 @@
 # Secrets file
 secrets.toml
 
+# SSL files, just in case
+*.crt
+*.key
+
 # MacOS generated files
 .DS_Store
 

@@ -1,19 +1,11 @@
-version: '3.8'
+version: '3'
 
 services:
-  streamlit:
-    container_name: streamlit_app
-    restart: always
-    expose:
-      - "8501"
-    ports:
-      - "8501:8501"
-    build: .
-    command: bash entrypoint.sh
-
   nginx:
+    image: nginx:stable
+    # image: nginx:1.15-alpine
+    container_name: nginx
     restart: always
-    image: nginx:1.15-alpine
     ports:
       - "80:80"
       - "443:443"
@@ -21,3 +13,11 @@ services:
       - ./nginx:/etc/nginx/conf.d
       - /home/ubuntu/ssl:/etc/ssl  # hard-coded for now
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  streamlit:
+    container_name: streamlit_app
+    restart: always
+    ports:
+      - "8501:8501"
+    build: .
+    command: bash entrypoint.sh

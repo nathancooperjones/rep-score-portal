@@ -178,7 +178,6 @@ else:
 
         st.session_state.important['username'] = username
         st.session_state.important['name'] = name
-        st.session_state.important['run_id'] = 0
 
     if 'progress' not in st.session_state:
         clear_session_state_progress()

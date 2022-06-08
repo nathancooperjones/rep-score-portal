@@ -31,7 +31,7 @@ docker run \
     --rm \
     --shm-size 16G \
     -v "${PWD}:/rep_score_portal" \
-    -p 80:80 \
+    -p 8501:8501 \
     rep_score_portal
 ```
 
