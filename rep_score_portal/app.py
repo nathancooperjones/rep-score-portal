@@ -6,9 +6,10 @@ import streamlit_authenticator as stauth
 
 from footer import display_footer
 from sidebar import construct_sidebar_prefix, construct_sidebar_suffix
-from streamlit_pages.asset_overview import home_page
-from streamlit_pages.explore_your_data import page_seven
-from streamlit_pages.submit_an_asset import (
+from utils import clear_session_state_asset_information, clear_session_state_progress
+from views.asset_overview import home_page
+from views.explore_your_data import page_seven
+from views.submit_an_asset import (
     # flake8... 🤦‍♂️
     page_five,
     page_four,
@@ -17,7 +18,6 @@ from streamlit_pages.submit_an_asset import (
     page_three,
     page_two,
 )
-from utils import clear_session_state_asset_information, clear_session_state_progress
 
 
 st.set_page_config(page_title='Rep Score Portal', page_icon='🌀')

@@ -1,11 +1,11 @@
 FROM python:3.9
-LABEL maintainer nathancooperjones@gmail.com
+LABEL maintainer nate@therepproject.org
 
 RUN apt-get update \
-    && apt-get install -y vim \
-    && apt-get install -y libpq-dev \
-    && apt-get install -y gcc \
-    && apt-get clean
+  && apt-get install -y vim \
+  && apt-get install -y libpq-dev \
+  && apt-get install -y gcc \
+  && apt-get clean
 
 USER root
 WORKDIR /rep_score_portal
@@ -21,4 +21,4 @@ RUN \
 # copy the rest of the files over
 COPY . .
 
-CMD streamlit run app.py
+CMD sh entrypoint.sh
