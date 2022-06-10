@@ -4,6 +4,10 @@ secrets.toml
 # SSL files, just in case
 *.crt
 *.key
+*.pem
+
+# ``ssl-proxy`` binary
+ssl-proxy-linux-amd64
 
 # MacOS generated files
 .DS_Store

@@ -1,23 +1,12 @@
 version: '3'
 
 services:
-  nginx:
-    image: nginx:stable
-    # image: nginx:1.15-alpine
-    container_name: nginx
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx:/etc/nginx/conf.d
-      - /home/ubuntu/ssl:/etc/ssl  # hard-coded for now
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-
   streamlit:
     container_name: streamlit_app
     restart: always
     ports:
+      - "80:80"
+      - "443:443"
       - "8501:8501"
     build: .
     command: bash entrypoint.sh

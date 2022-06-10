@@ -2,6 +2,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.7.0] - 2022-06-10
+### Changed
+ - Simplified SSL / HTTPS support for the application using ``ssl-proxy``
+### Removed
+ - Nginx logic in favor of ``ssl-proxy``
+
 # [0.6.0] - 2022-06-08
 ### Added
  - SSL / HTTPS support for the application when running on an EC2 instance using NGINX
