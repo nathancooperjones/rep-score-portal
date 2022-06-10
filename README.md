@@ -1,8 +1,8 @@
 # rep-score-portal
 
-TBD on a better description for this repo... 😬
+Portal to upload, track, and view assets' Representation Score, built entirely in Streamlit.
 
-<img width="1178" alt="Screen Shot 2022-06-05 at 11 59 31 PM" src="https://user-images.githubusercontent.com/31417712/172097833-b8b1f34f-79cb-439d-ac6d-6dc726d0ff7c.png">
+<img width="1272" alt="Screen Shot 2022-06-10 at 1 04 07 PM" src="https://user-images.githubusercontent.com/31417712/173125041-68d320c3-3df6-47f7-9d06-3ac5c81ee85a.png">
 
 ## Building and Running the PRD Container
 A simple one-liner that builds and runs the container without mounting any local volumes into the container. This way, if we update any file with a change we don't want to be deployed yet (while the application is running), the application will not auto-update with this new file (which is the current behavior of this Streamlit application).
