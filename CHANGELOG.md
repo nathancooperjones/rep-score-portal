@@ -2,6 +2,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.8.0] - 2022-06-10
+### Added
+ - Docstrings and type hints to all functions
+ - Ability to upload a creative brief to S3 when submitting a new asset
+ - Ability to provide a URL to an asset rather than having to upload an asset when submitting a new asset
+### Changed
+ - Broke up ``upload_file_and_update_tracker`` into two separate functions: ``upload_file_to_s3`` and ``append_new_row_in_asset_tracker``
+ - Cached color map dataset in ``explore_your_data.py``
+ - General code cleanup
+### Fixed
+ - Error is now correctly displayed when filtered data has zero rows in ``plot_color_maps``
+
 # [0.7.0] - 2022-06-10
 ### Changed
  - Simplified SSL / HTTPS support for the application using ``ssl-proxy``

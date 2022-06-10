@@ -6,7 +6,7 @@ import streamlit_authenticator as stauth
 
 from footer import display_footer
 from sidebar import construct_sidebar_prefix, construct_sidebar_suffix
-from utils import clear_session_state_asset_information, clear_session_state_progress
+from utils import reset_session_state_asset_information, reset_session_state_progress
 from views.asset_overview import home_page
 from views.explore_your_data import page_seven
 from views.submit_an_asset import (
@@ -132,7 +132,7 @@ st.image('../images/Rep Score Portal Banner.png')
 name, authentication_status, username = authenticator.login('Login', 'main')
 
 
-def main():  # TODO: rename to ``determine_page``
+def determine_page():
     if st.session_state.get('clear_radio'):
         del st.session_state.clear_radio
 
@@ -160,8 +160,8 @@ def main():  # TODO: rename to ``determine_page``
         page_seven()
     else:
         if 'page_five_complete' in st.session_state.progress:
-            clear_session_state_asset_information()
-            clear_session_state_progress()
+            reset_session_state_asset_information()
+            reset_session_state_progress()
 
         home_page()
 
@@ -180,13 +180,13 @@ else:
         st.session_state.important['name'] = name
 
     if 'progress' not in st.session_state:
-        clear_session_state_progress()
+        reset_session_state_progress()
 
     if 'asset_information' not in st.session_state:
-        clear_session_state_asset_information()
+        reset_session_state_asset_information()
 
     construct_sidebar_suffix(authenticator=authenticator)
 
     display_footer()
 
-    main()
+    determine_page()

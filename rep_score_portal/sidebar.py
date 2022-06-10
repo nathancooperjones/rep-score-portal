@@ -3,10 +3,11 @@ import streamlit as st
 import streamlit_authenticator as stauth
 
 from _version import __version__
-from utils import clear_session_state_asset_information, clear_session_state_progress
+from utils import reset_session_state_asset_information, reset_session_state_progress
 
 
 def construct_sidebar_prefix() -> None:
+    """Construct the first part of the sidebar before the "Submit an Asset" page navigation text."""
     with st.sidebar:
         st.markdown('<br>', unsafe_allow_html=True)
         st.markdown('<br>', unsafe_allow_html=True)
@@ -20,7 +21,7 @@ def construct_sidebar_prefix() -> None:
 
 
 def construct_sidebar_suffix(authenticator: stauth.Authenticate) -> None:
-    """TODO."""
+    """Construct the last part of the sidebar after the "Submit an Asset" page navigation text."""
     with st.sidebar:
         st.markdown('')
 
@@ -61,99 +62,9 @@ def construct_sidebar_suffix(authenticator: stauth.Authenticate) -> None:
             with asset_overview_col_1:
                 st.markdown('*')
 
-        if st.session_state.get('sidebar_radio') == 'Submit an Asset':
-            # TODO: clean this up a bit
-            if (
-                'page_one_complete' not in st.session_state.progress
-            ):
-                navigation_string = ("""
-                    <p style="color:#fff;"><strong>1. Start the Process</strong></p>
-                    <p>2. DEI Checklist: Marketing Brief<p>
-                    <p>3. DEI Checklist: Agency Creative Brief<p>
-                    <p>4. DEI Checklist: Creative Reviews<p>
-                    <p>5. Upload Asset<p>
-                    <p>6. Summary<p>
-                """)
-                with submit_an_asset_pages_navigation_container:
-                    st.markdown(navigation_string, unsafe_allow_html=True)
-            elif (
-                'page_one_complete' in st.session_state.progress
-                and 'page_two_complete' not in st.session_state.progress
-            ):
-                navigation_string = ("""
-                    <p>1. Start the Process</p>
-                    <p style="color:#fff;"><strong>2. DEI Checklist: Marketing Brief</strong></p>
-                    <p>3. DEI Checklist: Agency Creative Brief<p>
-                    <p>4. DEI Checklist: Creative Reviews<p>
-                    <p>5. Upload Asset<p>
-                    <p>6. Summary<p>
-                """)
-                with submit_an_asset_pages_navigation_container:
-                    st.markdown(navigation_string, unsafe_allow_html=True)
-            elif (
-                'page_two_complete' in st.session_state.progress
-                and 'page_three_complete' not in st.session_state.progress
-            ):
-                navigation_string = ("""
-                    <p>1. Start the Process</p>
-                    <p>2. DEI Checklist: Marketing Brief</p>
-                    <p style="color:#fff;"><strong>3. DEI Checklist: Agency Creative Brief</strong></p>
-                    <p>4. DEI Checklist: Creative Reviews<p>
-                    <p>5. Upload Asset<p>
-                    <p>6. Summary<p>
-                """)  # noqa: E501
-                with submit_an_asset_pages_navigation_container:
-                    st.markdown(navigation_string, unsafe_allow_html=True)
-            elif (
-                'page_three_complete' in st.session_state.progress
-                and 'page_four_complete' not in st.session_state.progress
-            ):
-                navigation_string = ("""
-                    <p>1. Start the Process</p>
-                    <p>2. DEI Checklist: Marketing Brief</p>
-                    <p>3. DEI Checklist: Agency Creative Brief</p>
-                    <p style="color:#fff;"><strong>4. DEI Checklist: Creative Reviews</strong></p>
-                    <p>5. Upload Asset<p>
-                    <p>6. Summary<p>
-                """)
-                with submit_an_asset_pages_navigation_container:
-                    st.markdown(navigation_string, unsafe_allow_html=True)
-            elif (
-                'page_four_complete' in st.session_state.progress
-                and 'page_five_complete' not in st.session_state.progress
-            ):
-                navigation_string = ("""
-                    <p>1. Start the Process</p>
-                    <p>2. DEI Checklist: Marketing Brief</p>
-                    <p>3. DEI Checklist: Agency Creative Brief</p>
-                    <p>4. DEI Checklist: Creative Reviews</p>
-                    <p style="color:#fff;"><strong>5. Upload Asset</strong></p>
-                    <p>6. Summary<p>
-                """)
-                with submit_an_asset_pages_navigation_container:
-                    st.markdown(navigation_string, unsafe_allow_html=True)
-            else:
-                navigation_string = ("""
-                    <p>1. Start the Process</p>
-                    <p>2. DEI Checklist: Marketing Brief</p>
-                    <p>3. DEI Checklist: Agency Creative Brief</p>
-                    <p>4. DEI Checklist: Creative Reviews</p>
-                    <p>5. Upload Asset</p>
-                    <p style="color:#fff;"><strong>6. Summary</strong></p>
-                """)
-                with submit_an_asset_pages_navigation_container:
-                    st.markdown(navigation_string, unsafe_allow_html=True)
-        else:
-            navigation_string = ("""
-                <p>1. Start the Process</p>
-                <p>2. DEI Checklist: Marketing Brief<p>
-                <p>3. DEI Checklist: Agency Creative Brief<p>
-                <p>4. DEI Checklist: Creative Reviews<p>
-                <p>5. Upload Asset<p>
-                <p>6. Summary<p>
-            """)
-            with submit_an_asset_pages_navigation_container:
-                st.markdown(navigation_string, unsafe_allow_html=True)
+        _display_submit_an_asset_page_progress(
+            submit_an_asset_pages_navigation_container=submit_an_asset_pages_navigation_container,
+        )
 
         if st.session_state.get('sidebar_radio') == 'Explore Your Data':
             st.markdown('<br>', unsafe_allow_html=True)
@@ -184,12 +95,11 @@ def construct_sidebar_suffix(authenticator: stauth.Authenticate) -> None:
         with col_1:
             if st.session_state.get('sidebar_radio') == 'Submit an Asset':
                 if st.button('Start over'):
-                    clear_session_state_progress()
-                    clear_session_state_asset_information()
+                    reset_session_state_progress()
+                    reset_session_state_asset_information()
 
                     st.session_state.refresh_app = True
 
-                    # main()
                     st.experimental_rerun()
             else:
                 if st.button('Refresh'):
@@ -200,7 +110,6 @@ def construct_sidebar_suffix(authenticator: stauth.Authenticate) -> None:
                     if isinstance(st.session_state.get('data_explorer_df'), pd.DataFrame):
                         del st.session_state.data_explorer_df
 
-                    # main()
                     st.experimental_rerun()
 
         with col_2:
@@ -209,3 +118,61 @@ def construct_sidebar_suffix(authenticator: stauth.Authenticate) -> None:
         st.markdown('<br>', unsafe_allow_html=True)
 
         st.caption(f'<p style="color: black;">v{__version__}</p>', unsafe_allow_html=True)
+
+
+def _display_submit_an_asset_page_progress(
+    submit_an_asset_pages_navigation_container: st.container,
+) -> None:
+    """
+    Display the progress of the "Submit an Asset" pages in the sidebar.
+
+    Parameters
+    ----------
+    submit_an_asset_pages_navigation_container: st.container
+        Container in which to place the progress text
+
+    """
+    highlight_one = False
+    highlight_two = False
+    highlight_three = False
+    highlight_four = False
+    highlight_five = False
+    highlight_six = False
+
+    if st.session_state.get('sidebar_radio') == 'Submit an Asset':
+        if 'page_one_complete' not in st.session_state.progress:
+            highlight_one = True
+        elif (
+            'page_one_complete' in st.session_state.progress
+            and 'page_two_complete' not in st.session_state.progress
+        ):
+            highlight_two = True
+        elif (
+            'page_two_complete' in st.session_state.progress
+            and 'page_three_complete' not in st.session_state.progress
+        ):
+            highlight_three = True
+        elif (
+            'page_three_complete' in st.session_state.progress
+            and 'page_four_complete' not in st.session_state.progress
+        ):
+            highlight_four = True
+        elif (
+            'page_four_complete' in st.session_state.progress
+            and 'page_five_complete' not in st.session_state.progress
+        ):
+            highlight_five = True
+        else:
+            highlight_six = True
+
+    navigation_string = (f"""
+        <p{' style="color:#fff;"><strong' if highlight_one else ''}>1. Start the Process{'</strong>' if highlight_one else ''}</p>
+        <p{' style="color:#fff;"><strong' if highlight_two else ''}>2. DEI Checklist: Marketing Brief{'</strong>' if highlight_two else ''}</p>
+        <p{' style="color:#fff;"><strong' if highlight_three else ''}>3. DEI Checklist: Agency Creative Brief{'</strong>' if highlight_three else ''}</p>
+        <p{' style="color:#fff;"><strong' if highlight_four else ''}>4. DEI Checklist: Creative Reviews{'</strong>' if highlight_four else ''}</p>
+        <p{' style="color:#fff;"><strong' if highlight_five else ''}>5. Upload Asset{'</strong>' if highlight_five else ''}</p>
+        <p{' style="color:#fff;"><strong' if highlight_six else ''}>6. Summary{'</strong>' if highlight_six else ''}</p>
+    """)  # noqa: E501
+
+    with submit_an_asset_pages_navigation_container:
+        st.markdown(navigation_string, unsafe_allow_html=True)

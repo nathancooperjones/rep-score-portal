@@ -1,14 +1,13 @@
 # Modified from: https://discuss.streamlit.io/t/st-footer/6447/17
+from typing import Union
+
 from htbuilder import div, HtmlElement, img, p, styles
 from htbuilder.units import percent, px
 import streamlit as st
 
 
-def image(src_as_string, **style):
-    return img(src=src_as_string, style=styles(**style))
-
-
-def layout(*args):
+def layout(*args: Union[HtmlElement, str]) -> None:
+    """Create the footer layout using ``htbuilder``."""
     style_div = styles(
         position='fixed',
         left=0,
@@ -23,7 +22,7 @@ def layout(*args):
     )
 
     body = p(
-        id='myFooter',
+        id='custom_streamlit_footer',
         style=styles(
             margin=px(0, 0, 0, 0),
             padding=px(0, 5, 12, 0),
@@ -32,24 +31,19 @@ def layout(*args):
         ),
     )
 
-    foot = div(style=style_div)(body)
+    footer = div(style=style_div)(body)
 
     for arg in args:
-        if isinstance(arg, str):
-            body(arg)
+        body(arg)
 
-        elif isinstance(arg, HtmlElement):
-            body(arg)
-
-    st.markdown(str(foot), unsafe_allow_html=True)
+    st.markdown(str(footer), unsafe_allow_html=True)
 
 
-def display_footer():
-    myargs = [
-        image(
-            src_as_string='https://nathancooperjones.com/wp-content/uploads/2022/06/BBDO_and_Rep_Logos-e1654094195618.png',  # noqa: E501
-            # width=px(25),
-            height=px(20),
-        ),
-    ]
-    layout(*myargs)
+def display_footer() -> None:
+    """Display the footer."""
+    layout(
+        img(
+            src='https://nathancooperjones.com/wp-content/uploads/2022/06/BBDO_and_Rep_Logos-e1654094195618.png',  # noqa: E501
+            style=styles(height=px(20)),
+        )
+    )
