@@ -12,6 +12,15 @@ def reset_session_state_asset_information() -> None:
     """Reset the ``st.session_state.asset_information`` dictionary."""
     st.session_state.asset_information = dict()
 
+    # also reload the page while we are at it
+    reload_javascript = ("""
+        <script>
+        window.location.reload();
+        </script>
+    """)
+
+    st.components.v1.html(reload_javascript)
+
 
 def display_progress_bar_asset_tracker(
     asset_name: str,

@@ -34,22 +34,22 @@ hide_streamlit_style = """
             visibility: hidden;
         }
 
-        h1 > div > a {
+        h1 > div > a > svg {
             display: none;
         }
-        h2 > div > a {
+        h2 > div > a > svg {
             display: none;
         }
-        h3 > div > a {
+        h3 > div > a > svg {
             display: none;
         }
-        h4 > div > a {
+        h4 > div > a > svg {
             display: none;
         }
-        h5 > div > a {
+        h5 > div > a > svg {
             display: none;
         }
-        h6 > div > a {
+        h6 > div > a > svg {
             display: none;
         }
 
@@ -61,7 +61,12 @@ hide_streamlit_style = """
             margin-bottom: 0.75rem;
         }
 
-        @import url('http://fonts.cdnfonts.com/css/lemon-milk');
+        @font-face{
+            font-family:"LEMON MILK";
+            src:url("https://nathancooperjones.com/LEMONMILK-Medium.otf") format("woff"),
+            url("https://nathancooperjones.com/LEMONMILK-Medium.otf") format("opentype"),
+            url("https://nathancooperjones.com/LEMONMILK-Medium.otf") format("truetype");
+        }
 
         h1,h2,h3,h4,h5,h6 {
             font-family: 'LEMON MILK', sans-serif;
@@ -160,8 +165,8 @@ def determine_page():
         page_seven()
     else:
         if 'page_five_complete' in st.session_state.progress:
-            reset_session_state_asset_information()
             reset_session_state_progress()
+            reset_session_state_asset_information()
 
         home_page()
 

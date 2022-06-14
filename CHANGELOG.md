@@ -2,6 +2,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.8.1] - 2022-06-14
+### Changed
+ - Upload limit from ``2GB`` to ``16GB``
+### Fixed
+ - Lemon/Milk font served over HTTPS
+ - ``ValueError`` when uploading the asset to S3
+ - Better handling of ``BytesIO`` file uploads to trigger garbage collection earlier
+ - Better hiding of title anchors
+
 # [0.8.0] - 2022-06-10
 ### Added
  - Docstrings and type hints to all functions

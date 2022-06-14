@@ -421,7 +421,10 @@ def page_five() -> None:
 
             if uploaded_file:
                 with st.spinner(text='Uploading asset...'):
-                    asset_filename = upload_file_to_s3(uploaded_file=uploaded_file)
+                    asset_filename = upload_file_to_s3(
+                        uploaded_file=uploaded_file,
+                        s3_key='uploads',
+                    )
 
                 file_uploaded_to_s3 = True
             else:

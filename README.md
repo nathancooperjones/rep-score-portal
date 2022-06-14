@@ -36,9 +36,3 @@ docker run \
 ```
 
 Once the Docker image is running, you can access the tool locally at [localhost:8501](http://localhost:8501/).
-
-For now, you can log in with credentials:
-
-**Username**: `user`
-
-**Password**: `test`

@@ -85,6 +85,8 @@ def upload_file_to_s3(uploaded_file: st.uploaded_file_manager.UploadedFile, s3_k
     )
 
     # try to trigger garbage collection early on the upload
+    uploaded_file.flush()
+    uploaded_file.seek(0)
     uploaded_file.close()
     del uploaded_file
 
