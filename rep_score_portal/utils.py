@@ -8,18 +8,27 @@ def reset_session_state_progress() -> None:
     st.session_state.progress = list()
 
 
-def reset_session_state_asset_information() -> None:
-    """Reset the ``st.session_state.asset_information`` dictionary."""
+def reset_session_state_asset_information(reload_page: bool = True) -> None:
+    """
+    Reset the ``st.session_state.asset_information`` dictionary.
+
+    Parameters
+    ----------
+    reload_page: bool
+        Use Javascript to reload the page after resetting the ``asset_information`` variable.
+
+    """
     st.session_state.asset_information = dict()
 
-    # also reload the page while we are at it
-    reload_javascript = ("""
-        <script>
-        window.location.reload();
-        </script>
-    """)
+    if reload_page:
+        # also reload the page while we are at it
+        reload_javascript = ("""
+            <script>
+            window.location.reload();
+            </script>
+        """)
 
-    st.components.v1.html(reload_javascript)
+        st.components.v1.html(reload_javascript)
 
 
 def display_progress_bar_asset_tracker(
