@@ -99,6 +99,7 @@ def append_new_row_in_asset_tracker(
     product: str,
     content_type: str,
     version: str,
+    point_of_contact: str,
     creative_brief_filename: str,
     asset_filename: str,
     file_uploaded_to_s3: bool,
@@ -117,6 +118,7 @@ def append_new_row_in_asset_tracker(
     product: str
     content_type: str
     version: str
+    point_of_contact: str
     creative_brief_filename: str
     asset_filename: str
     marketing_notes: str
@@ -134,16 +136,16 @@ def append_new_row_in_asset_tracker(
         sheet=0,
     )
 
-    asset_tracker_df = pd.concat(
-        objs=[
-            sheet.sheet_to_df(index=None),
-            pd.Series({
+    new_row_df = pd.DataFrame(
+        data=[
+            {
                 'Asset Name': asset_name,
                 'Status': 'Uploaded',
                 'Brand': brand,
                 'Product': product,
                 'Content Type': content_type,
                 'Version': version,
+                'Point of Contact Email': point_of_contact,
                 'Creative Brief Filename': creative_brief_filename,
                 'Asset Filename': asset_filename,
                 'File Uploaded to S3': file_uploaded_to_s3,
@@ -152,15 +154,16 @@ def append_new_row_in_asset_tracker(
                 'Agency Creative Brief Notes': agency_creative_notes,
                 'Creative Reviews Notes': creative_review_notes,
                 'Notes': notes,
-            }).to_frame().transpose()
+            }
         ],
-        ignore_index=True,
     )
 
-    # TODO: figure out how to do this without replacement
+    new_row_index = sheet.get_sheet_dims()[0] + 1
+
     sheet.df_to_sheet(
-        df=asset_tracker_df,
+        df=new_row_df,
         index=False,
-        sheet='Sheet1',
-        replace=True,
+        headers=None,
+        start=(new_row_index, 1),
+        replace=False,
     )

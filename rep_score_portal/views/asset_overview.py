@@ -61,24 +61,48 @@ def home_page() -> None:
 
         st.write('-----')
 
-    # TODO: add filtering here too
-
     st.markdown('### Submitted Assets')
 
-    for _, row in st.session_state.asset_tracker_df.iterrows():
-        if row['Status'] == 'Uploaded':
-            progress_value = ((1/3))
-        elif row['Status'] == 'In progress':
-            progress_value = ((2/3))
-        elif row['Status'] == 'Complete':
-            progress_value = ((3/3))
+    if len(st.session_state.asset_tracker_df) == 0:
+        st.info('No assets submitted yet! Please submit a new asset on the "Submit an Asset" page.')
+    else:
+        filter_by = None
 
-        display_progress_bar_asset_tracker(
-            asset_name=row['Asset Name'],
-            brand=row['Brand'],
-            product=row['Product'],
-            content_type=row['Content Type'],
-            version=row['Version'],
-            status=row["Status"],
-            progress_value=progress_value,
+        filter_by = st.selectbox(
+            label='Filter tracker by...',
+            options=['None', 'Asset Name', 'Brand', 'Product', 'Content Type', 'Version'],
         )
+
+        if filter_by != 'None':
+            field_selected = st.multiselect(
+                label='Select values to display',
+                options=sorted(st.session_state.asset_tracker_df[filter_by].unique()),
+                default=sorted(st.session_state.asset_tracker_df[filter_by].unique()),
+            )
+
+        st.markdown('<br>', unsafe_allow_html=True)
+
+        if filter_by != 'None' and field_selected is not None:
+            asset_tracker_df = st.session_state.asset_tracker_df[
+                st.session_state.asset_tracker_df[filter_by].isin(field_selected)
+            ]
+        else:
+            asset_tracker_df = st.session_state.asset_tracker_df.copy()
+
+        for _, row in asset_tracker_df.iterrows():
+            if row['Status'] == 'Uploaded':
+                progress_value = ((1/3))
+            elif row['Status'] == 'In progress':
+                progress_value = ((2/3))
+            elif row['Status'] == 'Complete':
+                progress_value = ((3/3))
+
+            display_progress_bar_asset_tracker(
+                asset_name=row['Asset Name'],
+                brand=row['Brand'],
+                product=row['Product'],
+                content_type=row['Content Type'],
+                version=row['Version'],
+                status=row["Status"],
+                progress_value=progress_value,
+            )

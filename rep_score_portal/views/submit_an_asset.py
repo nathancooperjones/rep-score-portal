@@ -215,10 +215,29 @@ def page_one() -> None:
             'Zimbabwe',
         ]
     )
+    asset_point_of_contact = st.text_input(
+        label='Email of Point of Contact',
+        placeholder='Ex: example@example.com',
+        autocomplete='email',
+    )
 
-    creative_brief = st.file_uploader(label='Creative Brief')
+    st.write('-----')
+
+    st.write(
+        '**Please either upload the creative brief or provide a URL to view your creative brief**'
+    )
 
     st.markdown('<br>', unsafe_allow_html=True)
+
+    creative_brief = st.file_uploader(
+        label='Select the creative brief to upload...',
+        type=None,
+        accept_multiple_files=False,
+    )
+
+    creative_brief_url = st.text_input(label='... or enter a URL to the creative brief')
+
+    st.write('-----')
 
     if st.button('Continue to next step'):
         if (
@@ -226,8 +245,13 @@ def page_one() -> None:
             or not asset_brand
             or not asset_product
             or not countries_airing
+            or not asset_point_of_contact
         ):
             st.error('Please fill out all fields before continuing.')
+            st.stop()
+
+        if creative_brief and creative_brief_url:
+            st.error('Please either upload a creative brief _or_ provide a URL - not both.')
             st.stop()
 
         if creative_brief:
@@ -237,12 +261,13 @@ def page_one() -> None:
                     s3_key='creative_briefs',
                 )
         else:
-            creative_brief_filename = None
+            creative_brief_filename = creative_brief_url
 
         st.session_state.asset_information['name'] = asset_name
         st.session_state.asset_information['brand'] = asset_brand
         st.session_state.asset_information['product'] = asset_product
         st.session_state.asset_information['countries_airing'] = countries_airing
+        st.session_state.asset_information['point_of_contact'] = asset_point_of_contact
         st.session_state.asset_information['creative_brief_filename'] = creative_brief_filename
 
         st.session_state.progress.append('page_one_complete')
@@ -438,6 +463,7 @@ def page_five() -> None:
                     product=st.session_state.asset_information['product'],
                     content_type=st.session_state.asset_information['content_type'],
                     version=st.session_state.asset_information['version'],
+                    point_of_contact=st.session_state.asset_information['point_of_contact'],
                     creative_brief_filename=st.session_state.asset_information['creative_brief_filename'],  # noqa: E501
                     asset_filename=asset_filename,
                     file_uploaded_to_s3=file_uploaded_to_s3,

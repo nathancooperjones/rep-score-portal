@@ -82,6 +82,14 @@ hide_streamlit_style = """
             background-color: green;
         }
 
+        div[role="progressbar"] > div > div {
+            background-color: gray;
+        }
+
+        div[role="progressbar"] > div > div > div {
+            background-color: green;
+        }
+
         .streamlit-expanderHeader {
             font-size: 16px;
             color: #EA3423;

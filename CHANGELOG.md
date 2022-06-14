@@ -2,6 +2,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.9.0] - 2022-06-14
+### Added
+ - Filters for the "Asset Overview" page
+ - Point of Contact input when submitting a new asset
+ - Ability to submit a URL for the creative brief rather than uploading it directly
+### Changed
+ - Colors of file upload progress bars
+ - Adding a new row to the asset tracking Google Spreadsheet does so as an append operation _without_ replacing existing rows
+### Fixed
+ - Specificity of HTTP(S) in ``ssl-proxy.sh``
+
 # [0.8.1] - 2022-06-14
 ### Changed
  - Upload limit from ``2GB`` to ``16GB``
