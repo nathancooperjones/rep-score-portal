@@ -2,6 +2,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.9.1] - 2022-06-15
+### Removed
+ - ``ssl-proxy`` code in favor of a traditional ACM + load balancer setup in AWS
+
 # [0.9.0] - 2022-06-14
 ### Added
  - Filters for the "Asset Overview" page
