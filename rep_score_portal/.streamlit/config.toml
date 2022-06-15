@@ -1,12 +1,19 @@
 [server]
-# Max size, in megabytes, for files uploaded with the file_uploader.
-# Default: 200
 maxUploadSize = 12000
 
-runOnSave = true
+maxMessageSize = 12000
+
+runOnSave = false
+
+enableCORS = false
+
+enableXsrfProtection = false
 
 [browser]
 gatherUsageStats = false
+
+[runner]
+fastReruns = true
 
 [theme]
 base="light"

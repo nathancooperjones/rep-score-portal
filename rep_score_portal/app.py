@@ -196,7 +196,7 @@ else:
         reset_session_state_progress()
 
     if 'asset_information' not in st.session_state:
-        reset_session_state_asset_information(reload_page=False)
+        reset_session_state_asset_information()
 
     construct_sidebar_suffix(authenticator=authenticator)
 
