@@ -5,8 +5,6 @@ services:
     container_name: streamlit_app
     restart: always
     ports:
-      - "80:80"
-      - "443:443"
       - "8501:8501"
     build: .
     command: bash entrypoint.sh

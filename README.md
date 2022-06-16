@@ -29,8 +29,6 @@ docker run \
     -it \
     --rm \
     -v "${PWD}:/rep_score_portal" \
-    -p 80:80 \
-    -p 443:443 \
     -p 8501:8501 \
     rep_score_portal
 ```
