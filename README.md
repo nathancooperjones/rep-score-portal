@@ -24,7 +24,7 @@ Running the container locally, we'll likely want to have a bit more control over
 # build the image
 docker build -t rep_score_portal .
 
-# run the container in interactive mode, opening ports ``80``, ``443``, and ``8501``
+# run the container in interactive mode, opening port ``8501``
 docker run \
     -it \
     --rm \
