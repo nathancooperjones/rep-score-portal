@@ -1,6 +1,3 @@
-import random
-import string
-
 import streamlit as st
 import streamlit_authenticator as stauth
 
@@ -121,28 +118,9 @@ hide_streamlit_style = """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 
-random.seed(42)
-
-
-usernames = list(st.secrets['logins'].keys())
-passwords = list(st.secrets['logins'].values())
-
-authenticator = stauth.Authenticate(
-    names=usernames,
-    usernames=usernames,
-    passwords=stauth.Hasher(passwords).generate(),
-    cookie_name='trp_rep_score_cookie',
-    key=''.join(random.choices(string.ascii_letters + string.digits, k=50)),
-    cookie_expiry_days=7,
-)
-
-
 construct_sidebar_prefix()
 
 st.image('../images/Rep Score Portal Banner.png')
-
-
-name, authentication_status, username = authenticator.login('Login', 'main')
 
 
 def determine_page():
@@ -179,27 +157,42 @@ def determine_page():
         home_page()
 
 
-if authentication_status is False:
-    st.error('Username and/or password is incorrect - please try again.')
-    st.stop()
-elif authentication_status is None:
-    st.warning('Please enter your username and password.')
-    st.stop()
-else:
-    if 'important' not in st.session_state:
-        st.session_state.important = dict()
+if not st.session_state.get('authentication_status'):
+    # this is likely the first time we are running the app - let's double check that
+    usernames = list(st.secrets['logins'].keys())
+    passwords = list(st.secrets['logins'].values())
 
-        st.session_state.important['username'] = username
-        st.session_state.important['name'] = name
+    authenticator = stauth.Authenticate(
+        names=usernames,
+        usernames=usernames,
+        passwords=stauth.Hasher(passwords).generate(),
+        cookie_name=st.secrets['authenticator']['cookie_name'],
+        key=st.secrets['authenticator']['key'],
+        cookie_expiry_days=7,
+    )
 
+    authenticator.login(form_name='Login', location='main')
+
+    if 'authenticator' not in st.session_state:
+        st.session_state.authenticator = authenticator
+
+    if st.session_state.get('authentication_status') is False:
+        st.error('The username and/or password entered is incorrect - please try again.')
+    elif st.session_state.get('authentication_status') is None:
+        st.info('Please enter your username and password, then click the "Login" button.')
+
+if st.session_state.get('authentication_status'):
     if 'progress' not in st.session_state:
         reset_session_state_progress()
 
     if 'asset_information' not in st.session_state:
         reset_session_state_asset_information()
 
-    construct_sidebar_suffix(authenticator=authenticator)
+    construct_sidebar_suffix()
 
     display_footer()
 
     determine_page()
+
+# NOTE: anything past this point will and NOT in the ``if`` block above will be displayed regardless
+# of login status

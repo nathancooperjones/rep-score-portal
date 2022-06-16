@@ -2,6 +2,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.9.3] - 2022-06-15
+### Changed
+ - Optimized the application by only instantiating the authentication "once" during application startup
+ - Storing authentication cookie details in ``secrets.toml`` for better security
+### Fixed
+ - Sidebar image spacing
+### Removed
+ - Unused ``st.session_state.important`` variable
+
 # [0.9.2] - 2022-06-15
 ### Removed
  - JavaScript to refresh a page after resetting the ``asset_information`` variable

@@ -1,6 +1,5 @@
 import pandas as pd
 import streamlit as st
-import streamlit_authenticator as stauth
 
 from _version import __version__
 from utils import reset_session_state_asset_information, reset_session_state_progress
@@ -9,8 +8,7 @@ from utils import reset_session_state_asset_information, reset_session_state_pro
 def construct_sidebar_prefix() -> None:
     """Construct the first part of the sidebar before the "Submit an Asset" page navigation text."""
     with st.sidebar:
-        st.markdown('<br>', unsafe_allow_html=True)
-        st.markdown('<br>', unsafe_allow_html=True)
+        st.caption('')
 
         _, col_2, _ = st.columns([1, 27, 1])
 
@@ -20,7 +18,7 @@ def construct_sidebar_prefix() -> None:
         st.markdown('<br>', unsafe_allow_html=True)
 
 
-def construct_sidebar_suffix(authenticator: stauth.Authenticate) -> None:
+def construct_sidebar_suffix() -> None:
     """Construct the last part of the sidebar after the "Submit an Asset" page navigation text."""
     with st.sidebar:
         st.markdown('')
@@ -113,7 +111,7 @@ def construct_sidebar_suffix(authenticator: stauth.Authenticate) -> None:
                     st.experimental_rerun()
 
         with col_2:
-            authenticator.logout('Logout', 'main')
+            st.session_state.authenticator.logout('Logout', 'main')
 
         st.markdown('<br>', unsafe_allow_html=True)
 
