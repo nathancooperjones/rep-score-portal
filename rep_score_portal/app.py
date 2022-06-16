@@ -111,6 +111,10 @@ hide_streamlit_style = """
             color: #FAF4EB;
             font-size: 20px;
         }
+
+        .stTextInput > div > span {
+            display: none;
+        }
     </style>
 """
 

@@ -216,9 +216,10 @@ def page_one() -> None:
         ]
     )
     asset_point_of_contact = st.text_input(
-        label='Email of Point of Contact',
+        label='Point of Contact Email',
         placeholder='Ex: example@example.com',
         autocomplete='email',
+        help='If we have questions about this asset, who should we reach out to?',
     )
 
     st.write('-----')
@@ -235,7 +236,13 @@ def page_one() -> None:
         accept_multiple_files=False,
     )
 
-    creative_brief_url = st.text_input(label='... or enter a URL to the creative brief')
+    creative_brief_url = st.text_input(
+        label='... or enter a URL to the creative brief',
+        help=(
+            'Rather than uploading a creative brief, you can submit a URL to an already-uploaded '
+            'creative brief that our coders can reference instead'
+        ),
+    )
 
     st.write('-----')
 
@@ -422,7 +429,13 @@ def page_five() -> None:
         accept_multiple_files=False,
     )
 
-    asset_url = st.text_input(label='... or enter a URL to the asset')
+    asset_url = st.text_input(
+        label='... or enter a URL to the asset',
+        help=(
+            'Rather than uploading an asset, you can submit a URL to an already-uploaded asset '
+            'that our coders can reference instead'
+        ),
+    )
 
     st.write('-----')
 

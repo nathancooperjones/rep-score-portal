@@ -2,8 +2,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
-# [0.9.4] - 2022-06-16
+# [0.9.5] - 2022-06-16
+### Added
+ - Initial help tooltips in various input spots
 ### Changed
+ - Slight wording tweaks for inputs
+### Removed
+ - "Press Enter to apply" prompt in text inputs
+### Fixed
+ - Error message is displayed when all data is filtered out in "Asset Overview"
+ - Color of the primary filter input in "Asset Overview" to be consistent with "Explore Your Data"
+
+# [0.9.4] - 2022-06-16
+### Fixed
  - Lemon/Milk font is now retrieved from an S3 bucket with proper CORS configuration
 
 # [0.9.3] - 2022-06-15

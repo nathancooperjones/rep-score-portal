@@ -13,6 +13,23 @@ def reset_session_state_asset_information() -> None:
     st.session_state.asset_information = dict()
 
 
+def edit_colors_of_selectbox() -> None:
+    """Color ``.stSelectbox`` CSS classes with a white fill and a black border."""
+    text_area_color_css = ("""
+        <style>
+        .stSelectbox > div > div {
+            background-color: #FFFFFF;
+            border-bottom-color: #000000;
+            border-top-color: #000000;
+            border-right-color: #000000;
+            border-left-color: #000000;
+        }
+        </style>
+    """)
+
+    st.markdown(text_area_color_css, unsafe_allow_html=True)
+
+
 def display_progress_bar_asset_tracker(
     asset_name: str,
     brand: Optional[str],

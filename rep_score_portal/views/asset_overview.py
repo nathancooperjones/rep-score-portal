@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 
 from input_output import read_google_spreadsheet
-from utils import display_progress_bar_asset_tracker
+from utils import display_progress_bar_asset_tracker, edit_colors_of_selectbox
 
 
 def home_page() -> None:
@@ -66,11 +66,12 @@ def home_page() -> None:
     if len(st.session_state.asset_tracker_df) == 0:
         st.info('No assets submitted yet! Please submit a new asset on the "Submit an Asset" page.')
     else:
-        filter_by = None
+        edit_colors_of_selectbox()
 
         filter_by = st.selectbox(
             label='Filter tracker by...',
             options=['None', 'Asset Name', 'Brand', 'Product', 'Content Type', 'Version'],
+            help='Only display assets with the specified attribute',
         )
 
         if filter_by != 'None':
@@ -86,6 +87,13 @@ def home_page() -> None:
             asset_tracker_df = st.session_state.asset_tracker_df[
                 st.session_state.asset_tracker_df[filter_by].isin(field_selected)
             ]
+
+            if len(asset_tracker_df) == 0:
+                st.error(
+                    "Hmm... we couldn't find any existing assets with those filters applied. "
+                    'Please try again with a different set of filters.'
+                )
+                st.stop()
         else:
             asset_tracker_df = st.session_state.asset_tracker_df.copy()
 

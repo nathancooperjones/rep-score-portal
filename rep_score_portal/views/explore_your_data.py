@@ -5,6 +5,7 @@ import pandas as pd
 import streamlit as st
 
 from input_output import read_google_spreadsheet
+from utils import edit_colors_of_selectbox
 
 
 def page_seven() -> None:
@@ -84,6 +85,8 @@ def page_seven() -> None:
         st.session_state.data_explorer_df_no_duplicates = data_explorer_df_no_duplicates
         st.session_state.color_map_df = color_map_df
 
+    edit_colors_of_selectbox()
+
     if st.session_state.sidebar_data_explorer_radio == 'Score Heatmap':
         plot_color_maps()
     elif st.session_state.sidebar_data_explorer_radio == 'Rep Score Progress':
@@ -97,25 +100,12 @@ def plot_color_maps() -> None:
     filter_by = st.selectbox(
         label='Filter visualization by...',
         options=['None', 'Ad Name', 'Brand', 'Product', 'Content Type', 'Date Submitted'],
+        help='Only display assets with the specified attribute',
     )
 
     field_selected = None
     min_date = None
     max_date = None
-
-    text_area_color_css = ("""
-        <style>
-        .stSelectbox > div > div {
-            background-color: #FFFFFF;
-            border-bottom-color: #000000;
-            border-top-color: #000000;
-            border-right-color: #000000;
-            border-left-color: #000000;
-        }
-        </style>
-    """)
-
-    st.markdown(text_area_color_css, unsafe_allow_html=True)
 
     if filter_by != 'None':
         if filter_by == 'Date Submitted':
@@ -157,7 +147,7 @@ def plot_color_maps() -> None:
     if len(df_to_plot) == 0:
         st.error(
             "Hmm... we couldn't find any existing assets with those filters applied. "
-            'Please try again with a different set of filters applied.'
+            'Please try again with a different set of filters.'
         )
         st.stop()
 
@@ -271,8 +261,9 @@ def _construct_plot(
 def plot_rep_score_progress() -> None:
     """Plot rep score progress over content type or date submitted."""
     x_axis = st.selectbox(
-        label='Select field to view by',
+        label='Select field to compare against',
         options=['Content Type', 'Date Submitted'],
+        help='This sets the x-axis of the plot below',
     )
 
     if x_axis == 'Date Submitted':
