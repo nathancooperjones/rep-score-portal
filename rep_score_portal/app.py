@@ -21,7 +21,6 @@ st.set_page_config(page_title='Rep Score Portal', page_icon='🌀')
 
 
 hide_streamlit_style = """
-    <link href="http://fonts.cdnfonts.com/css/lemon-milk" rel="stylesheet">
     <style>
         #MainMenu {visibility: hidden;}
         footer {
@@ -60,9 +59,9 @@ hide_streamlit_style = """
 
         @font-face{
             font-family:"LEMON MILK";
-            src:url("https://nathancooperjones.com/LEMONMILK-Medium.otf") format("woff"),
-            url("https://nathancooperjones.com/LEMONMILK-Medium.otf") format("opentype"),
-            url("https://nathancooperjones.com/LEMONMILK-Medium.otf") format("truetype");
+            src:url("https://trp-other.s3.amazonaws.com/fonts/LEMONMILK-Medium.otf") format("woff"),
+            url("https://trp-other.s3.amazonaws.com/fonts/LEMONMILK-Medium.otf") format("opentype"),
+            url("https://trp-other.s3.amazonaws.com/fonts/LEMONMILK-Medium.otf") format("truetype");
         }
 
         h1,h2,h3,h4,h5,h6 {
