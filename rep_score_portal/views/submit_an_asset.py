@@ -242,6 +242,7 @@ def page_one() -> None:
             'Rather than uploading a creative brief, you can submit a URL to an already-uploaded '
             'creative brief that our coders can reference instead'
         ),
+        placeholder='https://...',
     )
 
     st.write('-----')
@@ -435,6 +436,7 @@ def page_five() -> None:
             'Rather than uploading an asset, you can submit a URL to an already-uploaded asset '
             'that our coders can reference instead'
         ),
+        placeholder='https://...',
     )
 
     st.write('-----')

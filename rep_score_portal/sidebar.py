@@ -117,6 +117,9 @@ def construct_sidebar_suffix() -> None:
 
         st.caption(f'<p style="color: black;">v{__version__}</p>', unsafe_allow_html=True)
 
+        st.markdown('<br>', unsafe_allow_html=True)
+        st.markdown('<br>', unsafe_allow_html=True)
+
 
 def _display_submit_an_asset_page_progress(
     submit_an_asset_pages_navigation_container: st.container,
