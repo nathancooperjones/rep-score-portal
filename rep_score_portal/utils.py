@@ -2,6 +2,8 @@ from typing import Optional
 
 import streamlit as st
 
+from input_output import get_assigned_user_assets
+
 
 def reset_session_state_progress() -> None:
     """Reset the ``st.session_state.progress`` list."""
@@ -63,3 +65,12 @@ def display_progress_bar_asset_tracker(
         st.caption(f'<p style="text-align:right;">{status}</p>', unsafe_allow_html=True)
 
         st.progress(progress_value)
+
+
+def check_for_assigned_assets() -> None:
+    """Check for this user's assigned assets while displaying a ``st.spinner``."""
+    with st.spinner(text='Checking for assigned assets...'):
+        if not isinstance(st.session_state.get('assigned_user_assets'), list):
+            st.session_state.assigned_user_assets = get_assigned_user_assets(
+                username=st.session_state['username'],
+            )

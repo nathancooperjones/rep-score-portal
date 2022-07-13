@@ -2,6 +2,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.10.0] - 2022-07-12
+### Added
+ - Multiple logo options depending on the login as specified in the ``secrets.toml`` file
+ - Username uploaded to the asset tracking Google Spreadsheet
+### Changed
+ - Assets will only be displayed in the "Asset Overview" and "Explore Your Data" pages only if the asset is assigned to the user or the user uploaded the asset
+ - Clarified messages displayed when no assets have been uploaded / assigned / completed yet on both the "Asset Overview" and "Explore Your Data" pages
+### Removed
+ - Sidebar during login screen
+### Fixed
+ - Uploading "Region(s) This Creative Will Air In" to the asset tracking Google Spreadsheet
+ - ``plot_rep_score_progress`` will now show an error if no assets have been assigned / completed that have more than one version
+
 # [0.9.5] - 2022-06-16
 ### Added
  - Initial help tooltips in various input spots

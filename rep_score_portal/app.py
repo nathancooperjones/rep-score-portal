@@ -2,7 +2,7 @@ import streamlit as st
 import streamlit_authenticator as stauth
 
 from footer import display_footer
-from sidebar import construct_sidebar_prefix, construct_sidebar_suffix
+from sidebar import construct_sidebar
 from utils import reset_session_state_asset_information, reset_session_state_progress
 from views.asset_overview import home_page
 from views.explore_your_data import page_seven
@@ -120,9 +120,6 @@ hide_streamlit_style = """
 
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-
-construct_sidebar_prefix()
-
 st.image('../images/Rep Score Portal Banner.png')
 
 
@@ -191,7 +188,7 @@ if st.session_state.get('authentication_status'):
     if 'asset_information' not in st.session_state:
         reset_session_state_asset_information()
 
-    construct_sidebar_suffix()
+    construct_sidebar()
 
     display_footer()
 

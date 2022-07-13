@@ -2,22 +2,32 @@ import pandas as pd
 import streamlit as st
 
 from input_output import read_google_spreadsheet
-from utils import display_progress_bar_asset_tracker, edit_colors_of_selectbox
+from utils import (
+    check_for_assigned_assets,
+    display_progress_bar_asset_tracker,
+    edit_colors_of_selectbox,
+)
 
 
 def home_page() -> None:
     """Display the "Asset Overview" page."""
     st.markdown('## Asset Overview')
 
+    check_for_assigned_assets()
+
     with st.spinner(text='Fetching the latest asset data...'):
         if not isinstance(st.session_state.get('asset_tracker_df'), pd.DataFrame):
-            st.session_state.asset_tracker_df = (
+            asset_tracker_df = (
                 read_google_spreadsheet(
                     spread='https://docs.google.com/spreadsheets/d/1OR5Tj63Kzmq9AJX7XFGCzjQ7M9BEv15TkpkitXC1DgI/',  # noqa: E501
                     sheet=0,
                 )
                 .sheet_to_df(index=None)
             )
+
+            st.session_state.asset_tracker_df = asset_tracker_df[
+                asset_tracker_df['Asset Name'].isin(st.session_state.assigned_user_assets)
+            ]
 
     if st.session_state.asset_information.get('name'):
         st.markdown('### In Progress Assets')
@@ -64,7 +74,11 @@ def home_page() -> None:
     st.markdown('### Submitted Assets')
 
     if len(st.session_state.asset_tracker_df) == 0:
-        st.info('No assets submitted yet! Please submit a new asset on the "Submit an Asset" page.')
+        st.error(
+            'You have not been assigned to view a submitted asset yet. Please either 1) submit a '
+            'new asset on the "Submit an Asset" page or 2) click the "Having issues?" link and '
+            'contact Rebecca Cooper be assigned to an existing asset.'
+        )
     else:
         edit_colors_of_selectbox()
 

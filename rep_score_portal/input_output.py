@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+from typing import List
 
 import boto3
 import gspread_pandas
@@ -93,8 +94,10 @@ def upload_file_to_s3(uploaded_file: st.uploaded_file_manager.UploadedFile, s3_k
 
 def append_new_row_in_asset_tracker(
     asset_name: str,
+    username: str,
     brand: str,
     product: str,
+    countries_airing: List[str],
     content_type: str,
     version: str,
     point_of_contact: str,
@@ -112,8 +115,10 @@ def append_new_row_in_asset_tracker(
     Parameters
     ----------
     asset_name: str
+    username: str
     brand: str
     product: str
+    countries_airing: list
     content_type: str
     version: str
     point_of_contact: str
@@ -134,13 +139,18 @@ def append_new_row_in_asset_tracker(
         sheet=0,
     )
 
+    if not isinstance(countries_airing, list):
+        countries_airing = [countries_airing]
+
     new_row_df = pd.DataFrame(
         data=[
             {
                 'Asset Name': asset_name,
+                'Username': username,
                 'Status': 'Uploaded',
                 'Brand': brand,
                 'Product': product,
+                'Region(s) This Creative Will Air In': ', '.join(countries_airing),
                 'Content Type': content_type,
                 'Version': version,
                 'Point of Contact Email': point_of_contact,
@@ -165,3 +175,55 @@ def append_new_row_in_asset_tracker(
         start=(new_row_index, 1),
         replace=False,
     )
+
+
+def get_assigned_user_assets(username: str) -> List[str]:
+    """
+    Retrieve a list of assets that have been assigned for the user to view details on.
+
+    Parameters
+    ----------
+    username: str
+
+    Returns
+    -------
+    allowed_assets: list
+        List of assigned assets or assets uploaded by that specific user. If none are assigned, an
+        empty list will be returned
+
+    """
+    tracker_df = (
+        read_google_spreadsheet(
+            spread='https://docs.google.com/spreadsheets/d/1Sqbj1EPY-FuMbNiVxEKFsfR0CzcCuq8kmiaUpTzQT6k/',  # noqa: E501
+            sheet=2,
+        )
+        .sheet_to_df(index=None)
+    )
+
+    specific_user_tracker_df = tracker_df[tracker_df['Username'] == username]
+
+    if len(specific_user_tracker_df) > 0:
+        allowed_assets_tracker = [
+            x.strip()
+            for x in specific_user_tracker_df['Access To'].item().split(',')
+            if x.strip() != 'None'
+        ]
+    else:
+        allowed_assets_tracker = []
+
+    backend_df = (
+        read_google_spreadsheet(
+            spread='https://docs.google.com/spreadsheets/d/1OR5Tj63Kzmq9AJX7XFGCzjQ7M9BEv15TkpkitXC1DgI/',  # noqa: E501
+            sheet=0,
+        )
+        .sheet_to_df(index=None)
+    )
+
+    specific_user_backend_df = backend_df[backend_df['Username'] == username]
+
+    if len(specific_user_backend_df) > 0:
+        allowed_assets_backend = specific_user_backend_df['Asset Name'].tolist()
+    else:
+        allowed_assets_backend = []
+
+    return list(set(allowed_assets_tracker) | set(allowed_assets_backend))

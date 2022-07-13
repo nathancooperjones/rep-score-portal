@@ -5,23 +5,20 @@ from _version import __version__
 from utils import reset_session_state_asset_information, reset_session_state_progress
 
 
-def construct_sidebar_prefix() -> None:
-    """Construct the first part of the sidebar before the "Submit an Asset" page navigation text."""
+def construct_sidebar() -> None:
+    """Construct the sidebar."""
     with st.sidebar:
         st.caption('')
 
         _, col_2, _ = st.columns([1, 27, 1])
 
         with col_2:
-            st.image('../images/Mars Petcare Logo Square.png', use_column_width=True)
+            if st.secrets['login_logos'].get(st.session_state['username']) == 'Mars Petcare':
+                st.image('../images/Mars Petcare Logo Square.png', use_column_width=True)
+            else:
+                st.image('../images/Mars Chocolate Logo.png', use_column_width=True)
 
-        st.markdown('<br>', unsafe_allow_html=True)
-
-
-def construct_sidebar_suffix() -> None:
-    """Construct the last part of the sidebar after the "Submit an Asset" page navigation text."""
-    with st.sidebar:
-        st.markdown('')
+        st.markdown('<br><br>', unsafe_allow_html=True)
 
         start_the_process_col_1, start_the_process_col_2 = st.columns([0.1, 300])
 
@@ -107,6 +104,8 @@ def construct_sidebar_suffix() -> None:
                         del st.session_state.asset_tracker_df
                     if isinstance(st.session_state.get('data_explorer_df'), pd.DataFrame):
                         del st.session_state.data_explorer_df
+                    if isinstance(st.session_state.get('assigned_user_assets'), list):
+                        del st.session_state.assigned_user_assets
 
                     st.experimental_rerun()
 

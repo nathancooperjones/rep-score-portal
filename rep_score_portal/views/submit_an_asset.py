@@ -474,8 +474,10 @@ def page_five() -> None:
             with st.spinner(text='Setting up asset tracking...'):
                 append_new_row_in_asset_tracker(
                     asset_name=st.session_state.asset_information['name'],
+                    username=st.session_state['username'],
                     brand=st.session_state.asset_information['brand'],
                     product=st.session_state.asset_information['product'],
+                    countries_airing=st.session_state.asset_information['countries_airing'],
                     content_type=st.session_state.asset_information['content_type'],
                     version=st.session_state.asset_information['version'],
                     point_of_contact=st.session_state.asset_information['point_of_contact'],
@@ -490,6 +492,7 @@ def page_five() -> None:
 
             if isinstance(st.session_state.get('asset_tracker_df'), pd.DataFrame):
                 del st.session_state.asset_tracker_df
+                del st.session_state.assigned_user_assets
 
             st.session_state.progress.append('page_five_complete')
             st.experimental_rerun()

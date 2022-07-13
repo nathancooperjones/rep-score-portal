@@ -5,7 +5,7 @@ import pandas as pd
 import streamlit as st
 
 from input_output import read_google_spreadsheet
-from utils import edit_colors_of_selectbox
+from utils import check_for_assigned_assets, edit_colors_of_selectbox
 
 
 def page_seven() -> None:
@@ -17,6 +17,8 @@ def page_seven() -> None:
         or not isinstance(st.session_state.get('data_explorer_df_no_duplicates'), pd.DataFrame)
         or not isinstance(st.session_state.get('color_map_df'), pd.DataFrame)
     ):
+        check_for_assigned_assets()
+
         with st.spinner(text='Fetching the latest rep score data...'):
             data_explorer_df = (
                 read_google_spreadsheet(
@@ -26,11 +28,15 @@ def page_seven() -> None:
                 .sheet_to_df(index=None)
             )
 
+            data_explorer_df = data_explorer_df[
+                data_explorer_df['Ad Name'].isin(st.session_state.assigned_user_assets)
+            ]
+
         data_explorer_df = data_explorer_df[data_explorer_df['Cat No. '].str.len() > 0]
 
         if len(data_explorer_df) == 0:
-            st.write("We couldn't find any existing assets to view yet - sorry!")
-            return
+            st.error("We couldn't find any assigned and completed assets you can view yet - sorry!")
+            st.stop()
 
         data_explorer_df = data_explorer_df.rename(columns={
             'Product ': 'Product',
@@ -260,6 +266,15 @@ def _construct_plot(
 
 def plot_rep_score_progress() -> None:
     """Plot rep score progress over content type or date submitted."""
+    progress_df = st.session_state.data_explorer_df[
+        st.session_state.data_explorer_df[['Ad Name', 'Brand', 'Product']]
+        .duplicated(keep=False)
+    ]
+
+    if len(progress_df) == 0:
+        st.error('No assets with more than one version have been uploaded and assigned!')
+        st.stop()
+
     x_axis = st.selectbox(
         label='Select field to compare against',
         options=['Content Type', 'Date Submitted'],
@@ -270,11 +285,6 @@ def plot_rep_score_progress() -> None:
         x_axis = 'Date Submitted Month Year'
 
     st.markdown('<br>', unsafe_allow_html=True)
-
-    progress_df = st.session_state.data_explorer_df[
-        st.session_state.data_explorer_df[['Ad Name', 'Brand', 'Product']]
-        .duplicated(keep=False)
-    ]
 
     progress_df = progress_df[[
         'Content Type',
