@@ -25,9 +25,12 @@ def home_page() -> None:
                 .sheet_to_df(index=None)
             )
 
-            st.session_state.asset_tracker_df = asset_tracker_df[
-                asset_tracker_df['Asset Name'].isin(st.session_state.assigned_user_assets)
-            ]
+            if st.session_state['username'] not in st.secrets['login_groups']['admins']:
+                st.session_state.asset_tracker_df = asset_tracker_df[
+                    asset_tracker_df['Asset Name'].isin(st.session_state.assigned_user_assets)
+                ]
+            else:
+                st.session_state.asset_tracker_df = asset_tracker_df
 
     if st.session_state.asset_information.get('name'):
         st.markdown('### In Progress Assets')

@@ -2,6 +2,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.10.1] - 2022-07-14
+### Changed
+ - Scores of "N/A" will not be displayed with a gray background in the "Explore Your Data" color maps
+ - Displaying baseline in the "Explore Your Data" color maps
+ - Added admin login group that can view all assets
+
 # [0.10.0] - 2022-07-12
 ### Added
  - Multiple logo options depending on the login as specified in the ``secrets.toml`` file

@@ -28,9 +28,10 @@ def page_seven() -> None:
                 .sheet_to_df(index=None)
             )
 
-            data_explorer_df = data_explorer_df[
-                data_explorer_df['Ad Name'].isin(st.session_state.assigned_user_assets)
-            ]
+            if st.session_state['username'] not in st.secrets['login_groups']['admins']:
+                data_explorer_df = data_explorer_df[
+                    data_explorer_df['Ad Name'].isin(st.session_state.assigned_user_assets)
+                ]
 
         data_explorer_df = data_explorer_df[data_explorer_df['Cat No. '].str.len() > 0]
 
@@ -48,11 +49,26 @@ def page_seven() -> None:
             'TOTAL (Fat)': 'BODY SIZE',
         })
 
+        data_explorer_df = data_explorer_df.replace('#N/A', '').replace('N/A', '')
+
+        # hacky, I know, but easier to work with down the line when it comes to filtering input
+        data_explorer_df['BASELINE'] = data_explorer_df['Baseline'].copy()
+
         data_explorer_df_no_duplicates = (
             data_explorer_df
             .sort_values(by=['Date Submitted'])
             .drop_duplicates(subset=['Ad Name', 'Brand', 'Product'], keep='last')
         )
+
+        color_map_df_index = [
+            'Ad Name',
+            'Brand',
+            'Product',
+            'Content Type',
+            'Baseline',
+            'Date Submitted',
+            'Qual Notes',
+        ]
 
         color_map_df = (
             data_explorer_df_no_duplicates[[
@@ -60,6 +76,8 @@ def page_seven() -> None:
                 'Brand',
                 'Product',
                 'Content Type',
+                'Baseline',
+                'BASELINE',
                 'Date Submitted',
                 'Qual Notes',
                 'GENDER',
@@ -70,18 +88,18 @@ def page_seven() -> None:
                 'BODY SIZE',
                 'Ad Total Score',
             ]]
-            .set_index(
-                ['Ad Name', 'Brand', 'Product', 'Content Type', 'Date Submitted', 'Qual Notes']
-            )
+            .set_index(color_map_df_index)
             .stack()
             .reset_index()
-            .rename(columns={0: 'Score', 'level_6': 'Variable'})
+            .rename(columns={0: 'Score', f'level_{len(color_map_df_index)}': 'Variable'})
         )
 
         color_map_df['Date Submitted'] = pd.to_datetime(color_map_df['Date Submitted']).dt.date
 
         color_map_df['color'] = [
-            '#7ED957' if float(x) >= 80
+            '#8F9193' if str(x) == '' or 'no codeable character' in str(x).lower()  # N/A value
+            else '#FFFFFF' if not str(x).replace('.', '', 1).isdigit()  # BASELINE
+            else '#7ED957' if float(x) >= 80
             else '#FFDE59' if 60 <= float(x) < 80
             else '#EA3423'
             for x in color_map_df['Score']
@@ -105,7 +123,15 @@ def plot_color_maps() -> None:
     """Plot rep score color maps."""
     filter_by = st.selectbox(
         label='Filter visualization by...',
-        options=['None', 'Ad Name', 'Brand', 'Product', 'Content Type', 'Date Submitted'],
+        options=[
+            'None',
+            'Ad Name',
+            'Brand',
+            'Product',
+            'Content Type',
+            'Baseline',
+            'Date Submitted',
+        ],
         help='Only display assets with the specified attribute',
     )
 
@@ -157,11 +183,11 @@ def plot_color_maps() -> None:
         )
         st.stop()
 
-    overall_df_to_plot = df_to_plot[df_to_plot['Variable'] == 'Ad Total Score']
+    overall_df_to_plot = df_to_plot[df_to_plot['Variable'].isin(['Ad Total Score', 'BASELINE'])]
 
     _construct_plot(
         df_to_plot=overall_df_to_plot,
-        x_sort=None,
+        x_sort=['Ad Total Score', 'BASELINE'],
         include_variable_in_tooltip=False,
     )
 
@@ -211,6 +237,9 @@ def _construct_plot(
         Whether or not to include the variable ``Variable`` in the plot tooltip
 
     """
+    # matching the mock up image - don't display this column name ¯\_(ツ)_/¯
+    df_to_plot = df_to_plot.replace('BASELINE', '')
+
     base = (
         alt
         .Chart(df_to_plot)
