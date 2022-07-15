@@ -61,15 +61,6 @@ def construct_sidebar() -> None:
             submit_an_asset_pages_navigation_container=submit_an_asset_pages_navigation_container,
         )
 
-        if st.session_state.get('sidebar_radio') == 'Explore Your Data':
-            st.markdown('<br>', unsafe_allow_html=True)
-
-            st.session_state.sidebar_data_explorer_radio = st.radio(
-                label='Select a visualization to view:',
-                options=('Score Heatmap', 'Rep Score Progress', 'Qualitative Notes'),
-                index=0,
-            )
-
         st.markdown('<br>', unsafe_allow_html=True)
 
         email_subject = 'Trouble with the Rep Score Portal'

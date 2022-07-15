@@ -43,7 +43,7 @@ def display_footer() -> None:
     """Display the footer."""
     layout(
         img(
-            src='https://nathancooperjones.com/wp-content/uploads/2022/06/BBDO_and_Rep_Logos-e1654094195618.png',  # noqa: E501
+            src='https://trp-other.s3.amazonaws.com/images/BBDO_and_Rep_Logos.png',
             style=styles(height=px(20)),
         )
     )

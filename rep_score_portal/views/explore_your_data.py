@@ -22,7 +22,7 @@ def page_seven() -> None:
         with st.spinner(text='Fetching the latest rep score data...'):
             data_explorer_df = (
                 read_google_spreadsheet(
-                    spread='https://docs.google.com/spreadsheets/d/1AxYTVCUs0PRfPcmMZRP3jYPwtmrHps-C9ndyS3SJTxM/',  # noqa: E501
+                    spread=st.secrets['spreadsheets']['primary_dataset_url'],
                     sheet=0,
                 )
                 .sheet_to_df(index=None)
@@ -111,12 +111,14 @@ def page_seven() -> None:
 
     edit_colors_of_selectbox()
 
-    if st.session_state.sidebar_data_explorer_radio == 'Score Heatmap':
+    tab_1, tab_2, tab_3 = st.tabs(['Score Heatmap', 'Qualitative Notes', 'Rep Score Progress'])
+
+    with tab_1:
         plot_color_maps()
-    elif st.session_state.sidebar_data_explorer_radio == 'Rep Score Progress':
-        plot_rep_score_progress()
-    elif st.session_state.sidebar_data_explorer_radio == 'Qualitative Notes':
+    with tab_2:
         display_qualitative_notes()
+    with tab_3:
+        plot_rep_score_progress()
 
 
 def plot_color_maps() -> None:
@@ -158,6 +160,8 @@ def plot_color_maps() -> None:
                 default=sorted(st.session_state.color_map_df[filter_by].unique()),
             )
 
+    include_baseline = st.checkbox(label='Include baseline in plot(s)', value=True)
+
     st.markdown('<br>', unsafe_allow_html=True)
 
     if (
@@ -181,13 +185,16 @@ def plot_color_maps() -> None:
             "Hmm... we couldn't find any existing assets with those filters applied. "
             'Please try again with a different set of filters.'
         )
-        st.stop()
+        return
 
-    overall_df_to_plot = df_to_plot[df_to_plot['Variable'].isin(['Ad Total Score', 'BASELINE'])]
+    if include_baseline:
+        overall_df_to_plot = df_to_plot[df_to_plot['Variable'].isin(['Ad Total Score', 'BASELINE'])]
+    else:
+        overall_df_to_plot = df_to_plot[df_to_plot['Variable'].isin(['Ad Total Score'])]
 
     _construct_plot(
         df_to_plot=overall_df_to_plot,
-        x_sort=['Ad Total Score', 'BASELINE'],
+        x_sort=['Ad Total Score', 'Baseline'],
         include_variable_in_tooltip=False,
     )
 
@@ -200,7 +207,13 @@ def plot_color_maps() -> None:
     st.write('-----')
 
     if st.checkbox('Break down by identity'):
-        subset_df_to_plot = df_to_plot[df_to_plot['Variable'] != 'Ad Total Score']
+        if include_baseline:
+            subset_df_to_plot = df_to_plot[df_to_plot['Variable'] != 'Ad Total Score']
+        else:
+            subset_df_to_plot = df_to_plot[
+                (df_to_plot['Variable'] != 'Ad Total Score')
+                & (df_to_plot['Variable'] != 'BASELINE')
+            ]
 
         x_sort = [
             'GENDER',
@@ -209,6 +222,7 @@ def plot_color_maps() -> None:
             'DISABILITY',
             'BODY SIZE',
             'AGE',
+            'Baseline',
         ]
 
         _construct_plot(
@@ -237,8 +251,9 @@ def _construct_plot(
         Whether or not to include the variable ``Variable`` in the plot tooltip
 
     """
-    # matching the mock up image - don't display this column name ¯\_(ツ)_/¯
-    df_to_plot = df_to_plot.replace('BASELINE', '')
+    df_to_plot = df_to_plot.copy()
+
+    df_to_plot.loc[df_to_plot['Variable'] == 'BASELINE', 'Variable'] = 'Baseline'
 
     base = (
         alt
@@ -302,7 +317,7 @@ def plot_rep_score_progress() -> None:
 
     if len(progress_df) == 0:
         st.error('No assets with more than one version have been uploaded and assigned!')
-        st.stop()
+        return
 
     x_axis = st.selectbox(
         label='Select field to compare against',

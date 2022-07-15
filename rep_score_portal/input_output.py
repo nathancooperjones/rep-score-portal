@@ -135,7 +135,7 @@ def append_new_row_in_asset_tracker(
 
     """
     sheet = read_google_spreadsheet(
-        spread='https://docs.google.com/spreadsheets/d/1OR5Tj63Kzmq9AJX7XFGCzjQ7M9BEv15TkpkitXC1DgI/',  # noqa: E501
+        spread=st.secrets['spreadsheets']['portal_backend_url'],
         sheet=0,
     )
 
@@ -194,7 +194,7 @@ def get_assigned_user_assets(username: str) -> List[str]:
     """
     tracker_df = (
         read_google_spreadsheet(
-            spread='https://docs.google.com/spreadsheets/d/1Sqbj1EPY-FuMbNiVxEKFsfR0CzcCuq8kmiaUpTzQT6k/',  # noqa: E501
+            spread=st.secrets['spreadsheets']['project_tracker_url'],
             sheet=2,
         )
         .sheet_to_df(index=None)
@@ -213,7 +213,7 @@ def get_assigned_user_assets(username: str) -> List[str]:
 
     backend_df = (
         read_google_spreadsheet(
-            spread='https://docs.google.com/spreadsheets/d/1OR5Tj63Kzmq9AJX7XFGCzjQ7M9BEv15TkpkitXC1DgI/',  # noqa: E501
+            spread=st.secrets['spreadsheets']['portal_backend_url'],
             sheet=0,
         )
         .sheet_to_df(index=None)

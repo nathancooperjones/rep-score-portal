@@ -2,6 +2,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.10.2] - 2022-07-15
+### Added
+ - Baseline column header in color map plots
+ - Option to include baseline column in color map plots or not
+### Changed
+ - Replaced radio sidebar with tabs for the "Explore Your Data" page
+ - Upgraded version of Streamlit to ``1.11.0``
+
 # [0.10.1] - 2022-07-14
 ### Changed
  - Scores of "N/A" will not be displayed with a gray background in the "Explore Your Data" color maps

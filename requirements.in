@@ -3,5 +3,5 @@ boto3
 gspread_pandas
 htbuilder
 pandas
-streamlit
-streamlit_authenticator
+streamlit~=1.11.0
+streamlit_authenticator<0.2.0  # for now

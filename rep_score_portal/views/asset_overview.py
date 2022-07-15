@@ -19,7 +19,7 @@ def home_page() -> None:
         if not isinstance(st.session_state.get('asset_tracker_df'), pd.DataFrame):
             asset_tracker_df = (
                 read_google_spreadsheet(
-                    spread='https://docs.google.com/spreadsheets/d/1OR5Tj63Kzmq9AJX7XFGCzjQ7M9BEv15TkpkitXC1DgI/',  # noqa: E501
+                    spread=st.secrets['spreadsheets']['portal_backend_url'],
                     sheet=0,
                 )
                 .sheet_to_df(index=None)
