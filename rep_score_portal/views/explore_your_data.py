@@ -195,7 +195,6 @@ def plot_color_maps() -> None:
     _construct_plot(
         df_to_plot=overall_df_to_plot,
         x_sort=['Ad Total Score', 'Baseline'],
-        include_variable_in_tooltip=False,
     )
 
     st.caption(
@@ -228,14 +227,12 @@ def plot_color_maps() -> None:
         _construct_plot(
             df_to_plot=subset_df_to_plot,
             x_sort=x_sort,
-            include_variable_in_tooltip=True,
         )
 
 
 def _construct_plot(
     df_to_plot: pd.DataFrame,
     x_sort: Iterable[str] = None,
-    include_variable_in_tooltip: bool = False,
 ) -> None:
     """
     Construct the color map plot.
@@ -247,8 +244,6 @@ def _construct_plot(
         ``Score``
     x_sort: list
         Desired sort of the x-axis, if any
-    include_variable_in_tooltip: bool
-        Whether or not to include the variable ``Variable`` in the plot tooltip
 
     """
     df_to_plot = df_to_plot.copy()
@@ -277,10 +272,7 @@ def _construct_plot(
         )
     )
 
-    tooltip = ['Ad Name', 'Brand', 'Product', 'Score']
-
-    if include_variable_in_tooltip:
-        tooltip.insert(-1, 'Variable')
+    tooltip = ['Ad Name', 'Brand', 'Product', 'Variable', 'Score']
 
     chart = (
         base
@@ -293,7 +285,7 @@ def _construct_plot(
         )
     )
 
-    text = base.mark_text().encode(text='Score')
+    text = base.mark_text().encode(text='Score', tooltip=tooltip)
 
     full_plot = (
         (chart + text)

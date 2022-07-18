@@ -2,6 +2,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.10.3] - 2022-07-18
+### Fixed
+ - Updated sheet read for the project tracker Google spreadsheet
+ - Tooltip in plots being visible over text
+
 # [0.10.2] - 2022-07-15
 ### Added
  - Baseline column header in color map plots

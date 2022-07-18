@@ -195,7 +195,7 @@ def get_assigned_user_assets(username: str) -> List[str]:
     tracker_df = (
         read_google_spreadsheet(
             spread=st.secrets['spreadsheets']['project_tracker_url'],
-            sheet=2,
+            sheet=3,
         )
         .sheet_to_df(index=None)
     )
