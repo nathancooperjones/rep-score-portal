@@ -1,11 +1,16 @@
-from typing import Iterable
+from typing import Iterable, Union
 
 import altair as alt
 import pandas as pd
 import streamlit as st
 
 from input_output import read_google_spreadsheet
-from utils import check_for_assigned_assets, edit_colors_of_selectbox
+from utils import (
+    check_for_assigned_assets,
+    edit_colors_of_selectbox,
+    get_content_types,
+    insert_line_break,
+)
 
 
 def page_seven() -> None:
@@ -96,14 +101,7 @@ def page_seven() -> None:
 
         color_map_df['Date Submitted'] = pd.to_datetime(color_map_df['Date Submitted']).dt.date
 
-        color_map_df['color'] = [
-            '#8F9193' if str(x) == '' or 'no codeable character' in str(x).lower()  # N/A value
-            else '#FFFFFF' if not str(x).replace('.', '', 1).isdigit()  # BASELINE
-            else '#7ED957' if float(x) >= 80
-            else '#FFDE59' if 60 <= float(x) < 80
-            else '#EA3423'
-            for x in color_map_df['Score']
-        ]
+        color_map_df['color'] = _create_color_column(scores=color_map_df['Score'])
 
         st.session_state.data_explorer_df = data_explorer_df
         st.session_state.data_explorer_df_no_duplicates = data_explorer_df_no_duplicates
@@ -119,6 +117,18 @@ def page_seven() -> None:
         display_qualitative_notes()
     with tab_3:
         plot_rep_score_progress()
+
+
+def _create_color_column(scores: Iterable[Union[str, float]]) -> Iterable[str]:
+    """Assign cell color values to scores."""
+    return [
+        '#8F9193' if str(x) == '' or 'no codeable character' in str(x).lower()  # N/A value
+        else '#FFFFFF' if not str(x).replace('.', '', 1).isdigit()  # BASELINE
+        else '#7ED957' if float(x) >= 80
+        else '#FFDE59' if 60 <= float(x) < 80
+        else '#EA3423'
+        for x in scores
+    ]
 
 
 def plot_color_maps() -> None:
@@ -162,7 +172,7 @@ def plot_color_maps() -> None:
 
     include_baseline = st.checkbox(label='Include baseline in plot(s)', value=True)
 
-    st.markdown('<br>', unsafe_allow_html=True)
+    insert_line_break()
 
     if (
         filter_by != 'None'
@@ -192,10 +202,71 @@ def plot_color_maps() -> None:
     else:
         overall_df_to_plot = df_to_plot[df_to_plot['Variable'].isin(['Ad Total Score'])]
 
+    overall_portfolio_df_to_plot = _create_portfolio_df(df=overall_df_to_plot)
+
+    st.markdown('##### Overall Scores, Ad Level')
     _construct_plot(
         df_to_plot=overall_df_to_plot,
         x_sort=['Ad Total Score', 'Baseline'],
+        display_y_axis=True,
     )
+
+    insert_line_break()
+
+    st.markdown('##### Overall Scores, Portfolio Level')
+    _construct_plot(
+        df_to_plot=overall_portfolio_df_to_plot,
+        x_sort=['Ad Total Score', 'Baseline'],
+        display_y_axis=False,
+        tooltip=['Variable', 'Score'],
+    )
+
+    if include_baseline:
+        subset_df_to_plot = df_to_plot[df_to_plot['Variable'] != 'Ad Total Score']
+    else:
+        subset_df_to_plot = df_to_plot[
+            (df_to_plot['Variable'] != 'Ad Total Score')
+            & (df_to_plot['Variable'] != 'BASELINE')
+        ]
+
+    # hacky solution to trim strings that overflow out of the ``Baseline`` column of color map cells
+    subset_df_to_plot['Score'] = subset_df_to_plot['Score'].apply(
+        func=lambda x: x if not isinstance(x, str) else x if len(x) < 10 else x[:8] + '...',
+    )
+
+    subset_portfolio_df_to_plot = _create_portfolio_df(df=subset_df_to_plot)
+
+    x_sort = [
+        'GENDER',
+        'RACE',
+        'LGBTQ+ ',
+        'DISABILITY',
+        'BODY SIZE',
+        'AGE',
+        'Baseline',
+    ]
+
+    with st.expander(label='Break down by identity', expanded=False):
+        insert_line_break()
+
+        st.markdown('##### Scores by Identity, Ad Level')
+        _construct_plot(
+            df_to_plot=subset_df_to_plot,
+            x_sort=x_sort,
+            display_y_axis=True,
+        )
+
+        insert_line_break()
+
+        st.markdown('##### Scores by Identity, Portfolio Level')
+        _construct_plot(
+            df_to_plot=subset_portfolio_df_to_plot,
+            x_sort=x_sort,
+            display_y_axis=False,
+            tooltip=['Variable', 'Score'],
+        )
+
+    insert_line_break()
 
     st.caption(
         '\\* Note that when multiple versions of an asset have been submitted, only the '
@@ -203,36 +274,57 @@ def plot_color_maps() -> None:
         'click "Rep Score Progress" on the left sidebar.'
     )
 
-    st.write('-----')
 
-    if st.checkbox('Break down by identity'):
-        if include_baseline:
-            subset_df_to_plot = df_to_plot[df_to_plot['Variable'] != 'Ad Total Score']
-        else:
-            subset_df_to_plot = df_to_plot[
-                (df_to_plot['Variable'] != 'Ad Total Score')
-                & (df_to_plot['Variable'] != 'BASELINE')
-            ]
+def _create_portfolio_df(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Aggregate ``df`` to create a portfolio view ready to plot in a color map.
 
-        x_sort = [
-            'GENDER',
-            'RACE',
-            'LGBTQ+ ',
-            'DISABILITY',
-            'BODY SIZE',
-            'AGE',
-            'Baseline',
-        ]
+    Parameters
+    ----------
+    df: pd.DataFrame
+        DataFrame with columns ``Variable`` and ``Score``, where all variables have float scores
+        except for value ``BASELINE``
 
-        _construct_plot(
-            df_to_plot=subset_df_to_plot,
-            x_sort=x_sort,
-        )
+    Returns
+    -------
+    portfolio_df: pd.DataFrame
+        DataFrame aggregated by means with null values excluded. Columns include:
+
+            * Ad Name
+
+            * Variable
+
+            * Score
+
+            * color
+
+    """
+    portfolio_df = df[df['Variable'] != 'BASELINE']
+    portfolio_df = portfolio_df[['Variable', 'Score']]
+    portfolio_df['Score'] = pd.to_numeric(portfolio_df['Score'], errors='coerce')
+    portfolio_df = portfolio_df.dropna()
+    portfolio_df = portfolio_df.groupby('Variable').mean().apply(round, args=(1,)).reset_index()
+
+    # # display combined baseline values
+    # baseline_values = ', '.join(
+    #     list(df.loc[df['Variable'] == 'BASELINE', 'Score'].value_counts().index)
+    # )
+    # portfolio_df = pd.concat(
+    #     # objs=[portfolio_df, pd.DataFrame([{'Variable': 'BASELINE', 'Score': baseline_values}])],
+    #     objs=[portfolio_df, pd.DataFrame([{'Variable': 'BASELINE', 'Score': '1'}])],
+    # )
+
+    portfolio_df['Ad Name'] = ''
+    portfolio_df['color'] = _create_color_column(scores=portfolio_df['Score'])
+
+    return portfolio_df
 
 
 def _construct_plot(
     df_to_plot: pd.DataFrame,
     x_sort: Iterable[str] = None,
+    display_y_axis: bool = True,
+    tooltip: Iterable[str] = ['Ad Name', 'Brand', 'Product', 'Variable', 'Score'],
 ) -> None:
     """
     Construct the color map plot.
@@ -244,11 +336,20 @@ def _construct_plot(
         ``Score``
     x_sort: list
         Desired sort of the x-axis, if any
+    tooltip: list
+        Tooltip to be displayed on cell hover
 
     """
     df_to_plot = df_to_plot.copy()
 
     df_to_plot.loc[df_to_plot['Variable'] == 'BASELINE', 'Variable'] = 'Baseline'
+
+    y_axis_kwargs = {
+        'tickSize': 0,
+        'labelPadding': 10,
+        'titlePadding': 20,
+        **({'title': None} if not display_y_axis else {})
+    }
 
     base = (
         alt
@@ -267,12 +368,10 @@ def _construct_plot(
             ),
             y=alt.Y(
                 shorthand='Ad Name',
-                axis=alt.Axis(tickSize=0, labelPadding=10, titlePadding=20)
+                axis=alt.Axis(**y_axis_kwargs)
             ),
         )
     )
-
-    tooltip = ['Ad Name', 'Brand', 'Product', 'Variable', 'Score']
 
     chart = (
         base
@@ -300,6 +399,29 @@ def _construct_plot(
     st.altair_chart(full_plot, use_container_width=True)
 
 
+def display_qualitative_notes() -> None:
+    """Display qualitative notes per unique asset."""
+    notes_df = st.session_state.data_explorer_df_no_duplicates.copy()
+
+    notes_df = notes_df.drop_duplicates(
+        subset=['Ad Name', 'Brand', 'Product', 'Content Type', 'Date Submitted', 'Qual Notes']
+    )
+
+    for _, row in notes_df.iterrows():
+        with st.expander(f'"{row["Ad Name"]}" Notes', expanded=False):
+            notes = 'No notes! 🎉'
+
+            if row['Qual Notes']:
+                notes = row['Qual Notes']
+
+            st.write(notes)
+
+    st.caption(
+        '\\* Note that when multiple versions of an asset have been submitted, only the '
+        'most-recent version will be displayed above.'
+    )
+
+
 def plot_rep_score_progress() -> None:
     """Plot rep score progress over content type or date submitted."""
     progress_df = st.session_state.data_explorer_df[
@@ -320,7 +442,7 @@ def plot_rep_score_progress() -> None:
     if x_axis == 'Date Submitted':
         x_axis = 'Date Submitted Month Year'
 
-    st.markdown('<br>', unsafe_allow_html=True)
+    insert_line_break()
 
     progress_df = progress_df[[
         'Content Type',
@@ -347,7 +469,7 @@ def plot_rep_score_progress() -> None:
         .encode(
             x=alt.X(
                 shorthand=x_axis,
-                sort=['Storyboard', 'Working Cut', 'Final Cut'],
+                sort=get_content_types(),
                 axis=alt.Axis(
                     labelAngle=-45,
                     labelPadding=5,
@@ -365,26 +487,3 @@ def plot_rep_score_progress() -> None:
     )
 
     st.altair_chart(progress_chart, use_container_width=True)
-
-
-def display_qualitative_notes() -> None:
-    """Display qualitative notes per unique asset."""
-    notes_df = st.session_state.data_explorer_df_no_duplicates.copy()
-
-    notes_df = notes_df.drop_duplicates(
-        subset=['Ad Name', 'Brand', 'Product', 'Content Type', 'Date Submitted', 'Qual Notes']
-    )
-
-    for _, row in notes_df.iterrows():
-        with st.expander(f'"{row["Ad Name"]}" Notes', expanded=False):
-            notes = 'No notes! 🎉'
-
-            if row['Qual Notes']:
-                notes = row['Qual Notes']
-
-            st.write(notes)
-
-    st.caption(
-        '\\* Note that when multiple versions of an asset have been submitted, only the '
-        'most-recent version will be displayed above.'
-    )

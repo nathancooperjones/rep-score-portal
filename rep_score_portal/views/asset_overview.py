@@ -6,6 +6,7 @@ from utils import (
     check_for_assigned_assets,
     display_progress_bar_asset_tracker,
     edit_colors_of_selectbox,
+    insert_line_break,
 )
 
 
@@ -98,7 +99,7 @@ def home_page() -> None:
                 default=sorted(st.session_state.asset_tracker_df[filter_by].unique()),
             )
 
-        st.markdown('<br>', unsafe_allow_html=True)
+        insert_line_break()
 
         if filter_by != 'None' and field_selected is not None:
             asset_tracker_df = st.session_state.asset_tracker_df[

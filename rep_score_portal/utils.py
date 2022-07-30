@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 import streamlit as st
 
@@ -74,3 +74,18 @@ def check_for_assigned_assets() -> None:
             st.session_state.assigned_user_assets = get_assigned_user_assets(
                 username=st.session_state['username'],
             )
+
+
+def insert_line_break() -> None:
+    """Insert line break in Streamlit app."""
+    st.markdown('<br>', unsafe_allow_html=True)
+
+
+def get_content_types() -> List[str]:
+    """Get an ordered list of valid content types."""
+    return [
+        'Storyboard',
+        'Working Cut',
+        'Rough Cut',
+        'Final Cut',
+    ]

@@ -2,7 +2,11 @@ import pandas as pd
 import streamlit as st
 
 from _version import __version__
-from utils import reset_session_state_asset_information, reset_session_state_progress
+from utils import (
+    insert_line_break,
+    reset_session_state_asset_information,
+    reset_session_state_progress,
+)
 
 
 def construct_sidebar() -> None:
@@ -28,11 +32,11 @@ def construct_sidebar() -> None:
         if start_the_process_button:
             st.session_state.sidebar_radio = 'Submit an Asset'
 
-        st.markdown('<br>', unsafe_allow_html=True)
+        insert_line_break()
 
         submit_an_asset_pages_navigation_container = st.container()
 
-        st.markdown('<br>', unsafe_allow_html=True)
+        insert_line_break()
 
         asset_overview_col_1, asset_overview_col_2 = st.columns([0.1, 300])
         explore_your_data_col_1, explore_your_data_col_2 = st.columns([0.1, 300])
@@ -61,7 +65,7 @@ def construct_sidebar() -> None:
             submit_an_asset_pages_navigation_container=submit_an_asset_pages_navigation_container,
         )
 
-        st.markdown('<br>', unsafe_allow_html=True)
+        insert_line_break()
 
         email_subject = 'Trouble with the Rep Score Portal'
         email_body = "Hi Rebecca,%0D%0A%0D%0AI'm having some trouble with...%0D%0A%0D%0AThanks!"
@@ -74,7 +78,7 @@ def construct_sidebar() -> None:
 
         st.markdown(contact_html, unsafe_allow_html=True)
 
-        st.markdown('<br>', unsafe_allow_html=True)
+        insert_line_break()
 
         col_1, col_2 = st.columns(2)
 
@@ -103,12 +107,12 @@ def construct_sidebar() -> None:
         with col_2:
             st.session_state.authenticator.logout('Logout', 'main')
 
-        st.markdown('<br>', unsafe_allow_html=True)
+        insert_line_break()
 
         st.caption(f'<p style="color: black;">v{__version__}</p>', unsafe_allow_html=True)
 
-        st.markdown('<br>', unsafe_allow_html=True)
-        st.markdown('<br>', unsafe_allow_html=True)
+        insert_line_break()
+        insert_line_break()
 
 
 def _display_submit_an_asset_page_progress(

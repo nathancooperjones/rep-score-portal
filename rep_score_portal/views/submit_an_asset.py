@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 
 from input_output import append_new_row_in_asset_tracker, upload_file_to_s3
-from utils import display_progress_bar_asset_tracker
+from utils import display_progress_bar_asset_tracker, get_content_types, insert_line_break
 
 
 def page_one() -> None:
@@ -228,7 +228,7 @@ def page_one() -> None:
         '**Please either upload the creative brief or provide a URL to view your creative brief**'
     )
 
-    st.markdown('<br>', unsafe_allow_html=True)
+    insert_line_break()
 
     creative_brief = st.file_uploader(
         label='Select the creative brief to upload...',
@@ -422,7 +422,7 @@ def page_five() -> None:
 
     st.write('**Please either upload your asset below or provide a URL to view your asset**')
 
-    st.markdown('<br>', unsafe_allow_html=True)
+    insert_line_break()
 
     uploaded_file = st.file_uploader(
         label='Select a file to upload...',
@@ -443,7 +443,7 @@ def page_five() -> None:
 
     asset_content_type = st.selectbox(
         label='Content Type',
-        options=['Storyboard', 'Working Cut', 'Final Cut'],
+        options=get_content_types(),
     )
     asset_version = st.number_input(label='Version', min_value=1)
 
@@ -573,7 +573,7 @@ def page_six() -> None:
     st.write('* **Upload Notes**:')
     st.text(upload_notes)
 
-    st.markdown('<br>', unsafe_allow_html=True)
+    insert_line_break()
 
     if st.button('Back to home page'):
         st.session_state.refresh_app = True

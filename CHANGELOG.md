@@ -2,6 +2,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.10.4] - 2022-07-29
+### Added
+ - Portfolio view of color maps, aggregating data from the color map data displayed
+ - Helper functions ``insert_line_break`` and ``get_content_types`` to ``utils.py``
+### Changed
+ - Identity color maps are now available in an expander rather than triggered by a checkbox click
+### Fixed
+ - Order of x-axis for the Rep Score Progress plot
+ - String values that overflowing out of the cells of identity color maps are now trimmed to fit entirely in the cell
+
 # [0.10.3] - 2022-07-18
 ### Fixed
  - Updated sheet read for the project tracker Google spreadsheet
