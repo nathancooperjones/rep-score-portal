@@ -229,6 +229,8 @@ def plot_color_maps() -> None:
             & (df_to_plot['Variable'] != 'BASELINE')
         ]
 
+    subset_df_to_plot = subset_df_to_plot.copy()
+
     # hacky solution to trim strings that overflow out of the ``Baseline`` column of color map cells
     subset_df_to_plot['Score'] = subset_df_to_plot['Score'].apply(
         func=lambda x: x if not isinstance(x, str) else x if len(x) < 10 else x[:8] + '...',
