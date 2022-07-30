@@ -18,7 +18,7 @@ argon2-cffi-bindings==21.2.0
     # via argon2-cffi
 asttokens==2.0.5
     # via stack-data
-attrs==21.4.0
+attrs==22.1.0
     # via
     #   jsonschema
     #   streamlit
@@ -30,11 +30,11 @@ beautifulsoup4==4.11.1
     # via nbconvert
 bleach==5.0.1
     # via nbconvert
-blinker==1.4
+blinker==1.5
     # via streamlit
-boto3==1.24.31
+boto3==1.24.41
     # via -r requirements.in
-botocore==1.27.31
+botocore==1.27.41
     # via
     #   boto3
     #   s3transfer
@@ -68,11 +68,11 @@ entrypoints==0.4
     #   altair
     #   jupyter-client
     #   nbconvert
-executing==0.8.3
+executing==0.9.1
     # via stack-data
 extra-streamlit-components==0.1.55
     # via streamlit-authenticator
-fastjsonschema==2.15.3
+fastjsonschema==2.16.1
     # via nbformat
 gitdb==4.0.9
     # via gitpython
@@ -126,7 +126,7 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-jsonschema==4.7.2
+jsonschema==4.8.0
     # via
     #   altair
     #   nbformat
@@ -266,7 +266,7 @@ requests-oauthlib==1.3.1
     # via google-auth-oauthlib
 rich==12.5.1
     # via streamlit
-rsa==4.8
+rsa==4.9
     # via google-auth
 s3transfer==0.6.0
     # via boto3
@@ -286,7 +286,7 @@ soupsieve==2.3.2.post1
     # via beautifulsoup4
 stack-data==0.3.0
     # via ipython
-streamlit==1.11.0
+streamlit==1.11.1
     # via
     #   -r requirements.in
     #   extra-streamlit-components
@@ -327,7 +327,7 @@ tzdata==2022.1
     # via pytz-deprecation-shim
 tzlocal==4.2
     # via streamlit
-urllib3==1.26.10
+urllib3==1.26.11
     # via
     #   botocore
     #   requests
