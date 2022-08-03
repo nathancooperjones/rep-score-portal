@@ -84,8 +84,9 @@ def insert_line_break() -> None:
 def get_content_types() -> List[str]:
     """Get an ordered list of valid content types."""
     return [
+        'Script',
         'Storyboard',
-        'Working Cut',
+        'Animatic',
         'Rough Cut',
         'Final Cut',
     ]

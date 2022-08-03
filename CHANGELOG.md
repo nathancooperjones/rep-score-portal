@@ -2,6 +2,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.10.5] - 2022-08-03
+### Added
+ - Introductory description of Score Heatmap plot colors and filters
+### Changed
+ - List of Content Type categories available
+
 # [0.10.4] - 2022-07-29
 ### Added
  - Portfolio view of color maps, aggregating data from the color map data displayed

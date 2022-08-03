@@ -133,6 +133,21 @@ def _create_color_column(scores: Iterable[Union[str, float]]) -> Iterable[str]:
 
 def plot_color_maps() -> None:
     """Plot rep score color maps."""
+    color_explanation = (
+        'In the color maps below, we assign different colors to '
+        '<mark style="background-color:#7ED957;"><strong>GOOD REPRESENTATION</strong> '
+        '(80 points or higher) </mark>, '
+        '<mark style="background-color:#FFDE59;"><strong>FAIR REPRESENTATION</strong> '
+        '(60-79 points) </mark>, and '
+        '<mark style="background-color:#EA3423;"><strong>POOR REPRESENTATION</strong> '
+        '(under 60 points)</mark>.'
+    )
+    st.markdown(color_explanation, unsafe_allow_html=True)
+
+    insert_line_break()
+
+    st.markdown('Use the filter below to choose which ads you want to include in your portfolio.')
+
     filter_by = st.selectbox(
         label='Filter visualization by...',
         options=[
