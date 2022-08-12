@@ -42,13 +42,13 @@ def read_google_spreadsheet(spread: str, sheet: int = 0) -> pd.DataFrame:
     )
 
 
-def upload_file_to_s3(uploaded_file: st.uploaded_file_manager.UploadedFile, s3_key: str) -> str:
+def upload_file_to_s3(uploaded_file: st.runtime.uploaded_file_manager, s3_key: str) -> str:
     """
     Upload a file to S3 to ``s3://trp-rep-score-assets/{s3_key}/{modified_filename}``.
 
     Parameters
     ----------
-    uploaded_file: st.uploaded_file_manager.UploadedFile
+    uploaded_file: st.runtime.uploaded_file_manager
     s3_key: str
 
     Returns
