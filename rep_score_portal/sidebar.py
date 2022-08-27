@@ -19,6 +19,8 @@ def construct_sidebar() -> None:
         with col_2:
             if st.secrets['login_logos'].get(st.session_state['username']) == 'Mars Petcare':
                 st.image('../images/Mars Petcare Logo Square.png', use_column_width=True)
+            elif st.secrets['login_logos'].get(st.session_state['username']) == 'ExxonMobil':
+                st.image('../images/ExxonMobil Logo.png', use_column_width=True)
             else:
                 st.image('../images/Mars Chocolate Logo.png', use_column_width=True)
 
