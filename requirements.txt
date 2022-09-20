@@ -22,9 +22,9 @@ bcrypt==4.0.0
     # via streamlit-authenticator
 blinker==1.5
     # via streamlit
-boto3==1.24.61
+boto3==1.24.76
     # via -r requirements.in
-botocore==1.27.61
+botocore==1.27.76
     # via
     #   boto3
     #   s3transfer
@@ -32,7 +32,7 @@ cachetools==5.2.0
     # via
     #   google-auth
     #   streamlit
-certifi==2022.6.15
+certifi==2022.9.14
     # via requests
 charset-normalizer==2.1.1
     # via requests
@@ -51,7 +51,7 @@ entrypoints==0.4
     # via
     #   altair
     #   jupyter-client
-executing==0.10.0
+executing==1.0.0
     # via stack-data
 extra-streamlit-components==0.1.55
     # via streamlit-authenticator
@@ -59,34 +59,34 @@ gitdb==4.0.9
     # via gitpython
 gitpython==3.1.27
     # via streamlit
-google-auth==2.11.0
+google-auth==2.11.1
     # via
     #   google-auth-oauthlib
     #   gspread
     #   gspread-pandas
-google-auth-oauthlib==0.5.2
+google-auth-oauthlib==0.5.3
     # via
     #   gspread
     #   gspread-pandas
-gspread==5.4.0
+gspread==5.5.0
     # via gspread-pandas
 gspread-pandas==3.2.2
     # via -r requirements.in
 htbuilder==0.6.0
     # via -r requirements.in
-idna==3.3
+idna==3.4
     # via requests
 importlib-metadata==4.12.0
     # via streamlit
-ipykernel==6.15.1
+ipykernel==6.15.3
     # via
     #   ipywidgets
     #   pydeck
-ipython==8.4.0
+ipython==8.5.0
     # via
     #   ipykernel
     #   ipywidgets
-ipywidgets==8.0.1
+ipywidgets==8.0.2
     # via pydeck
 iteration-utilities==0.11.0
     # via htbuilder
@@ -100,13 +100,13 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-jsonschema==4.14.0
+jsonschema==4.16.0
     # via altair
 jupyter-client==7.3.5
     # via ipykernel
 jupyter-core==4.11.1
     # via jupyter-client
-jupyterlab-widgets==3.0.2
+jupyterlab-widgets==3.0.3
     # via ipywidgets
 markupsafe==2.1.1
     # via jinja2
@@ -118,20 +118,20 @@ nest-asyncio==1.5.5
     # via
     #   ipykernel
     #   jupyter-client
-numpy==1.23.2
+numpy==1.23.3
     # via
     #   altair
     #   pandas
     #   pyarrow
     #   pydeck
     #   streamlit
-oauthlib==3.2.0
+oauthlib==3.2.1
     # via requests-oauthlib
 packaging==21.3
     # via
     #   ipykernel
     #   streamlit
-pandas==1.4.3
+pandas==1.5.0
     # via
     #   -r requirements.in
     #   altair
@@ -145,11 +145,11 @@ pickleshare==0.7.5
     # via ipython
 pillow==9.2.0
     # via streamlit
-prompt-toolkit==3.0.30
+prompt-toolkit==3.0.31
     # via ipython
-protobuf==3.20.1
+protobuf==3.20.2
     # via streamlit
-psutil==5.9.1
+psutil==5.9.2
     # via ipykernel
 ptyprocess==0.7.0
     # via pexpect
@@ -169,7 +169,7 @@ pygments==2.13.0
     # via
     #   ipython
     #   rich
-pyjwt==2.4.0
+pyjwt==2.5.0
     # via streamlit-authenticator
 pympler==1.0.1
     # via streamlit
@@ -189,7 +189,7 @@ pytz-deprecation-shim==0.1.0.post0
     # via tzlocal
 pyyaml==6.0
     # via streamlit-authenticator
-pyzmq==23.2.1
+pyzmq==24.0.0
     # via
     #   ipykernel
     #   jupyter-client
@@ -231,7 +231,7 @@ tornado==6.2
     #   ipykernel
     #   jupyter-client
     #   streamlit
-traitlets==5.3.0
+traitlets==5.4.0
     # via
     #   ipykernel
     #   ipython
@@ -254,10 +254,7 @@ validators==0.20.0
     # via streamlit
 wcwidth==0.2.5
     # via prompt-toolkit
-widgetsnbextension==4.0.2
+widgetsnbextension==4.0.3
     # via ipywidgets
 zipp==3.8.1
     # via importlib-metadata
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools

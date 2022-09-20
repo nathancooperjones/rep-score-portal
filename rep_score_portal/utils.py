@@ -89,4 +89,5 @@ def get_content_types() -> List[str]:
         'Animatic',
         'Rough Cut',
         'Final Cut',
+        'Video',
     ]

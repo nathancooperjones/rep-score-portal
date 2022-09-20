@@ -1,4 +1,4 @@
-from typing import Iterable, Union
+from typing import Iterable, Optional, Union
 
 import altair as alt
 import pandas as pd
@@ -234,6 +234,7 @@ def plot_color_maps() -> None:
         x_sort=['Ad Total Score', 'Baseline'],
         display_y_axis=False,
         tooltip=['Variable', 'Score'],
+        height=200,
     )
 
     if include_baseline:
@@ -283,6 +284,7 @@ def plot_color_maps() -> None:
             x_sort=x_sort,
             display_y_axis=False,
             tooltip=['Variable', 'Score'],
+            height=200,
         )
 
     insert_line_break()
@@ -344,6 +346,7 @@ def _construct_plot(
     x_sort: Iterable[str] = None,
     display_y_axis: bool = True,
     tooltip: Iterable[str] = ['Ad Name', 'Brand', 'Product', 'Variable', 'Score'],
+    height: Optional[int] = None,
 ) -> None:
     """
     Construct the color map plot.
@@ -357,6 +360,9 @@ def _construct_plot(
         Desired sort of the x-axis, if any
     tooltip: list
         Tooltip to be displayed on cell hover
+    height: int
+        Optional height property to pass to the chart. If not provided, the height will be the
+        default value set by ``altair.Chart``
 
     """
     df_to_plot = df_to_plot.copy()
@@ -398,10 +404,11 @@ def _construct_plot(
         .encode(
             color=alt.Color('color', scale=None),
             tooltip=tooltip,
-        ).properties(
-            height=300,
         )
     )
+
+    if height:
+        chart = chart.properties(height=height)
 
     text = base.mark_text().encode(text='Score', tooltip=tooltip)
 

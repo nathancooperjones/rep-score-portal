@@ -2,6 +2,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.10.8] - 2022-09-20
+### Added
+ - "Video" content type options
+### Fixed
+ - Dynamic height for color map plots that scales as more data is added
+ - Issue with OAuthLib library being vulnerable to DoS when attacker provides malicious IPV6 URI
+
 # [0.10.7] - 2022-08-27
 ### Added
  - ExxonMobil logo option
