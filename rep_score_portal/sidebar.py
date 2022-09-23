@@ -22,7 +22,7 @@ def construct_sidebar() -> None:
             elif st.secrets['login_logos'].get(st.session_state['username']) == 'ExxonMobil':
                 st.image('../images/ExxonMobil Logo.png', use_column_width=True)
             else:
-                st.image('../images/Mars Chocolate Logo.png', use_column_width=True)
+                st.image('../images/Mars Logo.png', use_column_width=True)
 
         st.markdown('<br><br>', unsafe_allow_html=True)
 
