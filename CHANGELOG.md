@@ -2,6 +2,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.11.1] - 2022-09-29
+### Fixed
+ - "Refresh"/"Start over" and "Logout" buttons are now side-by-side on the sidebar
+ - Added additional short-circuiting logic for users who are not signed in to not check for assigned assets
+
 # [0.11.0] - 2022-09-29
 ### Added
  - Initial page before submitting an asset that allows a user to select a previously-uploaded asset whose details should be used to auto-fill and skip sections of the submission process

@@ -80,10 +80,13 @@ def display_progress_bar_asset_tracker(
 def check_for_assigned_assets() -> None:
     """Check for this user's assigned assets while displaying a ``st.spinner``."""
     with st.spinner(text='Checking for assigned assets...'):
-        if not isinstance(st.session_state.get('assigned_user_assets'), list):
+        if not st.session_state['username']:
+            st.session_state.assigned_user_assets = list()
+        elif not isinstance(st.session_state.get('assigned_user_assets'), list):
             st.session_state.assigned_user_assets = get_assigned_user_assets(
                 username=st.session_state['username'],
             )
+
         if st.session_state['username'] in st.secrets['login_groups']['admins']:
             st.session_state.assigned_user_assets.append('_all_')
 

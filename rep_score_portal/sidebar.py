@@ -87,9 +87,9 @@ def construct_sidebar() -> None:
 
         insert_line_break()
 
-        col_1, col_2 = st.columns(2)
+        sidebar_col_1, sidebar_col_2 = st.columns(2)
 
-        with col_1:
+        with sidebar_col_1:
             if st.session_state.get('sidebar_radio') == 'Submit an Asset':
                 if st.button('Start over'):
                     reset_session_state_progress()
@@ -111,11 +111,11 @@ def construct_sidebar() -> None:
 
                     st.experimental_rerun()
 
-        with col_2:
+        with sidebar_col_2:
             # HARD-CODED ``streamlit_authenticator.Authenticate.logout`` method to add injected
             # logic:
             # https://github.com/mkhorasani/Streamlit-Authenticator/blob/v0.1.5/streamlit_authenticator/__init__.py#L202  # noqa: E501
-            if st.sidebar.button('Logout'):
+            if st.button('Logout'):
                 st.session_state.authenticator.cookie_manager.delete(
                     st.session_state.authenticator.cookie_name
                 )
