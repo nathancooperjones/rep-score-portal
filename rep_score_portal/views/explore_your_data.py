@@ -118,6 +118,10 @@ def page_seven() -> None:
     with tab_3:
         plot_rep_score_progress()
 
+    if not st.session_state.get('hacky_experimental_rerun_for_explore_data_first_page_load'):
+        st.session_state.hacky_experimental_rerun_for_explore_data_first_page_load = True
+        st.experimental_rerun()
+
 
 def _create_color_column(scores: Iterable[Union[str, float]]) -> Iterable[str]:
     """Assign cell color values to scores."""
@@ -461,12 +465,9 @@ def plot_rep_score_progress() -> None:
 
     x_axis = st.selectbox(
         label='Select field to compare against',
-        options=['Content Type', 'Date Submitted'],
+        options=['Content Type', 'Date Submitted', 'Portfolio View'],
         help='This sets the x-axis of the plot below',
     )
-
-    if x_axis == 'Date Submitted':
-        x_axis = 'Date Submitted Month Year'
 
     insert_line_break()
 
@@ -480,13 +481,34 @@ def plot_rep_score_progress() -> None:
     ]]
 
     progress_df['Ad Total Score'] = progress_df['Ad Total Score'].astype(float)
-    progress_df['Date Submitted Month Year'] = (
+    progress_df['Date Submitted (Month)'] = (
         pd
         .to_datetime(progress_df['Date Submitted'])
         .dt
         .date
         .apply(lambda x: x.strftime('%b %Y'))
     )
+    progress_df = progress_df.sort_values(by='Date Submitted').reset_index(drop=True)
+
+    progress_chart_x_kwargs = {
+        'color': 'Ad Name',
+        'strokeDash': 'Ad Name',
+        'tooltip': ['Ad Name', 'Brand', 'Product', 'Date Submitted', 'Ad Total Score'],
+    }
+
+    if x_axis == 'Portfolio View':
+        progress_df = (
+            progress_df
+            .groupby('Date Submitted (Month)')
+            .mean(numeric_only=True)
+            .reset_index()
+        )
+        progress_chart_x_kwargs = {
+            'tooltip': ['Ad Total Score'],
+        }
+
+    if x_axis == 'Date Submitted' or x_axis == 'Portfolio View':
+        x_axis = 'Date Submitted (Month)'
 
     progress_chart = (
         alt
@@ -502,9 +524,7 @@ def plot_rep_score_progress() -> None:
                 )
             ),
             y='Ad Total Score',
-            color='Ad Name',
-            strokeDash='Ad Name',
-            tooltip=['Ad Name', 'Brand', 'Product', 'Date Submitted', 'Ad Total Score'],
+            **progress_chart_x_kwargs,
         ).properties(
             height=500,
         ).configure_point(

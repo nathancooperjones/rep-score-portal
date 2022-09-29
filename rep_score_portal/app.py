@@ -3,7 +3,11 @@ import streamlit_authenticator as stauth
 
 from footer import display_footer
 from sidebar import construct_sidebar
-from utils import reset_session_state_asset_information, reset_session_state_progress
+from utils import (
+    fetch_asset_data,
+    reset_session_state_asset_information,
+    reset_session_state_progress,
+)
 from views.asset_overview import home_page
 from views.explore_your_data import page_seven
 from views.submit_an_asset import (
@@ -14,6 +18,7 @@ from views.submit_an_asset import (
     page_six,
     page_three,
     page_two,
+    page_zero,
 )
 
 
@@ -115,6 +120,10 @@ hide_streamlit_style = """
         .stTextInput > div > span {
             display: none;
         }
+
+        .stMultiSelect > div > div > div > div > span > span {
+            max-width: 250px;
+        }
     </style>
 """
 
@@ -134,6 +143,8 @@ def determine_page():
 
         st.experimental_rerun()
 
+    fetch_asset_data()
+
     if st.session_state.get('sidebar_radio') == 'Submit an Asset':
         if 'page_five_complete' in st.session_state.progress:
             page_six()
@@ -145,8 +156,13 @@ def determine_page():
             page_three()
         elif 'page_one_complete' in st.session_state.progress:
             page_two()
-        else:
+        elif (
+            'page_zero_complete' in st.session_state.progress
+            or len(st.session_state.asset_tracker_df) == 0
+        ):
             page_one()
+        else:
+            page_zero()
     elif st.session_state.get('sidebar_radio') == 'Explore Your Data':
         page_seven()
     else:

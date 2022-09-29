@@ -2,7 +2,98 @@ import pandas as pd
 import streamlit as st
 
 from input_output import append_new_row_in_asset_tracker, upload_file_to_s3
-from utils import display_progress_bar_asset_tracker, get_content_types, insert_line_break
+from utils import (
+    display_progress_bar_asset_tracker,
+    fetch_asset_data,
+    get_content_types,
+    get_countries_list,
+    insert_line_break,
+)
+
+
+def page_zero() -> None:
+    st.markdown('## Before We Begin...')
+
+    asset_entered_before_option_str = (
+        'Yes, a past version of this asset has been uploaded to the portal.'
+    )
+
+    seen_asset_before_status = st.radio(
+        label='Has a version of this asset been uploaded to the Rep Score Portal before?',
+        options=[
+            'No, a past version of this asset HAS NOT been uploaded to the portal before.',
+            asset_entered_before_option_str,
+        ],
+        help=(
+            'If you have uploaded a past version of the asset to the portal before, we can use the '
+            "details you've already entered to auto-fill and skip much of the asset submission "
+            'process!'
+        ),
+    )
+
+    if seen_asset_before_status == asset_entered_before_option_str:
+        fetch_asset_data()
+
+        options = st.session_state.asset_tracker_df['Asset Name'].tolist()
+
+        if len(options) >= 1:
+            selected_asset = st.selectbox(
+                label=(
+                    'Choose the asset whose details should be use to auto-fill the asset '
+                    'submission process'
+                ),
+                options=options,
+            )
+        else:
+            st.error(
+                'We are unable to find an asset you have uploaded to the portal before! Please '
+                'proceed to submit a new asset instead.'
+            )
+
+    if st.button('Continue to Step 1'):
+        # set up default values for the next page
+        st.session_state.asset_information['seen_asset_before'] = False
+        st.session_state.asset_information['name'] = ''
+        st.session_state.asset_information['brand'] = ''
+        st.session_state.asset_information['product'] = ''
+        st.session_state.asset_information['countries_airing'] = []
+        st.session_state.asset_information['point_of_contact'] = ''
+        st.session_state.asset_information['creative_brief_filename'] = ''
+        st.session_state.asset_information['version'] = 1
+
+        if seen_asset_before_status == asset_entered_before_option_str and selected_asset:
+            selected_asset_df = (
+                st.session_state.asset_tracker_df[
+                    st.session_state.asset_tracker_df['Asset Name'] == selected_asset
+                ]
+                .iloc[-1]
+            )
+
+            st.session_state.asset_information['seen_asset_before'] = True
+            st.session_state.asset_information['name'] = selected_asset_df['Asset Name']
+            st.session_state.asset_information['brand'] = selected_asset_df['Brand']
+            st.session_state.asset_information['product'] = selected_asset_df['Product']
+            st.session_state.asset_information['countries_airing'] = (
+                selected_asset_df['Region(s) This Creative Will Air In']
+                .replace('US', 'United States of America')  # 😐
+                .split(', ')
+            )
+            st.session_state.asset_information['point_of_contact'] = (
+                selected_asset_df['Point of Contact Email']
+            )
+            st.session_state.asset_information['creative_brief_filename'] = (
+                selected_asset_df['Creative Brief Filename']
+            )
+            st.session_state.asset_information['version'] = int(selected_asset_df['Version']) + 1
+
+            # post-processing - ensure every country entered is actually a country in the list
+            st.session_state.asset_information['countries_airing'] = list(
+                set(get_countries_list())
+                & set(st.session_state.asset_information['countries_airing'])
+            )
+
+        st.session_state.progress.append('page_zero_complete')
+        st.experimental_rerun()
 
 
 def page_one() -> None:
@@ -11,212 +102,29 @@ def page_one() -> None:
 
     st.markdown('## Start the Process')
 
-    asset_name = st.text_input(label='Asset Name', placeholder='Ex: Pierre')
-    asset_brand = st.text_input(label='Brand', placeholder='Ex: Mars')
-    asset_product = st.text_input(label='Product', placeholder="Ex: M&M's")
+    asset_name = st.text_input(
+        label='Asset Name',
+        value=st.session_state.asset_information['name'],
+        placeholder='Ex: Pierre',
+    )
+    asset_brand = st.text_input(
+        label='Brand',
+        value=st.session_state.asset_information['brand'],
+        placeholder='Ex: Mars',
+    )
+    asset_product = st.text_input(
+        label='Product',
+        value=st.session_state.asset_information['product'],
+        placeholder="Ex: M&M's",
+    )
     countries_airing = st.multiselect(
         label='Region(s) This Creative Will Air In',
-        options=[
-            'United States of America',
-            'Afghanistan',
-            'Albania',
-            'Algeria',
-            'Andorra',
-            'Angola',
-            'Antigua and Barbuda',
-            'Argentina',
-            'Armenia',
-            'Australia',
-            'Austria',
-            'Azerbaijan',
-            'The Bahamas',
-            'Bahrain',
-            'Bangladesh',
-            'Barbados',
-            'Belarus',
-            'Belgium',
-            'Belize',
-            'Benin',
-            'Bhutan',
-            'Bolivia',
-            'Bosnia and Herzegovina',
-            'Botswana',
-            'Brazil',
-            'Brunei',
-            'Bulgaria',
-            'Burkina Faso',
-            'Burundi',
-            'Cambodia',
-            'Cameroon',
-            'Canada',
-            'Cape Verde',
-            'Central African Republic',
-            'Chad',
-            'Chile',
-            'China',
-            'Colombia',
-            'Comoros',
-            'Congo, Republic of the',
-            'Congo, Democratic Republic of the',
-            'Costa Rica',
-            "Cote d'Ivoire",
-            'Croatia',
-            'Cuba',
-            'Cyprus',
-            'Czech Republic',
-            'Denmark',
-            'Djibouti',
-            'Dominica',
-            'Dominican Republic',
-            'East Timor (Timor-Leste)',
-            'Ecuador',
-            'Egypt',
-            'El Salvador',
-            'Equatorial Guinea',
-            'Eritrea',
-            'Estonia',
-            'Ethiopia',
-            'Fiji',
-            'Finland',
-            'France',
-            'Gabon',
-            'The Gambia',
-            'Georgia',
-            'Germany',
-            'Ghana',
-            'Greece',
-            'Grenada',
-            'Guatemala',
-            'Guinea',
-            'Guinea-Bissau',
-            'Guyana',
-            'Haiti',
-            'Honduras',
-            'Hungary',
-            'Iceland',
-            'India',
-            'Indonesia',
-            'Iran',
-            'Iraq',
-            'Ireland',
-            'Israel',
-            'Italy',
-            'Jamaica',
-            'Japan',
-            'Jordan',
-            'Kazakhstan',
-            'Kenya',
-            'Kiribati',
-            'Korea, North',
-            'Korea, South',
-            'Kosovo',
-            'Kuwait',
-            'Kyrgyzstan',
-            'Laos',
-            'Latvia',
-            'Lebanon',
-            'Lesotho',
-            'Liberia',
-            'Libya',
-            'Liechtenstein',
-            'Lithuania',
-            'Luxembourg',
-            'Macedonia',
-            'Madagascar',
-            'Malawi',
-            'Malaysia',
-            'Maldives',
-            'Mali',
-            'Malta',
-            'Marshall Islands',
-            'Mauritania',
-            'Mauritius',
-            'Mexico',
-            'Micronesia, Federated States of',
-            'Moldova',
-            'Monaco',
-            'Mongolia',
-            'Montenegro',
-            'Morocco',
-            'Mozambique',
-            'Myanmar (Burma)',
-            'Namibia',
-            'Nauru',
-            'Nepal',
-            'Netherlands',
-            'New Zealand',
-            'Nicaragua',
-            'Niger',
-            'Nigeria',
-            'Norway',
-            'Oman',
-            'Pakistan',
-            'Palau',
-            'Panama',
-            'Papua New Guinea',
-            'Paraguay',
-            'Peru',
-            'Philippines',
-            'Poland',
-            'Portugal',
-            'Qatar',
-            'Romania',
-            'Russia',
-            'Rwanda',
-            'Saint Kitts and Nevis',
-            'Saint Lucia',
-            'Saint Vincent and the Grenadines',
-            'Samoa',
-            'San Marino',
-            'Sao Tome and Principe',
-            'Saudi Arabia',
-            'Senegal',
-            'Serbia',
-            'Seychelles',
-            'Sierra Leone',
-            'Singapore',
-            'Slovakia',
-            'Slovenia',
-            'Solomon Islands',
-            'Somalia',
-            'South Africa',
-            'South Sudan',
-            'Spain',
-            'Sri Lanka',
-            'Sudan',
-            'Suriname',
-            'Swaziland',
-            'Sweden',
-            'Switzerland',
-            'Syria',
-            'Taiwan',
-            'Tajikistan',
-            'Tanzania',
-            'Thailand',
-            'Togo',
-            'Tonga',
-            'Trinidad and Tobago',
-            'Tunisia',
-            'Turkey',
-            'Turkmenistan',
-            'Tuvalu',
-            'Uganda',
-            'Ukraine',
-            'United Arab Emirates',
-            'United Kingdom',
-            'Uruguay',
-            'Uzbekistan',
-            'Vanuatu',
-            'Vatican City (Holy See)',
-            'Venezuela',
-            'Vietnam',
-            'Yemen',
-            'Zambia',
-            'Zimbabwe',
-        ]
+        options=get_countries_list(),
+        default=st.session_state.asset_information['countries_airing'],
     )
     asset_point_of_contact = st.text_input(
         label='Point of Contact Email',
+        value=st.session_state.asset_information['point_of_contact'],
         placeholder='Ex: example@example.com',
         autocomplete='email',
         help='If we have questions about this asset, who should we reach out to?',
@@ -238,6 +146,7 @@ def page_one() -> None:
 
     creative_brief_url = st.text_input(
         label='... or enter a URL to the creative brief',
+        value=st.session_state.asset_information['creative_brief_filename'],
         help=(
             'Rather than uploading a creative brief, you can submit a URL to an already-uploaded '
             'creative brief that our coders can reference instead'
@@ -247,7 +156,12 @@ def page_one() -> None:
 
     st.write('-----')
 
-    if st.button('Continue to next step'):
+    button_label = 'Continue to Step 2'
+
+    if st.session_state.asset_information['seen_asset_before']:
+        button_label = 'Skip ahead to Step 5'
+
+    if st.button(button_label):
         if (
             not asset_name
             or not asset_brand
@@ -279,6 +193,12 @@ def page_one() -> None:
         st.session_state.asset_information['creative_brief_filename'] = creative_brief_filename
 
         st.session_state.progress.append('page_one_complete')
+
+        if st.session_state.asset_information['seen_asset_before']:
+            st.session_state.progress.append('page_two_complete')
+            st.session_state.progress.append('page_three_complete')
+            st.session_state.progress.append('page_four_complete')
+
         st.experimental_rerun()
 
 
@@ -313,7 +233,7 @@ def page_two() -> None:
             and marketing_4
         ) or marketing_notes
     ):
-        if st.button('Continue to next step'):
+        if st.button('Continue to Step 3'):
             st.session_state.asset_information['marketing_notes'] = marketing_notes
 
             st.session_state.progress.append('page_two_complete')
@@ -356,7 +276,7 @@ def page_three() -> None:
             and agency_creative_5
         ) or agency_creative_notes
     ):
-        if st.button('Continue to next step'):
+        if st.button('Continue to Step 4'):
             st.session_state.asset_information['agency_creative_notes'] = agency_creative_notes
 
             st.session_state.progress.append('page_three_complete')
@@ -400,7 +320,7 @@ def page_four() -> None:
             and creative_review_5
         ) or creative_review_notes
     ):
-        if st.button('Continue to next step'):
+        if st.button('Continue to Step 5'):
             st.session_state.asset_information['creative_review_notes'] = creative_review_notes
 
             st.session_state.progress.append('page_four_complete')
@@ -445,7 +365,11 @@ def page_five() -> None:
         label='Content Type',
         options=get_content_types(),
     )
-    asset_version = st.number_input(label='Version', min_value=1)
+    asset_version = st.number_input(
+        label='Version',
+        value=st.session_state.asset_information['version'],
+        min_value=1,
+    )
 
     asset_notes = st.text_area(label='Notes', height=200)
 
@@ -481,12 +405,18 @@ def page_five() -> None:
                     content_type=st.session_state.asset_information['content_type'],
                     version=st.session_state.asset_information['version'],
                     point_of_contact=st.session_state.asset_information['point_of_contact'],
-                    creative_brief_filename=st.session_state.asset_information['creative_brief_filename'],  # noqa: E501
+                    creative_brief_filename=(
+                        st.session_state.asset_information['creative_brief_filename']
+                    ),
                     asset_filename=asset_filename,
                     file_uploaded_to_s3=file_uploaded_to_s3,
-                    marketing_notes=st.session_state.asset_information['marketing_notes'],
-                    agency_creative_notes=st.session_state.asset_information['agency_creative_notes'],  # noqa: E501
-                    creative_review_notes=st.session_state.asset_information['creative_review_notes'],  # noqa: E501
+                    marketing_notes=st.session_state.asset_information.get('marketing_notes', ''),
+                    agency_creative_notes=(
+                        st.session_state.asset_information.get('agency_creative_notes', '')
+                    ),
+                    creative_review_notes=(
+                        st.session_state.asset_information.get('creative_review_notes', '')
+                    ),
                     notes=st.session_state.asset_information['notes'],
                 )
 

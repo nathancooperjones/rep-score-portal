@@ -2,6 +2,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.11.0] - 2022-09-28 [PENDING]
+### Added
+ - Initial page before submitting an asset that allows a user to select a previously-uploaded asset whose details should be used to auto-fill and skip sections of the submission process
+ - "Portfolio View" for the Rep Score Progress plot
+ - Username displayed on the sidebar after login
+### Changed
+ - Downgraded both ``maxUploadSize`` and ``maxMessageSize`` from 12GB to 2GB
+ - Upgraded Streamlit library version to ``streamlit~=1.13``
+ - Renamed x-axis for progress plots from "Date Submitted Month Year" to "Date Submitted (Month)"
+ - Size of version in sidebar
+### Fixed
+ - Streamlit multi-select options have a larger max width
+ - A Streamlit issue where tab selection would revert to the default for the first selection on the "Explore Your Data" page
+ - Rep Score Progress data is now sorted by date submitted before plotting
+
 # [0.10.9] - 2022-09-23
 ### Changed
  - Mars logo image

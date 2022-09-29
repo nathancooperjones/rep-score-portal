@@ -1,11 +1,9 @@
-import pandas as pd
 import streamlit as st
 
-from input_output import read_google_spreadsheet
 from utils import (
-    check_for_assigned_assets,
     display_progress_bar_asset_tracker,
     edit_colors_of_selectbox,
+    fetch_asset_data,
     insert_line_break,
 )
 
@@ -14,24 +12,7 @@ def home_page() -> None:
     """Display the "Asset Overview" page."""
     st.markdown('## Asset Overview')
 
-    check_for_assigned_assets()
-
-    with st.spinner(text='Fetching the latest asset data...'):
-        if not isinstance(st.session_state.get('asset_tracker_df'), pd.DataFrame):
-            asset_tracker_df = (
-                read_google_spreadsheet(
-                    spread=st.secrets['spreadsheets']['portal_backend_url'],
-                    sheet=0,
-                )
-                .sheet_to_df(index=None)
-            )
-
-            if st.session_state['username'] not in st.secrets['login_groups']['admins']:
-                st.session_state.asset_tracker_df = asset_tracker_df[
-                    asset_tracker_df['Asset Name'].isin(st.session_state.assigned_user_assets)
-                ]
-            else:
-                st.session_state.asset_tracker_df = asset_tracker_df
+    fetch_asset_data()
 
     if st.session_state.asset_information.get('name'):
         st.markdown('### In Progress Assets')

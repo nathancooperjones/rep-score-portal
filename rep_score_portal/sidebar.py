@@ -24,7 +24,12 @@ def construct_sidebar() -> None:
             else:
                 st.image('../images/Mars Logo.png', use_column_width=True)
 
-        st.markdown('<br><br>', unsafe_allow_html=True)
+        _, name_display_col_2 = st.columns([0.1, 300])
+
+        with name_display_col_2:
+            st.markdown(f'Welcome back, **{st.session_state["username"]}**!')
+
+        insert_line_break()
 
         start_the_process_col_1, start_the_process_col_2 = st.columns([0.1, 300])
 
@@ -111,7 +116,10 @@ def construct_sidebar() -> None:
 
         insert_line_break()
 
-        st.caption(f'<p style="color: black;">v{__version__}</p>', unsafe_allow_html=True)
+        st.caption(
+            body=f'<p style="font-size: 10px; color: black;">v{__version__}</p>',
+            unsafe_allow_html=True,
+        )
 
         insert_line_break()
         insert_line_break()
@@ -137,7 +145,10 @@ def _display_submit_an_asset_page_progress(
     highlight_six = False
 
     if st.session_state.get('sidebar_radio') == 'Submit an Asset':
-        if 'page_one_complete' not in st.session_state.progress:
+        if (
+            'page_zero_complete' in st.session_state.progress
+            and 'page_one_complete' not in st.session_state.progress
+        ):
             highlight_one = True
         elif (
             'page_one_complete' in st.session_state.progress
@@ -159,7 +170,10 @@ def _display_submit_an_asset_page_progress(
             and 'page_five_complete' not in st.session_state.progress
         ):
             highlight_five = True
-        else:
+        elif (
+            'page_five_complete' in st.session_state.progress
+            and 'page_six_complete' not in st.session_state.progress
+        ):
             highlight_six = True
 
     navigation_string = (f"""

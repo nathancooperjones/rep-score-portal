@@ -1,7 +1,9 @@
 [server]
-maxUploadSize = 12000
+# maxUploadSize = 12000
+maxUploadSize = 2000
 
-maxMessageSize = 12000
+# maxMessageSize = 12000
+maxMessageSize = 2000
 
 runOnSave = false
 

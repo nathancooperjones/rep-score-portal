@@ -1,8 +1,9 @@
 from typing import List, Optional
 
+import pandas as pd
 import streamlit as st
 
-from input_output import get_assigned_user_assets
+from input_output import get_assigned_user_assets, read_google_spreadsheet
 
 
 def reset_session_state_progress() -> None:
@@ -76,6 +77,32 @@ def check_for_assigned_assets() -> None:
             )
 
 
+def fetch_asset_data() -> None:
+    """
+    Fetch the latest _assigned_ asset data and assign the resulting Pandas DataFrame to the
+    ``st.session_state.asset_tracker_df`` variable.
+
+    """
+    check_for_assigned_assets()
+
+    with st.spinner(text='Fetching the latest asset data...'):
+        if not isinstance(st.session_state.get('asset_tracker_df'), pd.DataFrame):
+            asset_tracker_df = (
+                read_google_spreadsheet(
+                    spread=st.secrets['spreadsheets']['portal_backend_url'],
+                    sheet=0,
+                )
+                .sheet_to_df(index=None)
+            )
+
+            if st.session_state['username'] not in st.secrets['login_groups']['admins']:
+                st.session_state.asset_tracker_df = asset_tracker_df[
+                    asset_tracker_df['Asset Name'].isin(st.session_state.assigned_user_assets)
+                ]
+            else:
+                st.session_state.asset_tracker_df = asset_tracker_df
+
+
 def insert_line_break() -> None:
     """Insert line break in Streamlit app."""
     st.markdown('<br>', unsafe_allow_html=True)
@@ -90,4 +117,206 @@ def get_content_types() -> List[str]:
         'Rough Cut',
         'Final Cut',
         'Video',
+    ]
+
+
+def get_countries_list() -> List[str]:
+    """Return a list of all countries."""
+    return [
+        'United States of America',
+        'Afghanistan',
+        'Albania',
+        'Algeria',
+        'Andorra',
+        'Angola',
+        'Antigua and Barbuda',
+        'Argentina',
+        'Armenia',
+        'Australia',
+        'Austria',
+        'Azerbaijan',
+        'The Bahamas',
+        'Bahrain',
+        'Bangladesh',
+        'Barbados',
+        'Belarus',
+        'Belgium',
+        'Belize',
+        'Benin',
+        'Bhutan',
+        'Bolivia',
+        'Bosnia and Herzegovina',
+        'Botswana',
+        'Brazil',
+        'Brunei',
+        'Bulgaria',
+        'Burkina Faso',
+        'Burundi',
+        'Cambodia',
+        'Cameroon',
+        'Canada',
+        'Cape Verde',
+        'Central African Republic',
+        'Chad',
+        'Chile',
+        'China',
+        'Colombia',
+        'Comoros',
+        'Congo, Republic of the',
+        'Congo, Democratic Republic of the',
+        'Costa Rica',
+        "Cote d'Ivoire",
+        'Croatia',
+        'Cuba',
+        'Cyprus',
+        'Czech Republic',
+        'Denmark',
+        'Djibouti',
+        'Dominica',
+        'Dominican Republic',
+        'East Timor (Timor-Leste)',
+        'Ecuador',
+        'Egypt',
+        'El Salvador',
+        'Equatorial Guinea',
+        'Eritrea',
+        'Estonia',
+        'Ethiopia',
+        'Fiji',
+        'Finland',
+        'France',
+        'Gabon',
+        'The Gambia',
+        'Georgia',
+        'Germany',
+        'Ghana',
+        'Greece',
+        'Grenada',
+        'Guatemala',
+        'Guinea',
+        'Guinea-Bissau',
+        'Guyana',
+        'Haiti',
+        'Honduras',
+        'Hungary',
+        'Iceland',
+        'India',
+        'Indonesia',
+        'Iran',
+        'Iraq',
+        'Ireland',
+        'Israel',
+        'Italy',
+        'Jamaica',
+        'Japan',
+        'Jordan',
+        'Kazakhstan',
+        'Kenya',
+        'Kiribati',
+        'Korea, North',
+        'Korea, South',
+        'Kosovo',
+        'Kuwait',
+        'Kyrgyzstan',
+        'Laos',
+        'Latvia',
+        'Lebanon',
+        'Lesotho',
+        'Liberia',
+        'Libya',
+        'Liechtenstein',
+        'Lithuania',
+        'Luxembourg',
+        'Macedonia',
+        'Madagascar',
+        'Malawi',
+        'Malaysia',
+        'Maldives',
+        'Mali',
+        'Malta',
+        'Marshall Islands',
+        'Mauritania',
+        'Mauritius',
+        'Mexico',
+        'Micronesia, Federated States of',
+        'Moldova',
+        'Monaco',
+        'Mongolia',
+        'Montenegro',
+        'Morocco',
+        'Mozambique',
+        'Myanmar (Burma)',
+        'Namibia',
+        'Nauru',
+        'Nepal',
+        'Netherlands',
+        'New Zealand',
+        'Nicaragua',
+        'Niger',
+        'Nigeria',
+        'Norway',
+        'Oman',
+        'Pakistan',
+        'Palau',
+        'Panama',
+        'Papua New Guinea',
+        'Paraguay',
+        'Peru',
+        'Philippines',
+        'Poland',
+        'Portugal',
+        'Qatar',
+        'Romania',
+        'Russia',
+        'Rwanda',
+        'Saint Kitts and Nevis',
+        'Saint Lucia',
+        'Saint Vincent and the Grenadines',
+        'Samoa',
+        'San Marino',
+        'Sao Tome and Principe',
+        'Saudi Arabia',
+        'Senegal',
+        'Serbia',
+        'Seychelles',
+        'Sierra Leone',
+        'Singapore',
+        'Slovakia',
+        'Slovenia',
+        'Solomon Islands',
+        'Somalia',
+        'South Africa',
+        'South Sudan',
+        'Spain',
+        'Sri Lanka',
+        'Sudan',
+        'Suriname',
+        'Swaziland',
+        'Sweden',
+        'Switzerland',
+        'Syria',
+        'Taiwan',
+        'Tajikistan',
+        'Tanzania',
+        'Thailand',
+        'Togo',
+        'Tonga',
+        'Trinidad and Tobago',
+        'Tunisia',
+        'Turkey',
+        'Turkmenistan',
+        'Tuvalu',
+        'Uganda',
+        'Ukraine',
+        'United Arab Emirates',
+        'United Kingdom',
+        'Uruguay',
+        'Uzbekistan',
+        'Vanuatu',
+        'Vatican City (Holy See)',
+        'Venezuela',
+        'Vietnam',
+        'Yemen',
+        'Zambia',
+        'Zimbabwe',
     ]
