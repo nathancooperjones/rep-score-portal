@@ -468,7 +468,7 @@ def plot_rep_score_progress() -> None:
 
     x_axis = st.selectbox(
         label='Select field to compare against',
-        options=['Content Type', 'Date Submitted', 'Portfolio View'],
+        options=['Content Type', 'Date Submitted', 'Portfolio'],
         help='This sets the x-axis of the plot below',
     )
 
@@ -499,7 +499,7 @@ def plot_rep_score_progress() -> None:
         'tooltip': ['Ad Name', 'Brand', 'Product', 'Date Submitted', 'Ad Total Score'],
     }
 
-    if x_axis == 'Portfolio View':
+    if x_axis == 'Portfolio':
         progress_df = (
             progress_df
             .groupby('Date Submitted (Month)')
@@ -510,7 +510,7 @@ def plot_rep_score_progress() -> None:
             'tooltip': ['Ad Total Score'],
         }
 
-    if x_axis == 'Date Submitted' or x_axis == 'Portfolio View':
+    if x_axis == 'Date Submitted' or x_axis == 'Portfolio':
         x_axis = 'Date Submitted (Month)'
 
     progress_chart = (

@@ -413,16 +413,16 @@ def page_five() -> None:
                     notes=st.session_state.asset_information['notes'],
                 )
 
-            if isinstance(st.session_state.get('asset_tracker_df'), pd.DataFrame):
-                del st.session_state.asset_tracker_df
-                del st.session_state.assigned_user_assets
-
             st.session_state.progress.append('page_five_complete')
             st.experimental_rerun()
 
 
 def page_six() -> None:
     """Display the final page for the "Submit an Asset" process."""
+    if isinstance(st.session_state.get('asset_tracker_df'), pd.DataFrame):
+        del st.session_state.asset_tracker_df
+        del st.session_state.assigned_user_assets
+
     st.image('../images/Stage 6.png', use_column_width=True)
 
     st.markdown('## Summary')
@@ -446,22 +446,22 @@ def page_six() -> None:
 
     marketing_notes = (
         st.session_state.asset_information['marketing_notes']
-        if st.session_state.asset_information['marketing_notes']
+        if st.session_state.asset_information.get('marketing_notes')
         else 'N/A'
     )
     agency_creative_notes = (
         st.session_state.asset_information['agency_creative_notes']
-        if st.session_state.asset_information['agency_creative_notes']
+        if st.session_state.asset_information.get('agency_creative_notes')
         else 'N/A'
     )
     creative_review_notes = (
         st.session_state.asset_information['creative_review_notes']
-        if st.session_state.asset_information['creative_review_notes']
+        if st.session_state.asset_information.get('creative_review_notes')
         else 'N/A'
     )
     upload_notes = (
         st.session_state.asset_information['notes']
-        if st.session_state.asset_information['notes']
+        if st.session_state.asset_information.get('notes')
         else 'N/A'
     )
 
