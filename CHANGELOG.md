@@ -12,7 +12,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
  - Upgraded Streamlit library version to ``streamlit~=1.13``
  - Renamed x-axis for progress plots from "Date Submitted Month Year" to "Date Submitted (Month)"
  - Size of version in sidebar
+ - Faster loading times for users who have not been assigned any assets
 ### Fixed
+ - Logout button now fully wipes previous session's data
  - Streamlit multi-select options have a larger max width
  - A Streamlit issue where tab selection would revert to the default for the first selection on the "Explore Your Data" page
  - Rep Score Progress data is now sorted by date submitted before plotting

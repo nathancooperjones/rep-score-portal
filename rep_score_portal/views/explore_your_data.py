@@ -24,21 +24,24 @@ def page_seven() -> None:
     ):
         check_for_assigned_assets()
 
-        with st.spinner(text='Fetching the latest rep score data...'):
-            data_explorer_df = (
-                read_google_spreadsheet(
-                    spread=st.secrets['spreadsheets']['primary_dataset_url'],
-                    sheet=0,
+        if len(st.session_state.assigned_user_assets) > 0:
+            with st.spinner(text='Fetching the latest rep score data...'):
+                data_explorer_df = (
+                    read_google_spreadsheet(
+                        spread=st.secrets['spreadsheets']['primary_dataset_url'],
+                        sheet=0,
+                    )
+                    .sheet_to_df(index=None)
                 )
-                .sheet_to_df(index=None)
-            )
 
-            if st.session_state['username'] not in st.secrets['login_groups']['admins']:
-                data_explorer_df = data_explorer_df[
-                    data_explorer_df['Ad Name'].isin(st.session_state.assigned_user_assets)
-                ]
+                if st.session_state['username'] not in st.secrets['login_groups']['admins']:
+                    data_explorer_df = data_explorer_df[
+                        data_explorer_df['Ad Name'].isin(st.session_state.assigned_user_assets)
+                    ]
 
-        data_explorer_df = data_explorer_df[data_explorer_df['Cat No. '].str.len() > 0]
+            data_explorer_df = data_explorer_df[data_explorer_df['Cat No. '].str.len() > 0]
+        else:
+            data_explorer_df = pd.DataFrame()
 
         if len(data_explorer_df) == 0:
             st.error("We couldn't find any assigned and completed assets you can view yet - sorry!")

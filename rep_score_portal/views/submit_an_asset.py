@@ -4,6 +4,7 @@ import streamlit as st
 from input_output import append_new_row_in_asset_tracker, upload_file_to_s3
 from utils import (
     display_progress_bar_asset_tracker,
+    edit_colors_of_selectbox,
     fetch_asset_data,
     get_content_types,
     get_countries_list,
@@ -13,6 +14,8 @@ from utils import (
 
 def page_zero() -> None:
     st.markdown('## Before We Begin...')
+
+    edit_colors_of_selectbox()
 
     asset_entered_before_option_str = (
         'Yes, a past version of this asset has been uploaded to the portal.'
@@ -51,16 +54,6 @@ def page_zero() -> None:
             )
 
     if st.button('Continue to Step 1'):
-        # set up default values for the next page
-        st.session_state.asset_information['seen_asset_before'] = False
-        st.session_state.asset_information['name'] = ''
-        st.session_state.asset_information['brand'] = ''
-        st.session_state.asset_information['product'] = ''
-        st.session_state.asset_information['countries_airing'] = []
-        st.session_state.asset_information['point_of_contact'] = ''
-        st.session_state.asset_information['creative_brief_filename'] = ''
-        st.session_state.asset_information['version'] = 1
-
         if seen_asset_before_status == asset_entered_before_option_str and selected_asset:
             selected_asset_df = (
                 st.session_state.asset_tracker_df[

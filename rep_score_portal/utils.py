@@ -13,7 +13,16 @@ def reset_session_state_progress() -> None:
 
 def reset_session_state_asset_information() -> None:
     """Reset the ``st.session_state.asset_information`` dictionary."""
-    st.session_state.asset_information = dict()
+    st.session_state.asset_information = {
+        'seen_asset_before': False,
+        'name': '',
+        'brand': '',
+        'product': '',
+        'countries_airing': [],
+        'point_of_contact': '',
+        'creative_brief_filename': '',
+        'version': 1,
+    }
 
 
 def edit_colors_of_selectbox() -> None:
@@ -75,6 +84,8 @@ def check_for_assigned_assets() -> None:
             st.session_state.assigned_user_assets = get_assigned_user_assets(
                 username=st.session_state['username'],
             )
+        if st.session_state['username'] in st.secrets['login_groups']['admins']:
+            st.session_state.assigned_user_assets.append('_all_')
 
 
 def fetch_asset_data() -> None:
@@ -85,22 +96,25 @@ def fetch_asset_data() -> None:
     """
     check_for_assigned_assets()
 
-    with st.spinner(text='Fetching the latest asset data...'):
-        if not isinstance(st.session_state.get('asset_tracker_df'), pd.DataFrame):
-            asset_tracker_df = (
-                read_google_spreadsheet(
-                    spread=st.secrets['spreadsheets']['portal_backend_url'],
-                    sheet=0,
+    if len(st.session_state.assigned_user_assets) > 0:
+        with st.spinner(text='Fetching the latest asset data...'):
+            if not isinstance(st.session_state.get('asset_tracker_df'), pd.DataFrame):
+                asset_tracker_df = (
+                    read_google_spreadsheet(
+                        spread=st.secrets['spreadsheets']['portal_backend_url'],
+                        sheet=0,
+                    )
+                    .sheet_to_df(index=None)
                 )
-                .sheet_to_df(index=None)
-            )
 
-            if st.session_state['username'] not in st.secrets['login_groups']['admins']:
-                st.session_state.asset_tracker_df = asset_tracker_df[
-                    asset_tracker_df['Asset Name'].isin(st.session_state.assigned_user_assets)
-                ]
-            else:
-                st.session_state.asset_tracker_df = asset_tracker_df
+                if st.session_state['username'] not in st.secrets['login_groups']['admins']:
+                    st.session_state.asset_tracker_df = asset_tracker_df[
+                        asset_tracker_df['Asset Name'].isin(st.session_state.assigned_user_assets)
+                    ]
+                else:
+                    st.session_state.asset_tracker_df = asset_tracker_df
+    else:
+        st.session_state.asset_tracker_df = pd.DataFrame()
 
 
 def insert_line_break() -> None:
