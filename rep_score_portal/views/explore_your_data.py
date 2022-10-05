@@ -44,9 +44,12 @@ def page_seven() -> None:
 
             data_explorer_df = data_explorer_df[data_explorer_df['Cat No. '].str.len() > 0]
         else:
-            data_explorer_df = pd.DataFrame()
+            data_explorer_df = None
 
-        if len(data_explorer_df) == 0:
+        if (
+            not isinstance(data_explorer_df, pd.DataFrame)
+            or len(data_explorer_df) == 0
+        ):
             st.error("We couldn't find any assigned and completed assets you can view yet - sorry!")
             st.stop()
 

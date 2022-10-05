@@ -1,3 +1,4 @@
+import pandas as pd
 import streamlit as st
 import streamlit_authenticator as stauth
 
@@ -158,6 +159,7 @@ def determine_page():
             page_two()
         elif (
             'page_zero_complete' in st.session_state.progress
+            or not isinstance(st.session_state.get('asset_tracker_df'), pd.DataFrame)
             or len(st.session_state.asset_tracker_df) == 0
         ):
             page_one()

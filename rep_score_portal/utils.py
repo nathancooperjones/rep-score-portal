@@ -120,7 +120,7 @@ def fetch_asset_data() -> None:
                 else:
                     st.session_state.asset_tracker_df = asset_tracker_df
     else:
-        st.session_state.asset_tracker_df = pd.DataFrame()
+        st.session_state.asset_tracker_df = None
 
 
 def insert_line_break() -> None:
