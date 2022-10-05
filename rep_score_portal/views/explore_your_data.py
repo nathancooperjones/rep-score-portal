@@ -432,7 +432,7 @@ def _construct_plot(
         .configure_axis(
             labelFontSize=15,
             labelFontWeight=alt.FontWeight('bold'),
-            titleFontSize=15,
+            titleFontSize=12,
             titleFontWeight=alt.FontWeight('normal'),
         )
     )
