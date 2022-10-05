@@ -2,6 +2,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.11.2] - 2022-10-05
+### Fixed
+ - "No Codeable Characters" filtered out of the Rep Score Progress plots
+ - "Logout" button sets up for a successful next login done in the same session
+
 # [0.11.1] - 2022-09-29
 ### Fixed
  - "Refresh"/"Start over" and "Logout" buttons are now side-by-side on the sidebar

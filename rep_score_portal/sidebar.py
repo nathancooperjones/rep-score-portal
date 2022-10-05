@@ -129,6 +129,9 @@ def construct_sidebar() -> None:
                 st.session_state['username'] = None
                 st.session_state['authentication_status'] = None
 
+                reset_session_state_progress()
+                reset_session_state_asset_information()
+
         insert_line_break()
 
         st.caption(

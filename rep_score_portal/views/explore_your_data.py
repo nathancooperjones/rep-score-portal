@@ -462,8 +462,13 @@ def plot_rep_score_progress() -> None:
         .duplicated(keep=False)
     ]
 
+    # remove scores of "No Codeable Characters" from consideration
+    progress_df = progress_df[
+        ~progress_df['Ad Total Score'].str.lower().str.contains('no codeable character')
+    ]
+
     if len(progress_df) == 0:
-        st.error('No assets with more than one version have been uploaded and assigned!')
+        st.error('No assets with more than one version scored have been uploaded and assigned!')
         return
 
     x_axis = st.selectbox(
