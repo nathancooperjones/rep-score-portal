@@ -492,14 +492,16 @@ def plot_rep_score_progress() -> None:
     ]]
 
     progress_df['Ad Total Score'] = progress_df['Ad Total Score'].astype(float)
+    progress_df['Date Submitted'] = pd.to_datetime(progress_df['Date Submitted'])
     progress_df['Date Submitted (Month)'] = (
-        pd
-        .to_datetime(progress_df['Date Submitted'])
+        progress_df['Date Submitted']
         .dt
         .date
         .apply(lambda x: x.strftime('%b %Y'))
     )
     progress_df = progress_df.sort_values(by='Date Submitted').reset_index(drop=True)
+
+    date_submitted_month_sorted_order = progress_df['Date Submitted (Month)'].unique().tolist()
 
     progress_chart_x_kwargs = {
         'color': 'Ad Name',
@@ -528,7 +530,7 @@ def plot_rep_score_progress() -> None:
         .encode(
             x=alt.X(
                 shorthand=x_axis,
-                sort=get_content_types(),
+                sort=get_content_types() + date_submitted_month_sorted_order,  # hacky, but whatever
                 axis=alt.Axis(
                     labelAngle=-45,
                     labelPadding=5,
