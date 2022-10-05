@@ -81,7 +81,7 @@ def check_for_assigned_assets() -> None:
     """Check for this user's assigned assets while displaying a ``st.spinner``."""
     with st.spinner(text='Checking for assigned assets...'):
         if not st.session_state['username']:
-            st.session_state.assigned_user_assets = list()
+            st.session_state.assigned_user_assets = None
         elif not isinstance(st.session_state.get('assigned_user_assets'), list):
             st.session_state.assigned_user_assets = get_assigned_user_assets(
                 username=st.session_state['username'],
@@ -99,7 +99,10 @@ def fetch_asset_data() -> None:
     """
     check_for_assigned_assets()
 
-    if len(st.session_state.assigned_user_assets) > 0:
+    if (
+        isinstance(st.session_state.get('assigned_user_assets'), list)
+        and len(st.session_state.assigned_user_assets) > 0
+    ):
         with st.spinner(text='Fetching the latest asset data...'):
             if not isinstance(st.session_state.get('asset_tracker_df'), pd.DataFrame):
                 asset_tracker_df = (

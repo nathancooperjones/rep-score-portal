@@ -24,7 +24,10 @@ def page_seven() -> None:
     ):
         check_for_assigned_assets()
 
-        if len(st.session_state.assigned_user_assets) > 0:
+        if (
+            isinstance(st.session_state.get('assigned_user_assets'), list)
+            and len(st.session_state.assigned_user_assets) > 0
+        ):
             with st.spinner(text='Fetching the latest rep score data...'):
                 data_explorer_df = (
                     read_google_spreadsheet(
