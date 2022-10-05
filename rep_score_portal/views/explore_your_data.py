@@ -65,6 +65,8 @@ def page_seven() -> None:
         # hacky, I know, but easier to work with down the line when it comes to filtering input
         data_explorer_df['BASELINE'] = data_explorer_df['Baseline'].copy()
 
+        data_explorer_df['Date Submitted'] = pd.to_datetime(data_explorer_df['Date Submitted'])
+
         data_explorer_df_no_duplicates = (
             data_explorer_df
             .sort_values(by=['Date Submitted'])
@@ -440,7 +442,8 @@ def display_qualitative_notes() -> None:
     notes_df = st.session_state.data_explorer_df_no_duplicates.copy()
 
     notes_df = notes_df.drop_duplicates(
-        subset=['Ad Name', 'Brand', 'Product', 'Content Type', 'Date Submitted', 'Qual Notes']
+        subset=['Ad Name', 'Brand', 'Product', 'Content Type', 'Date Submitted', 'Qual Notes'],
+        keep='last',
     )
 
     for _, row in notes_df.iterrows():
@@ -492,7 +495,6 @@ def plot_rep_score_progress() -> None:
     ]]
 
     progress_df['Ad Total Score'] = progress_df['Ad Total Score'].astype(float)
-    progress_df['Date Submitted'] = pd.to_datetime(progress_df['Date Submitted'])
     progress_df['Date Submitted (Month)'] = (
         progress_df['Date Submitted']
         .dt

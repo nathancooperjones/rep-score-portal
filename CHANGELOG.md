@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
  - "No Codeable Characters" filtered out of the Rep Score Progress plots
  - "Logout" button sets up for a successful next login done in the same session
- - Date sort for Rep Score Progress plots
+ - Date sort for Rep Score Progress plots and Qualitative Notes
 
 # [0.11.1] - 2022-09-29
 ### Fixed
