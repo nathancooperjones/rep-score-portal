@@ -7,6 +7,23 @@ import gspread_pandas
 import pandas as pd
 import streamlit as st
 
+from config import (
+    AGENCY_CREATIVE_LABEL_1,
+    AGENCY_CREATIVE_LABEL_2,
+    AGENCY_CREATIVE_LABEL_3,
+    AGENCY_CREATIVE_LABEL_4,
+    AGENCY_CREATIVE_LABEL_5,
+    DEI_CREATIVE_REVIEWS_LABEL_1,
+    DEI_CREATIVE_REVIEWS_LABEL_2,
+    DEI_CREATIVE_REVIEWS_LABEL_3,
+    DEI_CREATIVE_REVIEWS_LABEL_4,
+    DEI_CREATIVE_REVIEWS_LABEL_5,
+    MARKETING_LABEL_1,
+    MARKETING_LABEL_2,
+    MARKETING_LABEL_3,
+    MARKETING_LABEL_4,
+)
+
 
 def read_google_spreadsheet(spread: str, sheet: int = 0) -> pd.DataFrame:
     """
@@ -104,9 +121,20 @@ def append_new_row_in_asset_tracker(
     creative_brief_filename: str,
     asset_filename: str,
     file_uploaded_to_s3: bool,
-    marketing_notes: str,
-    agency_creative_notes: str,
-    creative_review_notes: str,
+    marketing_1_notes: str,
+    marketing_2_notes: str,
+    marketing_3_notes: str,
+    marketing_4_notes: str,
+    agency_creative_1_notes: str,
+    agency_creative_2_notes: str,
+    agency_creative_3_notes: str,
+    agency_creative_4_notes: str,
+    agency_creative_5_notes: str,
+    creative_review_1_notes: str,
+    creative_review_2_notes: str,
+    creative_review_3_notes: str,
+    creative_review_4_notes: str,
+    creative_review_5_notes: str,
     notes: str,
 ) -> None:
     """
@@ -124,9 +152,20 @@ def append_new_row_in_asset_tracker(
     point_of_contact: str
     creative_brief_filename: str
     asset_filename: str
-    marketing_notes: str
-    agency_creative_notes: str
-    creative_review_notes: str
+    marketing_1_notes: str
+    marketing_2_notes: str
+    marketing_3_notes: str
+    marketing_4_notes: str
+    agency_creative_1_notes: str
+    agency_creative_2_notes: str
+    agency_creative_3_notes: str
+    agency_creative_4_notes: str
+    agency_creative_5_notes: str
+    creative_review_1_notes: str
+    creative_review_2_notes: str
+    creative_review_3_notes: str
+    creative_review_4_notes: str
+    creative_review_5_notes: str
     notes: str
 
     Side Effects
@@ -158,9 +197,20 @@ def append_new_row_in_asset_tracker(
                 'Asset Filename': asset_filename,
                 'File Uploaded to S3': file_uploaded_to_s3,
                 'Date Submitted': datetime.today().strftime('%m/%d/%Y'),
-                'Marketing Brief Notes': marketing_notes,
-                'Agency Creative Brief Notes': agency_creative_notes,
-                'Creative Reviews Notes': creative_review_notes,
+                MARKETING_LABEL_1: marketing_1_notes,
+                MARKETING_LABEL_2: marketing_2_notes,
+                MARKETING_LABEL_3: marketing_3_notes,
+                MARKETING_LABEL_4: marketing_4_notes,
+                AGENCY_CREATIVE_LABEL_1: agency_creative_1_notes,
+                AGENCY_CREATIVE_LABEL_2: agency_creative_2_notes,
+                AGENCY_CREATIVE_LABEL_3: agency_creative_3_notes,
+                AGENCY_CREATIVE_LABEL_4: agency_creative_4_notes,
+                AGENCY_CREATIVE_LABEL_5: agency_creative_5_notes,
+                DEI_CREATIVE_REVIEWS_LABEL_1: creative_review_1_notes,
+                DEI_CREATIVE_REVIEWS_LABEL_2: creative_review_2_notes,
+                DEI_CREATIVE_REVIEWS_LABEL_3: creative_review_3_notes,
+                DEI_CREATIVE_REVIEWS_LABEL_4: creative_review_4_notes,
+                DEI_CREATIVE_REVIEWS_LABEL_5: creative_review_5_notes,
                 'Notes': notes,
             }
         ],

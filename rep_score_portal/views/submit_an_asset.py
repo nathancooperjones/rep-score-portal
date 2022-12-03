@@ -1,14 +1,32 @@
 import pandas as pd
 import streamlit as st
 
+from config import (
+    AGENCY_CREATIVE_LABEL_1,
+    AGENCY_CREATIVE_LABEL_2,
+    AGENCY_CREATIVE_LABEL_3,
+    AGENCY_CREATIVE_LABEL_4,
+    AGENCY_CREATIVE_LABEL_5,
+    DEI_CREATIVE_REVIEWS_LABEL_1,
+    DEI_CREATIVE_REVIEWS_LABEL_2,
+    DEI_CREATIVE_REVIEWS_LABEL_3,
+    DEI_CREATIVE_REVIEWS_LABEL_4,
+    DEI_CREATIVE_REVIEWS_LABEL_5,
+    MARKETING_LABEL_1,
+    MARKETING_LABEL_2,
+    MARKETING_LABEL_3,
+    MARKETING_LABEL_4,
+)
 from input_output import append_new_row_in_asset_tracker, upload_file_to_s3
 from utils import (
     display_progress_bar_asset_tracker,
     edit_colors_of_selectbox,
+    edit_colors_of_text_area,
     fetch_asset_data,
     get_content_types,
     get_countries_list,
     insert_line_break,
+    remove_elements_from_progress_list,
 )
 
 
@@ -95,6 +113,13 @@ def page_one() -> None:
 
     st.markdown('## Start the Process')
 
+    if st.button('← Previous Page'):
+        st.session_state.asset_information.pop('seen_asset_before', None)
+
+        remove_elements_from_progress_list(pages_to_remove=['page_zero_complete'])
+
+        st.experimental_rerun()
+
     asset_name = st.text_input(
         label='Asset Name',
         value=st.session_state.asset_information['name'],
@@ -151,7 +176,7 @@ def page_one() -> None:
 
     button_label = 'Continue to Step 2'
 
-    if st.session_state.asset_information['seen_asset_before']:
+    if st.session_state.asset_information.get('seen_asset_before'):
         button_label = 'Skip ahead to Step 5'
 
     if st.button(button_label):
@@ -187,7 +212,7 @@ def page_one() -> None:
 
         st.session_state.progress.append('page_one_complete')
 
-        if st.session_state.asset_information['seen_asset_before']:
+        if st.session_state.asset_information.get('seen_asset_before'):
             st.session_state.progress.append('page_two_complete')
             st.session_state.progress.append('page_three_complete')
             st.session_state.progress.append('page_four_complete')
@@ -201,33 +226,44 @@ def page_two() -> None:
 
     st.markdown('## Marketing Brief')
 
-    st.caption('Please check all boxes below or provide notes to continue')
+    edit_colors_of_text_area()
 
-    marketing_1 = st.checkbox(
-        'DE&I can be reflected in our High Value Communities or audience definitions'
-    )
-    marketing_2 = st.checkbox(
-        'All additional growth audience(s) are considered, or prioritized'
-    )
-    marketing_3 = st.checkbox(
-        'We have the opportunity to personalize our work to different DE&I communities'
-    )
-    marketing_4 = st.checkbox(
-        'This project (or business opportunity) intersects with social issues'
-    )
+    if st.button('← Previous Page'):
+        remove_elements_from_progress_list(
+            pages_to_remove=[
+                'page_one_complete',
+                'page_two_complete',
+                'page_three_complete',
+                'page_four_complete',
+            ],
+        )
 
-    marketing_notes = st.text_area(label='Notes on Marketing Brief')
+        st.experimental_rerun()
+
+    marketing_1 = st.text_area(label=MARKETING_LABEL_1, help='')
+    marketing_2 = st.text_area(label=MARKETING_LABEL_2, help='')
+    marketing_3 = st.text_area(label=MARKETING_LABEL_3, help='')
+    marketing_4 = st.text_area(label=MARKETING_LABEL_4, help='')
+
+    notes = st.text_area(
+        label='Notes',
+        value=st.session_state.asset_information.get('notes', ''),
+        height=200,
+    )
 
     if (
-        (
-            marketing_1
-            and marketing_2
-            and marketing_3
-            and marketing_4
-        ) or marketing_notes
+        marketing_1
+        or marketing_2
+        or marketing_3
+        or marketing_4
+        or notes
     ):
         if st.button('Continue to Step 3'):
-            st.session_state.asset_information['marketing_notes'] = marketing_notes
+            st.session_state.asset_information['marketing_1'] = marketing_1
+            st.session_state.asset_information['marketing_2'] = marketing_2
+            st.session_state.asset_information['marketing_3'] = marketing_3
+            st.session_state.asset_information['marketing_4'] = marketing_4
+            st.session_state.asset_information['notes'] = notes
 
             st.session_state.progress.append('page_two_complete')
             st.experimental_rerun()
@@ -239,38 +275,40 @@ def page_three() -> None:
 
     st.markdown('## Agency Creative Brief')
 
-    st.caption('Please check all boxes below or provide notes to continue')
+    edit_colors_of_text_area()
 
-    agency_creative_1 = st.checkbox(
-        'We have considered where we are sourcing data and inspiration for this project'
-    )
-    agency_creative_2 = st.checkbox(
-        'We are getting a full picture of the audience, getting a more diverse perspective'
-    )
-    agency_creative_3 = st.checkbox(
-        'We dispel any relevant stereotypes about the audience'
-    )
-    agency_creative_4 = st.checkbox(
-        'We are gaining input or inspiration from the audience'
-    )
-    agency_creative_5 = st.checkbox(
-        'Our creative references and thought starters are as diverse, equal, and inclusive as the '
-        'work we hope to make'
-    )
+    if st.button('← Previous Page'):
+        remove_elements_from_progress_list(pages_to_remove=['page_two_complete'])
 
-    agency_creative_notes = st.text_area(label='Notes on Agency Creative')
+        st.experimental_rerun()
+
+    agency_creative_1 = st.text_area(label=AGENCY_CREATIVE_LABEL_1, help='')
+    agency_creative_2 = st.text_area(label=AGENCY_CREATIVE_LABEL_2, help='')
+    agency_creative_3 = st.text_area(label=AGENCY_CREATIVE_LABEL_3, help='')
+    agency_creative_4 = st.text_area(label=AGENCY_CREATIVE_LABEL_4, help='')
+    agency_creative_5 = st.text_area(label=AGENCY_CREATIVE_LABEL_5, help='')
+
+    notes = st.text_area(
+        label='Notes',
+        value=st.session_state.asset_information.get('notes', ''),
+        height=200,
+    )
 
     if (
-        (
-            agency_creative_1
-            and agency_creative_2
-            and agency_creative_3
-            and agency_creative_4
-            and agency_creative_5
-        ) or agency_creative_notes
+        agency_creative_1
+        or agency_creative_2
+        or agency_creative_3
+        or agency_creative_4
+        or agency_creative_5
+        or notes
     ):
         if st.button('Continue to Step 4'):
-            st.session_state.asset_information['agency_creative_notes'] = agency_creative_notes
+            st.session_state.asset_information['agency_creative_1'] = agency_creative_1
+            st.session_state.asset_information['agency_creative_2'] = agency_creative_2
+            st.session_state.asset_information['agency_creative_3'] = agency_creative_3
+            st.session_state.asset_information['agency_creative_4'] = agency_creative_4
+            st.session_state.asset_information['agency_creative_5'] = agency_creative_5
+            st.session_state.asset_information['notes'] = notes
 
             st.session_state.progress.append('page_three_complete')
             st.experimental_rerun()
@@ -282,39 +320,40 @@ def page_four() -> None:
 
     st.markdown('## DE&I Discussion in the Creative Reviews')
 
-    st.caption('Please check all boxes below or provide notes to continue')
+    edit_colors_of_text_area()
 
-    creative_review_1 = st.checkbox(
-        'We can reasonably make the work more inclusive, equitable, and representative at this '
-        'stage'
-    )
-    creative_review_2 = st.checkbox(
-        'The work is not reinforcing negative stereotypes'
-    )
-    creative_review_3 = st.checkbox(
-        'There are no cultural references we are misappropriating'
-    )
-    creative_review_4 = st.checkbox(
-        'We are inclusive with regard to age, body type, disability, ethnicity, gender, and sexual '
-        'orientation'
-    )
-    creative_review_5 = st.checkbox(
-        'We, and our clients, made choices that lead to more inclusive and equitable work'
-    )
+    if st.button('← Previous Page'):
+        remove_elements_from_progress_list(pages_to_remove=['page_three_complete'])
 
-    creative_review_notes = st.text_area(label='Notes on Creative Reviews')
+        st.experimental_rerun()
+
+    creative_review_1 = st.text_area(label=DEI_CREATIVE_REVIEWS_LABEL_1, help='')
+    creative_review_2 = st.text_area(label=DEI_CREATIVE_REVIEWS_LABEL_2, help='')
+    creative_review_3 = st.text_area(label=DEI_CREATIVE_REVIEWS_LABEL_3, help='')
+    creative_review_4 = st.text_area(label=DEI_CREATIVE_REVIEWS_LABEL_4, help='')
+    creative_review_5 = st.text_area(label=DEI_CREATIVE_REVIEWS_LABEL_5, help='')
+
+    notes = st.text_area(
+        label='Notes',
+        value=st.session_state.asset_information.get('notes', ''),
+        height=200,
+    )
 
     if (
-        (
-            creative_review_1
-            and creative_review_2
-            and creative_review_3
-            and creative_review_4
-            and creative_review_5
-        ) or creative_review_notes
+        creative_review_1
+        or creative_review_2
+        or creative_review_3
+        or creative_review_4
+        or creative_review_5
+        or notes
     ):
         if st.button('Continue to Step 5'):
-            st.session_state.asset_information['creative_review_notes'] = creative_review_notes
+            st.session_state.asset_information['creative_review_1'] = creative_review_1
+            st.session_state.asset_information['creative_review_2'] = creative_review_2
+            st.session_state.asset_information['creative_review_3'] = creative_review_3
+            st.session_state.asset_information['creative_review_4'] = creative_review_4
+            st.session_state.asset_information['creative_review_5'] = creative_review_5
+            st.session_state.asset_information['notes'] = notes
 
             st.session_state.progress.append('page_four_complete')
             st.experimental_rerun()
@@ -325,6 +364,13 @@ def page_five() -> None:
     st.image('../images/Stage 5.png', use_column_width=True)
 
     st.markdown('## Upload Asset')
+
+    edit_colors_of_text_area()
+
+    if st.button('← Previous Page'):
+        remove_elements_from_progress_list(pages_to_remove=['page_four_complete'])
+
+        st.experimental_rerun()
 
     st.write(
         'Use this portal to upload your content (advertisement, storyboard, working cut, '
@@ -364,7 +410,11 @@ def page_five() -> None:
         min_value=1,
     )
 
-    asset_notes = st.text_area(label='Notes', height=200)
+    notes = st.text_area(
+        label='Notes',
+        value=st.session_state.asset_information.get('notes', ''),
+        height=200,
+    )
 
     if uploaded_file or asset_url:
         if st.button('Upload!'):
@@ -374,7 +424,7 @@ def page_five() -> None:
 
             st.session_state.asset_information['content_type'] = asset_content_type
             st.session_state.asset_information['version'] = asset_version
-            st.session_state.asset_information['notes'] = asset_notes
+            st.session_state.asset_information['notes'] = notes
 
             if uploaded_file:
                 with st.spinner(text='Uploading asset...'):
@@ -403,13 +453,20 @@ def page_five() -> None:
                     ),
                     asset_filename=asset_filename,
                     file_uploaded_to_s3=file_uploaded_to_s3,
-                    marketing_notes=st.session_state.asset_information.get('marketing_notes', ''),
-                    agency_creative_notes=(
-                        st.session_state.asset_information.get('agency_creative_notes', '')
-                    ),
-                    creative_review_notes=(
-                        st.session_state.asset_information.get('creative_review_notes', '')
-                    ),
+                    marketing_1_notes=st.session_state.asset_information['marketing_1'],
+                    marketing_2_notes=st.session_state.asset_information['marketing_2'],
+                    marketing_3_notes=st.session_state.asset_information['marketing_3'],
+                    marketing_4_notes=st.session_state.asset_information['marketing_4'],
+                    agency_creative_1_notes=st.session_state.asset_information['agency_creative_1'],
+                    agency_creative_2_notes=st.session_state.asset_information['agency_creative_2'],
+                    agency_creative_3_notes=st.session_state.asset_information['agency_creative_3'],
+                    agency_creative_4_notes=st.session_state.asset_information['agency_creative_4'],
+                    agency_creative_5_notes=st.session_state.asset_information['agency_creative_5'],
+                    creative_review_1_notes=st.session_state.asset_information['creative_review_1'],
+                    creative_review_2_notes=st.session_state.asset_information['creative_review_2'],
+                    creative_review_3_notes=st.session_state.asset_information['creative_review_3'],
+                    creative_review_4_notes=st.session_state.asset_information['creative_review_4'],
+                    creative_review_5_notes=st.session_state.asset_information['creative_review_5'],
                     notes=st.session_state.asset_information['notes'],
                 )
 
@@ -444,24 +501,9 @@ def page_six() -> None:
         progress_value=(1/3),
     )
 
-    marketing_notes = (
-        st.session_state.asset_information['marketing_notes']
-        if st.session_state.asset_information.get('marketing_notes')
-        else 'N/A'
-    )
-    agency_creative_notes = (
-        st.session_state.asset_information['agency_creative_notes']
-        if st.session_state.asset_information.get('agency_creative_notes')
-        else 'N/A'
-    )
-    creative_review_notes = (
-        st.session_state.asset_information['creative_review_notes']
-        if st.session_state.asset_information.get('creative_review_notes')
-        else 'N/A'
-    )
     upload_notes = (
         st.session_state.asset_information['notes']
-        if st.session_state.asset_information.get('notes')
+        if st.session_state.asset_information.get('notes', '')
         else 'N/A'
     )
 
@@ -480,20 +522,7 @@ def page_six() -> None:
 
     st.markdown(progress_bar_css, unsafe_allow_html=True)
 
-    st.write("""
-        Notes submitted:
-
-        * **Marketing Brief Notes**:
-    """)
-    st.text(marketing_notes)
-
-    st.write('* **Agency Creative Brief Notes**:')
-    st.text(agency_creative_notes)
-
-    st.write('* **Creative Reviews Notes**:')
-    st.text(creative_review_notes)
-
-    st.write('* **Upload Notes**:')
+    st.write('Notes submitted:')
     st.text(upload_notes)
 
     insert_line_break()

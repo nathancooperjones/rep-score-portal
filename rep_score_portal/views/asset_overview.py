@@ -1,4 +1,5 @@
 import pandas as pd
+import st_aggrid
 import streamlit as st
 
 from utils import (
@@ -15,6 +16,75 @@ def home_page() -> None:
 
     fetch_asset_data()
 
+    tab_1, tab_2 = st.tabs(['Asset Information', 'Progress of All Available Assets'])
+
+    with tab_1:
+        view_asset_information()
+    with tab_2:
+        view_progress_of_all_available_assets()
+
+    if not st.session_state.get('hacky_experimental_rerun_for_asset_overview_first_page_load'):
+        st.session_state.hacky_experimental_rerun_for_asset_overview_first_page_load = True
+        st.experimental_rerun()
+
+
+def view_asset_information() -> None:
+    """View all details and uploaded notes about a specific version of an assigned asset."""
+    asset_selected = st.selectbox(
+        label='Select values to display',
+        options=sorted(st.session_state.asset_tracker_df['Asset Name'].unique()),
+    )
+
+    if asset_selected:
+        df_to_display = st.session_state.asset_tracker_df[
+            st.session_state.asset_tracker_df['Asset Name'] == asset_selected
+        ]
+
+        cols_to_display = [
+            'Asset Name',
+            'Date Submitted',
+            'Username',
+            'Point of Contact Email',
+            'Status',
+            'Brand',
+            'Product',
+            'Region(s) This Creative Will Air In',
+            'Content Type',
+            'Version',
+        ]
+
+        grid_options = st_aggrid.grid_options_builder.GridOptionsBuilder.from_dataframe(
+            dataframe=df_to_display[cols_to_display],
+        )
+        grid_options.configure_selection(selection_mode='single')
+        grid_options = grid_options.build()
+
+        # random, but... ¯\_(ツ)_/¯
+        height = 41 + (len(df_to_display) * 28)
+
+        st.caption('Click a row below to view more details about that asset.')
+
+        data = st_aggrid.AgGrid(
+            data=df_to_display,
+            gridOptions=grid_options,
+            update_mode=st_aggrid.shared.GridUpdateMode.SELECTION_CHANGED,
+            height=height,
+        )
+
+        if len(data['selected_rows']) > 0:
+            row_selected = data['selected_rows'][0]
+
+            # TODO: finish then remove this line
+            st.dataframe(pd.DataFrame([row_selected]))
+
+            st.markdown(f'**Asset Name**: {row_selected["Asset Name"]}')
+
+            st.markdown('**Notes**:')
+            st.markdown('> ' + row_selected['Notes'])
+
+
+def view_progress_of_all_available_assets() -> None:
+    """View coding progress of all pending and assigned uploaded assets."""
     if st.session_state.asset_information.get('name'):
         st.markdown('### In Progress Assets')
 
