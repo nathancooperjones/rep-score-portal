@@ -2,6 +2,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.12.0] - 2022-12-04
+### Added
+ - Page to view the uploaded notes and details about an assigned asset
+ - Ability to go back to a previous page when submitting a new asset
+### Changed
+ - Added ability to add more fleshed out notes to each of the DEI Checklist questions, rather than just selecting a checkbox
+ - Color of text areas for notes during the asset submission screens
+ - Upgraded version of Streamlit used to ``1.15.2``
+
 # [0.11.2] - 2022-10-05
 ### Fixed
  - "No Codeable Characters" filtered out of the Rep Score Progress plots

@@ -50,7 +50,7 @@ def view_asset_information() -> None:
     """View all details and uploaded notes about a specific version of an assigned asset."""
     # TODO: change the ``label``
     asset_selected = st.selectbox(
-        label='Select values to display',
+        label="Select an asset whose details you'd like to view",
         options=sorted(st.session_state.asset_tracker_df['Asset Name'].unique()),
     )
 
