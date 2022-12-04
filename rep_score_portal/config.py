@@ -5,7 +5,7 @@ MARKETING_LABEL_2 = (
     'Should additional growth audience(s) be considered, or prioritized?'
 )
 MARKETING_LABEL_3 = (
-    'Do we have the opportunity to personalize our work to different DE&I communities? '
+    'Do we have the opportunity to personalize our work to different DE&I communities?'
 )
 MARKETING_LABEL_4 = (
     'Does this project (or business opportunity) intersect with social issues?'

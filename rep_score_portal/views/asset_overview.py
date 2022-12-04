@@ -1,7 +1,25 @@
+import warnings
+
 import pandas as pd
 import st_aggrid
 import streamlit as st
 
+from config import (
+    AGENCY_CREATIVE_LABEL_1,
+    AGENCY_CREATIVE_LABEL_2,
+    AGENCY_CREATIVE_LABEL_3,
+    AGENCY_CREATIVE_LABEL_4,
+    AGENCY_CREATIVE_LABEL_5,
+    DEI_CREATIVE_REVIEWS_LABEL_1,
+    DEI_CREATIVE_REVIEWS_LABEL_2,
+    DEI_CREATIVE_REVIEWS_LABEL_3,
+    DEI_CREATIVE_REVIEWS_LABEL_4,
+    DEI_CREATIVE_REVIEWS_LABEL_5,
+    MARKETING_LABEL_1,
+    MARKETING_LABEL_2,
+    MARKETING_LABEL_3,
+    MARKETING_LABEL_4,
+)
 from utils import (
     display_progress_bar_asset_tracker,
     edit_colors_of_selectbox,
@@ -30,6 +48,7 @@ def home_page() -> None:
 
 def view_asset_information() -> None:
     """View all details and uploaded notes about a specific version of an assigned asset."""
+    # TODO: change the ``label``
     asset_selected = st.selectbox(
         label='Select values to display',
         options=sorted(st.session_state.asset_tracker_df['Asset Name'].unique()),
@@ -64,12 +83,16 @@ def view_asset_information() -> None:
 
         st.caption('Click a row below to view more details about that asset.')
 
-        data = st_aggrid.AgGrid(
-            data=df_to_display,
-            gridOptions=grid_options,
-            update_mode=st_aggrid.shared.GridUpdateMode.SELECTION_CHANGED,
-            height=height,
-        )
+        with warnings.catch_warnings():
+            # oof
+            warnings.filterwarnings('ignore', module=r'.*st_aggrid*')
+
+            data = st_aggrid.AgGrid(
+                data=df_to_display,
+                gridOptions=grid_options,
+                update_mode=st_aggrid.shared.GridUpdateMode.SELECTION_CHANGED,
+                height=height,
+            )
 
         if len(data['selected_rows']) > 0:
             row_selected = data['selected_rows'][0]
@@ -77,10 +100,54 @@ def view_asset_information() -> None:
             # TODO: finish then remove this line
             st.dataframe(pd.DataFrame([row_selected]))
 
-            st.markdown(f'**Asset Name**: {row_selected["Asset Name"]}')
+            non_note_cols_to_display = [
+                # 'Asset Name',
+                'Username',
+                'Status',
+                'Brand',
+                'Product',
+                'Region(s) This Creative Will Air In',
+                'Content Type',
+                'Version',
+                'Point of Contact Email',
+                # 'Creative Brief Filename',
+                # 'Asset Filename',
+                # 'File Uploaded to S3',
+                'Date Submitted',
+            ]
 
-            st.markdown('**Notes**:')
-            st.markdown('> ' + row_selected['Notes'])
+            note_cols_to_display = [
+                MARKETING_LABEL_1,
+                MARKETING_LABEL_2,
+                MARKETING_LABEL_3,
+                MARKETING_LABEL_4,
+                AGENCY_CREATIVE_LABEL_1,
+                AGENCY_CREATIVE_LABEL_2,
+                AGENCY_CREATIVE_LABEL_3,
+                AGENCY_CREATIVE_LABEL_4,
+                AGENCY_CREATIVE_LABEL_5,
+                DEI_CREATIVE_REVIEWS_LABEL_1,
+                DEI_CREATIVE_REVIEWS_LABEL_2,
+                DEI_CREATIVE_REVIEWS_LABEL_3,
+                DEI_CREATIVE_REVIEWS_LABEL_4,
+                DEI_CREATIVE_REVIEWS_LABEL_5,
+                'Notes',
+            ]
+
+            st.markdown(f'### {row_selected["Asset Name"]}')
+
+            for col in non_note_cols_to_display:
+                st.markdown(f'**{col}**: {row_selected[col]}')
+
+            insert_line_break()
+
+            for col in note_cols_to_display:
+                st.markdown(f'**{col if col != "Notes" else "Notes:"}**')
+
+                if row_selected[col] and row_selected[col] != 'N/A':
+                    st.markdown(f'> {row_selected[col]}')
+                else:
+                    st.markdown('> N/A')
 
 
 def view_progress_of_all_available_assets() -> None:
