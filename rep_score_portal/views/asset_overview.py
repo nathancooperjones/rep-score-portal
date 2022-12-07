@@ -48,28 +48,33 @@ def home_page() -> None:
 
 def view_asset_information() -> None:
     """View all details and uploaded notes about a specific version of an assigned asset."""
-    # TODO: change the ``label``
     asset_selected = st.selectbox(
         label="Select an asset whose details you'd like to view",
-        options=sorted(st.session_state.asset_tracker_df['Asset Name'].unique()),
+        options=['-'] + sorted(st.session_state.asset_tracker_df['Asset Name'].unique()),
     )
 
-    if asset_selected:
-        df_to_display = st.session_state.asset_tracker_df[
-            st.session_state.asset_tracker_df['Asset Name'] == asset_selected
-        ]
+    if asset_selected and asset_selected != '-':
+        df_to_display = (
+            st.session_state.asset_tracker_df[
+                st.session_state.asset_tracker_df['Asset Name'] == asset_selected
+            ]
+            .rename(columns={'Username': 'Submitted By'})
+        )
+
+        if len(df_to_display) == 0:
+            st.error('Hmm... something went wrong here. Sorry, please refresh and try again.')
+            st.stop()
 
         cols_to_display = [
             'Asset Name',
             'Date Submitted',
-            'Username',
-            'Point of Contact Email',
+            'Version',
+            'Submitted By',
             'Status',
             'Brand',
             'Product',
             'Region(s) This Creative Will Air In',
             'Content Type',
-            'Version',
         ]
 
         grid_options = st_aggrid.grid_options_builder.GridOptionsBuilder.from_dataframe(
@@ -97,22 +102,14 @@ def view_asset_information() -> None:
         if len(data['selected_rows']) > 0:
             row_selected = data['selected_rows'][0]
 
-            # TODO: finish then remove this line
-            st.dataframe(pd.DataFrame([row_selected]))
-
             non_note_cols_to_display = [
-                # 'Asset Name',
-                'Username',
-                'Status',
+                'Submitted By',
+                'Version',
                 'Brand',
                 'Product',
                 'Region(s) This Creative Will Air In',
                 'Content Type',
-                'Version',
                 'Point of Contact Email',
-                # 'Creative Brief Filename',
-                # 'Asset Filename',
-                # 'File Uploaded to S3',
                 'Date Submitted',
             ]
 
@@ -134,20 +131,20 @@ def view_asset_information() -> None:
                 'Notes',
             ]
 
-            st.markdown(f'### {row_selected["Asset Name"]}')
+            st.markdown(body=f'### {row_selected["Asset Name"]}')
 
             for col in non_note_cols_to_display:
-                st.markdown(f'**{col}**: {row_selected[col]}')
+                st.markdown(body=f'**{col}**: {row_selected[col]}')
 
             insert_line_break()
 
             for col in note_cols_to_display:
-                st.markdown(f'**{col if col != "Notes" else "Notes:"}**')
+                st.markdown(body=f'**{col if col != "Notes" else "Notes:"}**')
 
                 if row_selected[col] and row_selected[col] != 'N/A':
-                    st.markdown(f'> {row_selected[col]}')
+                    st.text(body=f'{row_selected[col]}')
                 else:
-                    st.markdown('> N/A')
+                    st.text(body='N/A')
 
 
 def view_progress_of_all_available_assets() -> None:

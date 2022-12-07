@@ -9,8 +9,11 @@ secrets.toml
 # ``ssl-proxy`` binary
 ssl-proxy-linux-amd64
 
-# MacOS generated files
+# MacOS-generated files
 .DS_Store
+
+# VSCode-generated files
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -27,6 +27,7 @@ from utils import (
     get_countries_list,
     insert_line_break,
     remove_elements_from_progress_list,
+    reset_session_state_asset_information,
 )
 
 
@@ -47,8 +48,7 @@ def page_zero() -> None:
         ],
         help=(
             'If you have uploaded a past version of the asset to the portal before, we can use the '
-            "details you've already entered to auto-fill and skip much of the asset submission "
-            'process!'
+            "details you've already entered to auto-fill much of the asset submission process!"
         ),
     )
 
@@ -96,6 +96,52 @@ def page_zero() -> None:
                 selected_asset_df['Creative Brief Filename']
             )
             st.session_state.asset_information['version'] = int(selected_asset_df['Version']) + 1
+
+            st.session_state.asset_information['marketing_1'] = (
+                selected_asset_df[MARKETING_LABEL_1]
+            )
+            st.session_state.asset_information['marketing_2'] = (
+                selected_asset_df[MARKETING_LABEL_2]
+            )
+            st.session_state.asset_information['marketing_3'] = (
+                selected_asset_df[MARKETING_LABEL_3]
+            )
+            st.session_state.asset_information['marketing_4'] = (
+                selected_asset_df[MARKETING_LABEL_4]
+            )
+            st.session_state.asset_information['agency_creative_1'] = (
+                selected_asset_df[AGENCY_CREATIVE_LABEL_1]
+            )
+            st.session_state.asset_information['agency_creative_2'] = (
+                selected_asset_df[AGENCY_CREATIVE_LABEL_2]
+            )
+            st.session_state.asset_information['agency_creative_3'] = (
+                selected_asset_df[AGENCY_CREATIVE_LABEL_3]
+            )
+            st.session_state.asset_information['agency_creative_4'] = (
+                selected_asset_df[AGENCY_CREATIVE_LABEL_4]
+            )
+            st.session_state.asset_information['agency_creative_5'] = (
+                selected_asset_df[AGENCY_CREATIVE_LABEL_5]
+            )
+            st.session_state.asset_information['creative_review_1'] = (
+                selected_asset_df[DEI_CREATIVE_REVIEWS_LABEL_1]
+            )
+            st.session_state.asset_information['creative_review_2'] = (
+                selected_asset_df[DEI_CREATIVE_REVIEWS_LABEL_2]
+            )
+            st.session_state.asset_information['creative_review_3'] = (
+                selected_asset_df[DEI_CREATIVE_REVIEWS_LABEL_3]
+            )
+            st.session_state.asset_information['creative_review_4'] = (
+                selected_asset_df[DEI_CREATIVE_REVIEWS_LABEL_4]
+            )
+            st.session_state.asset_information['creative_review_5'] = (
+                selected_asset_df[DEI_CREATIVE_REVIEWS_LABEL_5]
+            )
+            st.session_state.asset_information['notes'] = (
+                selected_asset_df['Notes']
+            )
 
             # post-processing - ensure every country entered is actually a country in the list
             st.session_state.asset_information['countries_airing'] = list(
@@ -176,9 +222,6 @@ def page_one() -> None:
 
     button_label = 'Continue to Step 2'
 
-    if st.session_state.asset_information.get('seen_asset_before'):
-        button_label = 'Skip ahead to Step 5'
-
     if st.button(button_label):
         if (
             not asset_name
@@ -212,11 +255,6 @@ def page_one() -> None:
 
         st.session_state.progress.append('page_one_complete')
 
-        if st.session_state.asset_information.get('seen_asset_before'):
-            st.session_state.progress.append('page_two_complete')
-            st.session_state.progress.append('page_three_complete')
-            st.session_state.progress.append('page_four_complete')
-
         st.experimental_rerun()
 
 
@@ -229,42 +267,46 @@ def page_two() -> None:
     edit_colors_of_text_area()
 
     if st.button('← Previous Page'):
-        remove_elements_from_progress_list(
-            pages_to_remove=[
-                'page_one_complete',
-                'page_two_complete',
-                'page_three_complete',
-                'page_four_complete',
-            ],
-        )
+        remove_elements_from_progress_list(pages_to_remove=['page_one_complete'])
 
         st.experimental_rerun()
 
-    marketing_1 = st.text_area(label=MARKETING_LABEL_1, help='')
-    marketing_2 = st.text_area(label=MARKETING_LABEL_2, help='')
-    marketing_3 = st.text_area(label=MARKETING_LABEL_3, help='')
-    marketing_4 = st.text_area(label=MARKETING_LABEL_4, help='')
+    st.session_state.asset_information['marketing_1'] = st.text_area(
+        label=MARKETING_LABEL_1,
+        value=st.session_state.asset_information.get('marketing_1', ''),
+        help='More info to come',
+    )
+    st.session_state.asset_information['marketing_2'] = st.text_area(
+        label=MARKETING_LABEL_2,
+        value=st.session_state.asset_information.get('marketing_2', ''),
+        help='More info to come',
+    )
+    st.session_state.asset_information['marketing_3'] = st.text_area(
+        label=MARKETING_LABEL_3,
+        value=st.session_state.asset_information.get('marketing_3', ''),
+        help='More info to come',
+    )
+    st.session_state.asset_information['marketing_4'] = st.text_area(
+        label=MARKETING_LABEL_4,
+        value=st.session_state.asset_information.get('marketing_4', ''),
+        help='More info to come',
+    )
 
-    notes = st.text_area(
+    st.session_state.asset_information['notes'] = st.text_area(
         label='Notes',
         value=st.session_state.asset_information.get('notes', ''),
         height=200,
     )
 
     if (
-        marketing_1
-        or marketing_2
-        or marketing_3
-        or marketing_4
-        or notes
+        st.session_state.asset_information['marketing_1']
+        or st.session_state.asset_information['marketing_2']
+        or st.session_state.asset_information['marketing_3']
+        or st.session_state.asset_information['marketing_4']
+        or st.session_state.asset_information['notes']
+        or st.session_state.asset_information['seen_asset_before']
     ):
         if st.button('Continue to Step 3'):
-            st.session_state.asset_information['marketing_1'] = marketing_1
-            st.session_state.asset_information['marketing_2'] = marketing_2
-            st.session_state.asset_information['marketing_3'] = marketing_3
-            st.session_state.asset_information['marketing_4'] = marketing_4
-            st.session_state.asset_information['notes'] = notes
-
             st.session_state.progress.append('page_two_complete')
             st.experimental_rerun()
 
@@ -282,34 +324,48 @@ def page_three() -> None:
 
         st.experimental_rerun()
 
-    agency_creative_1 = st.text_area(label=AGENCY_CREATIVE_LABEL_1, help='')
-    agency_creative_2 = st.text_area(label=AGENCY_CREATIVE_LABEL_2, help='')
-    agency_creative_3 = st.text_area(label=AGENCY_CREATIVE_LABEL_3, help='')
-    agency_creative_4 = st.text_area(label=AGENCY_CREATIVE_LABEL_4, help='')
-    agency_creative_5 = st.text_area(label=AGENCY_CREATIVE_LABEL_5, help='')
+    st.session_state.asset_information['agency_creative_1'] = st.text_area(
+        label=AGENCY_CREATIVE_LABEL_1,
+        value=st.session_state.asset_information.get('agency_creative_1', ''),
+        help='More info to come',
+    )
+    st.session_state.asset_information['agency_creative_2'] = st.text_area(
+        label=AGENCY_CREATIVE_LABEL_2,
+        value=st.session_state.asset_information.get('agency_creative_2', ''),
+        help='More info to come',
+    )
+    st.session_state.asset_information['agency_creative_3'] = st.text_area(
+        label=AGENCY_CREATIVE_LABEL_3,
+        value=st.session_state.asset_information.get('agency_creative_3', ''),
+        help='More info to come',
+    )
+    st.session_state.asset_information['agency_creative_4'] = st.text_area(
+        label=AGENCY_CREATIVE_LABEL_4,
+        value=st.session_state.asset_information.get('agency_creative_4', ''),
+        help='More info to come',
+    )
+    st.session_state.asset_information['agency_creative_5'] = st.text_area(
+        label=AGENCY_CREATIVE_LABEL_5,
+        value=st.session_state.asset_information.get('agency_creative_5', ''),
+        help='More info to come',
+    )
 
-    notes = st.text_area(
+    st.session_state.asset_information['notes'] = st.text_area(
         label='Notes',
         value=st.session_state.asset_information.get('notes', ''),
         height=200,
     )
 
     if (
-        agency_creative_1
-        or agency_creative_2
-        or agency_creative_3
-        or agency_creative_4
-        or agency_creative_5
-        or notes
+        st.session_state.asset_information['agency_creative_1']
+        or st.session_state.asset_information['agency_creative_2']
+        or st.session_state.asset_information['agency_creative_3']
+        or st.session_state.asset_information['agency_creative_4']
+        or st.session_state.asset_information['agency_creative_5']
+        or st.session_state.asset_information['notes']
+        or st.session_state.asset_information['seen_asset_before']
     ):
         if st.button('Continue to Step 4'):
-            st.session_state.asset_information['agency_creative_1'] = agency_creative_1
-            st.session_state.asset_information['agency_creative_2'] = agency_creative_2
-            st.session_state.asset_information['agency_creative_3'] = agency_creative_3
-            st.session_state.asset_information['agency_creative_4'] = agency_creative_4
-            st.session_state.asset_information['agency_creative_5'] = agency_creative_5
-            st.session_state.asset_information['notes'] = notes
-
             st.session_state.progress.append('page_three_complete')
             st.experimental_rerun()
 
@@ -327,34 +383,48 @@ def page_four() -> None:
 
         st.experimental_rerun()
 
-    creative_review_1 = st.text_area(label=DEI_CREATIVE_REVIEWS_LABEL_1, help='')
-    creative_review_2 = st.text_area(label=DEI_CREATIVE_REVIEWS_LABEL_2, help='')
-    creative_review_3 = st.text_area(label=DEI_CREATIVE_REVIEWS_LABEL_3, help='')
-    creative_review_4 = st.text_area(label=DEI_CREATIVE_REVIEWS_LABEL_4, help='')
-    creative_review_5 = st.text_area(label=DEI_CREATIVE_REVIEWS_LABEL_5, help='')
+    st.session_state.asset_information['creative_review_1'] = st.text_area(
+        label=DEI_CREATIVE_REVIEWS_LABEL_1,
+        value=st.session_state.asset_information.get('creative_review_1', ''),
+        help='More info to come',
+    )
+    st.session_state.asset_information['creative_review_2'] = st.text_area(
+        label=DEI_CREATIVE_REVIEWS_LABEL_2,
+        value=st.session_state.asset_information.get('creative_review_2', ''),
+        help='More info to come',
+    )
+    st.session_state.asset_information['creative_review_3'] = st.text_area(
+        label=DEI_CREATIVE_REVIEWS_LABEL_3,
+        value=st.session_state.asset_information.get('creative_review_3', ''),
+        help='More info to come',
+    )
+    st.session_state.asset_information['creative_review_4'] = st.text_area(
+        label=DEI_CREATIVE_REVIEWS_LABEL_4,
+        value=st.session_state.asset_information.get('creative_review_4', ''),
+        help='More info to come',
+    )
+    st.session_state.asset_information['creative_review_5'] = st.text_area(
+        label=DEI_CREATIVE_REVIEWS_LABEL_5,
+        value=st.session_state.asset_information.get('creative_review_5', ''),
+        help='More info to come',
+    )
 
-    notes = st.text_area(
+    st.session_state.asset_information['notes'] = st.text_area(
         label='Notes',
         value=st.session_state.asset_information.get('notes', ''),
         height=200,
     )
 
     if (
-        creative_review_1
-        or creative_review_2
-        or creative_review_3
-        or creative_review_4
-        or creative_review_5
-        or notes
+        st.session_state.asset_information['creative_review_1']
+        or st.session_state.asset_information['creative_review_2']
+        or st.session_state.asset_information['creative_review_3']
+        or st.session_state.asset_information['creative_review_4']
+        or st.session_state.asset_information['creative_review_5']
+        or st.session_state.asset_information['notes']
+        or st.session_state.asset_information['seen_asset_before']
     ):
         if st.button('Continue to Step 5'):
-            st.session_state.asset_information['creative_review_1'] = creative_review_1
-            st.session_state.asset_information['creative_review_2'] = creative_review_2
-            st.session_state.asset_information['creative_review_3'] = creative_review_3
-            st.session_state.asset_information['creative_review_4'] = creative_review_4
-            st.session_state.asset_information['creative_review_5'] = creative_review_5
-            st.session_state.asset_information['notes'] = notes
-
             st.session_state.progress.append('page_four_complete')
             st.experimental_rerun()
 

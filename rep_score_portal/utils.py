@@ -23,6 +23,21 @@ def reset_session_state_asset_information() -> None:
         'point_of_contact': '',
         'creative_brief_filename': '',
         'version': 1,
+        'marketing_1': '',
+        'marketing_2': '',
+        'marketing_3': '',
+        'marketing_4': '',
+        'agency_creative_1': '',
+        'agency_creative_2': '',
+        'agency_creative_3': '',
+        'agency_creative_4': '',
+        'agency_creative_5': '',
+        'creative_review_1': '',
+        'creative_review_2': '',
+        'creative_review_3': '',
+        'creative_review_4': '',
+        'creative_review_5': '',
+        'notes': '',
     }
 
 
@@ -104,9 +119,9 @@ def display_progress_bar_asset_tracker(
 
     """
     with st.expander(label=asset_name, expanded=True):
-        st.write(f"**Brand**: {brand if brand else 'N/A'}")
-        st.write(f"**Product**: {product if product else 'N/A'}")
-        st.write(f"**Content Type**: {content_type if content_type else 'N/A'}")
+        # st.write(f"**Brand**: {brand if brand else 'N/A'}")
+        # st.write(f"**Product**: {product if product else 'N/A'}")
+        # st.write(f"**Content Type**: {content_type if content_type else 'N/A'}")
         st.write(f"**Version**: {version if version else 'N/A'}")
 
         st.caption(f'<p style="text-align:right;">{status}</p>', unsafe_allow_html=True)
