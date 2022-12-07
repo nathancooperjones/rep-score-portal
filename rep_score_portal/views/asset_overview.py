@@ -97,6 +97,7 @@ def view_asset_information() -> None:
                 gridOptions=grid_options,
                 update_mode=st_aggrid.shared.GridUpdateMode.SELECTION_CHANGED,
                 height=height,
+                enable_enterprise_modules=False,
             )
 
         if len(data['selected_rows']) > 0:
