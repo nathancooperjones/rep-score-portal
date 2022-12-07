@@ -27,7 +27,6 @@ from utils import (
     get_countries_list,
     insert_line_break,
     remove_elements_from_progress_list,
-    reset_session_state_asset_information,
 )
 
 
@@ -48,7 +47,7 @@ def page_zero() -> None:
         ],
         help=(
             'If you have uploaded a past version of the asset to the portal before, we can use the '
-            "details you've already entered to auto-fill much of the asset submission process!"
+            "details you've already entered to autofill much of the asset submission process!"
         ),
     )
 
@@ -60,7 +59,7 @@ def page_zero() -> None:
         if len(options) >= 1:
             selected_asset = st.selectbox(
                 label=(
-                    'Choose the asset whose details should be use to auto-fill the asset '
+                    'Choose the asset whose details should be use to autofill the asset '
                     'submission process'
                 ),
                 options=options,

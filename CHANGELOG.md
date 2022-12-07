@@ -6,15 +6,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
  - Page to view the uploaded notes and details about an assigned asset
  - Ability to go back to a previous page when submitting a new asset
+ - Sections to add more fleshed out notes to each of the DEI Checklist questions, rather than just selecting a checkbox
 ### Changed
- - Added ability to add more fleshed out notes to each of the DEI Checklist questions, rather than just selecting a checkbox
  - Having previously-submitted an asset no longer skips to Step 5 of the asset submission process, rather just autofills those answers
+ - "Progress of All Available Assets" tab no longer shows brand, product, or content type - only version
  - Color of text areas for notes during the asset submission screens
  - Upgraded version of Streamlit used to ``1.15.2``
 
 # [0.11.2] - 2022-10-05
 ### Fixed
- - "No Codeable Characters" filtered out of the Rep Score Progress plots
+ - "No Codable Characters" filtered out of the Rep Score Progress plots
  - "Logout" button sets up for a successful next login done in the same session
  - Date sort for Rep Score Progress plots and Qualitative Notes
  - Font size for labels in color map plots
@@ -274,4 +275,4 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 # [0.0.0] - 2022-06-02
 ### Added
- - Initial repo stup
+ - Initial repo setup
