@@ -1,4 +1,5 @@
-from typing import List, Optional
+from typing import Iterable, List, Optional, Union
+
 
 import pandas as pd
 import streamlit as st
@@ -22,12 +23,27 @@ def reset_session_state_asset_information() -> None:
         'point_of_contact': '',
         'creative_brief_filename': '',
         'version': 1,
+        'marketing_1': '',
+        'marketing_2': '',
+        'marketing_3': '',
+        'marketing_4': '',
+        'agency_creative_1': '',
+        'agency_creative_2': '',
+        'agency_creative_3': '',
+        'agency_creative_4': '',
+        'agency_creative_5': '',
+        'creative_review_1': '',
+        'creative_review_2': '',
+        'creative_review_3': '',
+        'creative_review_4': '',
+        'creative_review_5': '',
+        'notes': '',
     }
 
 
 def edit_colors_of_selectbox() -> None:
     """Color ``.stSelectbox`` CSS classes with a white fill and a black border."""
-    text_area_color_css = ("""
+    selectbox_color_css = ("""
         <style>
         .stSelectbox > div > div {
             background-color: #FFFFFF;
@@ -39,7 +55,43 @@ def edit_colors_of_selectbox() -> None:
         </style>
     """)
 
+    st.markdown(selectbox_color_css, unsafe_allow_html=True)
+
+
+def edit_colors_of_text_area() -> None:
+    """Color ``.stTextArea`` CSS classes with a light gray fill."""
+    text_area_color_css = ("""
+        <style>
+        .stTextArea > div > div > div {
+            background-color: #D7D7D7;
+        }
+        </style>
+    """)
+
     st.markdown(text_area_color_css, unsafe_allow_html=True)
+
+
+def remove_elements_from_progress_list(pages_to_remove: Union[str, Iterable[str]]) -> None:
+    """
+    Remove every element in ``pages_to_remove`` if it exists in ``st.session_state.progress``. If an
+    element does not exist, the element will not be removed and an error will _NOT_ be raised.
+
+    Parameters
+    ----------
+    pages_to_remove: str or list of str
+
+    Side Effects
+    ------------
+    Modifies the elements in the ``st.session_state.progress`` list if any of ``pages_to_remove``
+    existed in it before.
+
+    """
+    if isinstance(pages_to_remove, str):
+        pages_to_remove = [pages_to_remove]
+
+    for page in pages_to_remove:
+        if page in st.session_state.progress:
+            st.session_state.progress.remove(page)
 
 
 def display_progress_bar_asset_tracker(
@@ -67,9 +119,9 @@ def display_progress_bar_asset_tracker(
 
     """
     with st.expander(label=asset_name, expanded=True):
-        st.write(f"**Brand**: {brand if brand else 'N/A'}")
-        st.write(f"**Product**: {product if product else 'N/A'}")
-        st.write(f"**Content Type**: {content_type if content_type else 'N/A'}")
+        # st.write(f"**Brand**: {brand if brand else 'N/A'}")
+        # st.write(f"**Product**: {product if product else 'N/A'}")
+        # st.write(f"**Content Type**: {content_type if content_type else 'N/A'}")
         st.write(f"**Version**: {version if version else 'N/A'}")
 
         st.caption(f'<p style="text-align:right;">{status}</p>', unsafe_allow_html=True)

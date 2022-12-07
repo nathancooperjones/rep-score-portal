@@ -110,12 +110,15 @@ hide_streamlit_style = """
         div.stButton > button:first-child {
             background-color: #2A2526;
             color: #FAF4EB;
-            font-size: 20px;
         }
         div.stButton > button:focus:not(:active) {
             background-color: #2A2526;
             color: #FAF4EB;
+        }
+
+        div.stButton > button:first-child > div > p {
             font-size: 20px;
+            margin-bottom: 1rem;
         }
 
         .stTextInput > div > span {
