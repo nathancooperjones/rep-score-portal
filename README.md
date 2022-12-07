@@ -2,6 +2,8 @@
 
 Portal to upload, track, and view assets' Representation Score, built entirely in Streamlit.
 
+[![CI](https://github.com/nathancooperjones/rep-score-portal/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/nathancooperjones/rep-score-portal/actions/workflows/ci.yaml)
+
 ![Screenshot of the Rep Score Portal UI](https://user-images.githubusercontent.com/31417712/173125041-68d320c3-3df6-47f7-9d06-3ac5c81ee85a.png)
 
 ## Building and Running the PRD Container
