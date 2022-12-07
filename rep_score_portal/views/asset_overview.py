@@ -48,6 +48,17 @@ def home_page() -> None:
 
 def view_asset_information() -> None:
     """View all details and uploaded notes about a specific version of an assigned asset."""
+    if (
+        not isinstance(st.session_state.get('asset_tracker_df'), pd.DataFrame)
+        or len(st.session_state.asset_tracker_df) == 0
+    ):
+        st.error(
+            'You have not been assigned to view a submitted asset yet. Please either 1) submit a '
+            'new asset on the "Submit an Asset" page or 2) click the "Having issues?" link and '
+            'contact Rebecca Cooper be assigned to an existing asset.'
+        )
+        st.stop()
+
     asset_selected = st.selectbox(
         label="Select an asset whose details you'd like to view",
         options=['-'] + sorted(st.session_state.asset_tracker_df['Asset Name'].unique()),
