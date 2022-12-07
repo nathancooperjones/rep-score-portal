@@ -137,7 +137,7 @@ def page_seven() -> None:
 def _create_color_column(scores: Iterable[Union[str, float]]) -> Iterable[str]:
     """Assign cell color values to scores."""
     return [
-        '#8F9193' if str(x) == '' or 'no codable character' in str(x).lower()  # N/A value
+        '#8F9193' if str(x) == '' or 'no codeable character' in str(x).lower()  # N/A value
         else '#FFFFFF' if not str(x).replace('.', '', 1).isdigit()  # BASELINE
         else '#7ED957' if float(x) >= 80
         else '#FFDE59' if 60 <= float(x) < 80
@@ -471,9 +471,9 @@ def plot_rep_score_progress() -> None:
         .duplicated(keep=False)
     ]
 
-    # remove scores of "No Codable Characters" from consideration
+    # remove scores of "No Codeable Characters" from consideration
     progress_df = progress_df[
-        ~progress_df['Ad Total Score'].str.lower().str.contains('no codable character')
+        ~progress_df['Ad Total Score'].str.lower().str.contains('no codeable character')
     ]
 
     if len(progress_df) == 0:
