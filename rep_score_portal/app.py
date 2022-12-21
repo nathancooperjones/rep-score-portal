@@ -128,6 +128,28 @@ hide_streamlit_style = """
         .stMultiSelect > div > div > div > div > span > span {
             max-width: 250px;
         }
+
+        div[alt="Sunday"] {
+            color: #333333;
+        }
+        div[alt="Monday"] {
+            color: #333333;
+        }
+        div[alt="Tuesday"] {
+            color: #333333;
+        }
+        div[alt="Wednesday"] {
+            color: #333333;
+        }
+        div[alt="Thursday"] {
+            color: #333333;
+        }
+        div[alt="Friday"] {
+            color: #333333;
+        }
+        div[alt="Saturday"] {
+            color: #333333;
+        }
     </style>
 """
 
