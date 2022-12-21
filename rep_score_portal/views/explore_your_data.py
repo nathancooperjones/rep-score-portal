@@ -13,6 +13,12 @@ from utils import (
 )
 
 
+TOO_FILTERED_DOWN_ERROR_MESSAGE = (
+    "Hmm... we couldn't find any existing assets with those filters applied. Please try again with "
+    'a different set of filters.'
+)
+
+
 def page_seven() -> None:
     """Display the "Explore Your Data" page."""
     st.markdown('## Explore Your Data')
@@ -68,7 +74,12 @@ def page_seven() -> None:
         # hacky, I know, but easier to work with down the line when it comes to filtering input
         data_explorer_df['BASELINE'] = data_explorer_df['Baseline'].copy()
 
-        data_explorer_df['Date Submitted'] = pd.to_datetime(data_explorer_df['Date Submitted']).dt.date
+        data_explorer_df['Date Submitted'] = (
+            pd
+            .to_datetime(data_explorer_df['Date Submitted'])
+            .dt
+            .date
+        )
 
         data_explorer_df_no_duplicates = (
             data_explorer_df
@@ -109,14 +120,6 @@ def page_seven() -> None:
             .reset_index()
             .rename(columns={0: 'Score', f'level_{len(color_map_df_index)}': 'Variable'})
         )
-
-        # color_map_df['Date Submitted'] = pd.to_datetime(color_map_df['Date Submitted']).dt.date
-        # data_explorer_df['Date Submitted'] = (
-        #     pd.to_datetime(data_explorer_df['Date Submitted']).dt.date
-        # )
-        # data_explorer_df_no_duplicates['Date Submitted'] = (
-        #     pd.to_datetime(data_explorer_df_no_duplicates['Date Submitted']).dt.date
-        # )
 
         color_map_df['color'] = _create_color_column(scores=color_map_df['Score'])
 
@@ -159,7 +162,7 @@ def _create_filters_selectboxes(
     date_col: str = 'Date Submitted',
 ) -> pd.DataFrame:
     """
-    Create two filter selectboxes to filter the ads displayed in a visualization.
+    Create two filter selectboxes to filter the assets displayed in a visualization.
 
     The first selectbox will allow the user to filter by the fields in ``filter_by_cols`` (plus an
     initial option called "None"), which should all be valid columns in ``df``.
@@ -172,7 +175,8 @@ def _create_filters_selectboxes(
     ----------
     df: pd.DataFrame
     key_prefix: str
-        Prefix for the selectbox keys, needed when this is used in multiple tabs on the same page
+        Prefix for the selectbox keys, needed when this is used in multiple tabs on the same page.
+        Every tab calling this function must provide a different value for this argument
     filter_by_cols: list
         Columns in ``df`` to allow filtering by
     date_col: str
@@ -182,7 +186,7 @@ def _create_filters_selectboxes(
     Returns
     -------
     df_to_plot: pd.DataFrame
-        Filtered down DataFrame ready for visualization
+        Filtered-down DataFrame ready for visualization
 
     """
     filter_by = st.selectbox(
@@ -213,10 +217,12 @@ def _create_filters_selectboxes(
                     key=f'{key_prefix}_max_date_date_input',
                 )
         else:
+            filter_by_options = sorted(df[filter_by].unique())
+
             field_selected = st.multiselect(
                 label='Choose a field to compare against',
-                options=sorted(df[filter_by].unique()),
-                default=sorted(df[filter_by].unique()),
+                options=filter_by_options,
+                default=filter_by_options,
                 key=f'{key_prefix}_field_selected_multiselect',
             )
 
@@ -269,10 +275,7 @@ def plot_color_maps() -> None:
     insert_line_break()
 
     if len(df_to_plot) == 0:
-        st.error(
-            "Hmm... we couldn't find any existing assets with those filters applied. "
-            'Please try again with a different set of filters.'
-        )
+        st.error(TOO_FILTERED_DOWN_ERROR_MESSAGE)
         return
 
     if include_baseline:
@@ -513,10 +516,7 @@ def display_qualitative_notes() -> None:
     insert_line_break()
 
     if len(df_to_plot) == 0:
-        st.error(
-            "Hmm... we couldn't find any existing assets with those filters applied. "
-            'Please try again with a different set of filters.'
-        )
+        st.error(TOO_FILTERED_DOWN_ERROR_MESSAGE)
         return
 
     for _, row in df_to_plot.iterrows():
@@ -538,15 +538,18 @@ def plot_rep_score_progress() -> None:
     """Plot rep score progress over content type or date submitted."""
     date_strftime_format = '%b %Y'
 
+    # remove scores of "No Codeable Characters" from consideration
     progress_df = st.session_state.data_explorer_df[
-        st.session_state.data_explorer_df[['Ad Name', 'Brand', 'Product']]
-        .duplicated(keep=False)
+        ~(
+            st.session_state.data_explorer_df['Ad Total Score']
+            .str
+            .lower()
+            .str
+            .contains('no codeable character')
+        )
     ]
 
-    # remove scores of "No Codeable Characters" from consideration
-    progress_df = progress_df[
-        ~progress_df['Ad Total Score'].str.lower().str.contains('no codeable character')
-    ]
+    progress_df = _remove_duplicate_assets_for_progress_plots(df=progress_df)
 
     if len(progress_df) == 0:
         st.error('No assets with more than one version scored have been uploaded and assigned!')
@@ -566,14 +569,16 @@ def plot_rep_score_progress() -> None:
     )
 
     # remove duplicates again, in case they were filtered out
-    df_to_plot = df_to_plot[df_to_plot[['Ad Name', 'Brand', 'Product']].duplicated(keep=False)]
+    df_to_plot = _remove_duplicate_assets_for_progress_plots(df=df_to_plot)
 
     if len(df_to_plot) == 0:
         st.error(
-            "Hmm... we couldn't find any existing assets with those filters applied. "
+            "Hmm... we couldn't find two or more versions of any asset with those filters applied. "
             'Please try again with a different set of filters.'
         )
         return
+
+    did_we_apply_any_filters = (len(progress_df) != len(df_to_plot))
 
     x_axis = st.selectbox(
         label='Select field to compare against',
@@ -649,6 +654,7 @@ def plot_rep_score_progress() -> None:
             ),
             y=alt.Y(
                 shorthand='Ad Total Score',
+                title=f'{"Filtered " if did_we_apply_any_filters else ""}Ad Total Score',
                 scale=alt.Scale(domain=[0, 100]),
             ),
             **progress_chart_encode_kwargs,
@@ -660,3 +666,8 @@ def plot_rep_score_progress() -> None:
     )
 
     st.altair_chart(progress_chart, use_container_width=True)
+
+
+def _remove_duplicate_assets_for_progress_plots(df: pd.DataFrame) -> pd.DataFrame:
+    """Remove rows in ``df`` sharing duplicate ``Ad Name``, ``Brand``, and ``Product`` values."""
+    return df[df[['Ad Name', 'Brand', 'Product']].duplicated(keep=False)]
