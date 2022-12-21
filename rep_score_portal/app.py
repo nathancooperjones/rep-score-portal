@@ -129,25 +129,7 @@ hide_streamlit_style = """
             max-width: 250px;
         }
 
-        div[alt="Sunday"] {
-            color: #333333;
-        }
-        div[alt="Monday"] {
-            color: #333333;
-        }
-        div[alt="Tuesday"] {
-            color: #333333;
-        }
-        div[alt="Wednesday"] {
-            color: #333333;
-        }
-        div[alt="Thursday"] {
-            color: #333333;
-        }
-        div[alt="Friday"] {
-            color: #333333;
-        }
-        div[alt="Saturday"] {
+        div[data-baseweb="calendar"] > div > div > div > div {
             color: #333333;
         }
     </style>
