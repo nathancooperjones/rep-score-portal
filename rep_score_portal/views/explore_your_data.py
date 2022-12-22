@@ -15,6 +15,11 @@ from utils import (
 )
 
 
+GOOD_COLOR = '#A478B8'
+FAIR_COLOR = '#E0C2F2'
+BAD_COLOR = '#F7E7FB'
+
+
 def page_seven() -> None:
     """Display the "Explore Your Data" page."""
     st.markdown('## Explore Your Data')
@@ -144,9 +149,9 @@ def _create_color_column(scores: Iterable[Union[str, float]]) -> Iterable[str]:
     return [
         '#8F9193' if str(x) == '' or 'no codeable character' in str(x).lower()  # N/A value
         else '#FFFFFF' if not str(x).replace('.', '', 1).isdigit()  # BASELINE
-        else '#7ED957' if float(x) >= 80
-        else '#FFDE59' if 60 <= float(x) < 80
-        else '#EA3423'
+        else GOOD_COLOR if float(x) >= 80
+        else FAIR_COLOR if 60 <= float(x) < 80
+        else BAD_COLOR
         for x in scores
     ]
 
@@ -155,11 +160,11 @@ def plot_color_maps() -> None:
     """Plot rep score color maps."""
     color_explanation = (
         'In the color maps below, we assign different colors to '
-        '<mark style="background-color:#7ED957;"><strong>GOOD REPRESENTATION</strong> '
+        f'<mark style="background-color:{GOOD_COLOR};"><strong>GOOD REPRESENTATION</strong> '
         '(80 points or higher) </mark>, '
-        '<mark style="background-color:#FFDE59;"><strong>FAIR REPRESENTATION</strong> '
+        f'<mark style="background-color:{FAIR_COLOR};"><strong>FAIR REPRESENTATION</strong> '
         '(60-79 points) </mark>, and '
-        '<mark style="background-color:#EA3423;"><strong>POOR REPRESENTATION</strong> '
+        f'<mark style="background-color:{BAD_COLOR};"><strong>POOR REPRESENTATION</strong> '
         '(under 60 points)</mark>.'
     )
     st.markdown(color_explanation, unsafe_allow_html=True)
@@ -244,7 +249,7 @@ def plot_color_maps() -> None:
         'Baseline',
     ]
 
-    with st.expander(label='Break down by identity', expanded=False):
+    with st.expander(label='Break down by identity', expanded=True):
         insert_line_break()
 
         st.markdown('##### Scores by Identity, Ad Level')
