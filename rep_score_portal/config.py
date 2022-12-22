@@ -1,3 +1,9 @@
+TOO_FILTERED_DOWN_ERROR_MESSAGE = (
+    "Hmm... we couldn't find any existing assets with those filters applied. Please try again with "
+    'a different set of filters.'
+)
+
+
 MARKETING_LABEL_1 = (
     'How can DE&I be reflected in our High Value Communities or audience definitions?'
 )

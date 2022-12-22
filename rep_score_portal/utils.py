@@ -94,6 +94,23 @@ def remove_elements_from_progress_list(pages_to_remove: Union[str, Iterable[str]
             st.session_state.progress.remove(page)
 
 
+def insert_line_break() -> None:
+    """Insert line break in Streamlit app."""
+    st.markdown('<br>', unsafe_allow_html=True)
+
+
+def get_content_types() -> List[str]:
+    """Get an ordered list of valid content types."""
+    return [
+        'Script',
+        'Storyboard',
+        'Animatic',
+        'Rough Cut',
+        'Final Cut',
+        'Video',
+    ]
+
+
 def display_progress_bar_asset_tracker(
     asset_name: str,
     brand: Optional[str],
@@ -165,6 +182,13 @@ def fetch_asset_data() -> None:
                     .sheet_to_df(index=None)
                 )
 
+                asset_tracker_df['Date Submitted'] = (
+                    pd
+                    .to_datetime(asset_tracker_df['Date Submitted'])
+                    .dt
+                    .date
+                )
+
                 if st.session_state['username'] not in st.secrets['login_groups']['admins']:
                     st.session_state.asset_tracker_df = asset_tracker_df[
                         asset_tracker_df['Asset Name'].isin(st.session_state.assigned_user_assets)
@@ -175,21 +199,91 @@ def fetch_asset_data() -> None:
         st.session_state.asset_tracker_df = None
 
 
-def insert_line_break() -> None:
-    """Insert line break in Streamlit app."""
-    st.markdown('<br>', unsafe_allow_html=True)
+def create_filters_selectboxes(
+    df: pd.DataFrame,
+    key_prefix: str,
+    selectbox_label: str,
+    filter_by_cols: Iterable[str],
+    date_col: str = 'Date Submitted',
+) -> pd.DataFrame:
+    """
+    Create two filter selectboxes to filter the assets displayed in a visualization.
 
+    The first selectbox will allow the user to filter by the fields in ``filter_by_cols`` (plus an
+    initial option called "-"), which should all be valid columns in ``df``.
 
-def get_content_types() -> List[str]:
-    """Get an ordered list of valid content types."""
-    return [
-        'Script',
-        'Storyboard',
-        'Animatic',
-        'Rough Cut',
-        'Final Cut',
-        'Video',
-    ]
+    The second selectbox will appear if any non-"-" option is selected, allowing the user to select
+    the proper fields from a ``multiselect`` input (or ``date_input`` for ``date_col``).
+
+    Parameters
+    ----------
+    df: pd.DataFrame
+    key_prefix: str
+        Prefix for the selectbox keys, needed when this is used in multiple tabs on the same page.
+        Every tab calling this function must provide a different value for this argument
+    selectbox_label: str
+        Label value to display in the initial selectbox rendered by this function
+    filter_by_cols: list
+        Columns in ``df`` to allow filtering by
+    date_col: str
+        Column in ``df`` and ``filter_by_cols`` containing a date field to filter by, used to
+        present a better selectbox for the second-round filter
+
+    Returns
+    -------
+    filtered_df: pd.DataFrame
+        Filtered-down DataFrame ready for visualization
+
+    """
+    filter_by = st.selectbox(
+        label=selectbox_label,
+        options=['-'] + filter_by_cols,
+        help='Only display assets with the specified attribute',
+        key=f'{key_prefix}_filter_by_selectbox',
+    )
+
+    field_selected = None
+    min_date = None
+    max_date = None
+
+    if filter_by != '-':
+        if filter_by == date_col:
+            col_1, col_2 = st.columns(2)
+
+            with col_1:
+                min_date = st.date_input(
+                    label='Earliest submitted date to consider',
+                    value=df[date_col].min(),
+                    key=f'{key_prefix}_min_date_date_input',
+                )
+
+            with col_2:
+                max_date = st.date_input(
+                    label='Latest submitted date to consider',
+                    key=f'{key_prefix}_max_date_date_input',
+                )
+        else:
+            filter_by_options = sorted(df[filter_by].unique())
+
+            field_selected = st.multiselect(
+                label='Select values to display',
+                options=filter_by_options,
+                default=filter_by_options,
+                key=f'{key_prefix}_field_selected_multiselect',
+            )
+
+    filtered_df = df
+
+    if (
+        filter_by != '-'
+        and (field_selected is not None or min_date is not None or max_date is not None)
+    ):
+        if filter_by == date_col:
+            filtered_df = df[(df[date_col] >= min_date) & (df[date_col] <= max_date)]
+        else:
+            filtered_df = df[df[filter_by].isin(field_selected)]
+
+    return filtered_df
 
 
 def get_countries_list() -> List[str]:

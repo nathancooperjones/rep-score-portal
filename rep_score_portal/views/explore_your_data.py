@@ -4,18 +4,14 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
+from config import TOO_FILTERED_DOWN_ERROR_MESSAGE
 from input_output import read_google_spreadsheet
 from utils import (
     check_for_assigned_assets,
+    create_filters_selectboxes,
     edit_colors_of_selectbox,
     get_content_types,
     insert_line_break,
-)
-
-
-TOO_FILTERED_DOWN_ERROR_MESSAGE = (
-    "Hmm... we couldn't find any existing assets with those filters applied. Please try again with "
-    'a different set of filters.'
 )
 
 
@@ -155,91 +151,6 @@ def _create_color_column(scores: Iterable[Union[str, float]]) -> Iterable[str]:
     ]
 
 
-def _create_filters_selectboxes(
-    df: pd.DataFrame,
-    key_prefix: str,
-    filter_by_cols: Iterable[str],
-    date_col: str = 'Date Submitted',
-) -> pd.DataFrame:
-    """
-    Create two filter selectboxes to filter the assets displayed in a visualization.
-
-    The first selectbox will allow the user to filter by the fields in ``filter_by_cols`` (plus an
-    initial option called "None"), which should all be valid columns in ``df``.
-
-    The second selectbox will appear if any non-"None" option is selected, allowing the user to
-    select the proper fields from a ``multiselect`` input (or ``date_input`` for
-    ``date_col``).
-
-    Parameters
-    ----------
-    df: pd.DataFrame
-    key_prefix: str
-        Prefix for the selectbox keys, needed when this is used in multiple tabs on the same page.
-        Every tab calling this function must provide a different value for this argument
-    filter_by_cols: list
-        Columns in ``df`` to allow filtering by
-    date_col: str
-        Column in ``df`` and ``filter_by_cols`` containing a date field to filter by, used to
-        present a better selectbox for the second-round filter
-
-    Returns
-    -------
-    df_to_plot: pd.DataFrame
-        Filtered-down DataFrame ready for visualization
-
-    """
-    filter_by = st.selectbox(
-        label='Filter visualization by...',
-        options=['None'] + filter_by_cols,
-        help='Only display assets with the specified attribute',
-        key=f'{key_prefix}_filter_by_selectbox',
-    )
-
-    field_selected = None
-    min_date = None
-    max_date = None
-
-    if filter_by != 'None':
-        if filter_by == date_col:
-            col_1, col_2 = st.columns(2)
-
-            with col_1:
-                min_date = st.date_input(
-                    label='Earliest submitted date to consider',
-                    value=df[date_col].min(),
-                    key=f'{key_prefix}_min_date_date_input',
-                )
-
-            with col_2:
-                max_date = st.date_input(
-                    label='Latest submitted date to consider',
-                    key=f'{key_prefix}_max_date_date_input',
-                )
-        else:
-            filter_by_options = sorted(df[filter_by].unique())
-
-            field_selected = st.multiselect(
-                label='Choose a field to compare against',
-                options=filter_by_options,
-                default=filter_by_options,
-                key=f'{key_prefix}_field_selected_multiselect',
-            )
-
-    df_to_plot = df
-
-    if (
-        filter_by != 'None'
-        and (field_selected is not None or min_date is not None or max_date is not None)
-    ):
-        if filter_by == date_col:
-            df_to_plot = df[(df[date_col] >= min_date) & (df[date_col] <= max_date)]
-        else:
-            df_to_plot = df[df[filter_by].isin(field_selected)]
-
-    return df_to_plot
-
-
 def plot_color_maps() -> None:
     """Plot rep score color maps."""
     color_explanation = (
@@ -257,9 +168,10 @@ def plot_color_maps() -> None:
 
     st.markdown('Use the filter below to choose which ads you want to include in your portfolio.')
 
-    df_to_plot = _create_filters_selectboxes(
+    df_to_plot = create_filters_selectboxes(
         df=st.session_state.color_map_df,
         key_prefix='plot_color_maps',
+        selectbox_label='Filter score heatmaps by...',
         filter_by_cols=[
             'Ad Name',
             'Brand',
@@ -268,6 +180,7 @@ def plot_color_maps() -> None:
             'Baseline',
             'Date Submitted',
         ],
+        date_col='Date Submitted',
     )
 
     include_baseline = st.checkbox(label='Include baseline in plot(s)', value=True)
@@ -500,9 +413,10 @@ def display_qualitative_notes() -> None:
         keep='last',
     )
 
-    df_to_plot = _create_filters_selectboxes(
+    df_to_plot = create_filters_selectboxes(
         df=notes_df,
         key_prefix='display_qualitative_notes',
+        selectbox_label='Filter notes by...',
         filter_by_cols=[
             'Ad Name',
             'Brand',
@@ -511,6 +425,7 @@ def display_qualitative_notes() -> None:
             'Baseline',
             'Date Submitted',
         ],
+        date_col='Date Submitted',
     )
 
     insert_line_break()
@@ -555,9 +470,10 @@ def plot_rep_score_progress() -> None:
         st.error('No assets with more than one version scored have been uploaded and assigned!')
         return
 
-    df_to_plot = _create_filters_selectboxes(
+    df_to_plot = create_filters_selectboxes(
         df=progress_df,
         key_prefix='plot_rep_score_progress',
+        selectbox_label='Filter progress plot by...',
         filter_by_cols=[
             'Ad Name',
             'Brand',
@@ -566,6 +482,7 @@ def plot_rep_score_progress() -> None:
             'Baseline',
             'Date Submitted',
         ],
+        date_col='Date Submitted',
     )
 
     # remove duplicates again, in case they were filtered out
