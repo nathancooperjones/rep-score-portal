@@ -6,9 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
  - Asset filters across all tabs in the "Explore Your Data" page, not just for the "Score Heatmap"
 ### Changed
+ - Text box help cues to be actually helpful, rather than a template ``More info to come``
  - Colors used for good, fair, and poor representation in the "Score Heatmap" tab
  - Plots on the "Rep Score Progress" tab now have a set y-axis range from ``0`` to ``100``
  - Date picker colors to be more readable in the "Rep Score Progress" tab
+ - Some language used during the asset submission process
 ### Fixed
  - Plots on the "Rep Score Progress" tab where the date submitted is the x-axis now includes all date values in the range, not just the ones where assets were submitted
 

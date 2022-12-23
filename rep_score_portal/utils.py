@@ -290,6 +290,9 @@ def get_countries_list() -> List[str]:
     """Return a list of all countries."""
     return [
         'United States of America',
+        'Latin America',
+        'Europe',
+        'Global',
         'Afghanistan',
         'Albania',
         'Algeria',

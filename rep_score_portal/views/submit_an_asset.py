@@ -84,7 +84,7 @@ def page_zero() -> None:
             st.session_state.asset_information['brand'] = selected_asset_df['Brand']
             st.session_state.asset_information['product'] = selected_asset_df['Product']
             st.session_state.asset_information['countries_airing'] = (
-                selected_asset_df['Region(s) This Creative Will Air In']
+                selected_asset_df['Region / Countries This Creative Will Air In']
                 .replace('US', 'United States of America')  # 😐
                 .split(', ')
             )
@@ -169,6 +169,7 @@ def page_one() -> None:
         label='Asset Name',
         value=st.session_state.asset_information['name'],
         placeholder='Ex: Pierre',
+        help='Provide the name of the advertisement or other piece of content.',
     )
     asset_brand = st.text_input(
         label='Brand',
@@ -181,9 +182,13 @@ def page_one() -> None:
         placeholder="Ex: M&M's",
     )
     countries_airing = st.multiselect(
-        label='Region(s) This Creative Will Air In',
+        label='Region / Countries This Creative Will Air In',
         options=get_countries_list(),
         default=st.session_state.asset_information['countries_airing'],
+        help=(
+            'Select the region(s) or countries that this advertisement will air in. Population '
+            'comparisons are tailored to the region where the content will be aired.'
+        ),
     )
     asset_point_of_contact = st.text_input(
         label='Point of Contact Email',
@@ -261,7 +266,7 @@ def page_two() -> None:
     """Display the second page for the "Submit an Asset" process."""
     st.image('../images/Stage 2.png', use_column_width=True)
 
-    st.markdown('## Marketing Brief')
+    st.markdown('## Infuse DE&I provocations into the Marketing Brief')
 
     edit_colors_of_text_area()
 
@@ -273,28 +278,28 @@ def page_two() -> None:
     st.session_state.asset_information['marketing_1'] = st.text_area(
         label=MARKETING_LABEL_1,
         value=st.session_state.asset_information.get('marketing_1', ''),
-        help='More info to come',
     )
     st.session_state.asset_information['marketing_2'] = st.text_area(
         label=MARKETING_LABEL_2,
         value=st.session_state.asset_information.get('marketing_2', ''),
-        help='More info to come',
     )
     st.session_state.asset_information['marketing_3'] = st.text_area(
         label=MARKETING_LABEL_3,
         value=st.session_state.asset_information.get('marketing_3', ''),
-        help='More info to come',
     )
     st.session_state.asset_information['marketing_4'] = st.text_area(
         label=MARKETING_LABEL_4,
         value=st.session_state.asset_information.get('marketing_4', ''),
-        help='More info to come',
     )
 
     st.session_state.asset_information['notes'] = st.text_area(
         label='Notes',
         value=st.session_state.asset_information.get('notes', ''),
         height=200,
+        help=(
+            'Use this space to record any additional notes. This box will carry over as you '
+            'advance through the submission process.'
+        ),
     )
 
     if (
@@ -314,7 +319,7 @@ def page_three() -> None:
     """Display the third page for the "Submit an Asset" process."""
     st.image('../images/Stage 3.png', use_column_width=True)
 
-    st.markdown('## Agency Creative Brief')
+    st.markdown('## Infuse DE&I provocations into the Agency Creative Brief')
 
     edit_colors_of_text_area()
 
@@ -326,33 +331,32 @@ def page_three() -> None:
     st.session_state.asset_information['agency_creative_1'] = st.text_area(
         label=AGENCY_CREATIVE_LABEL_1,
         value=st.session_state.asset_information.get('agency_creative_1', ''),
-        help='More info to come',
     )
     st.session_state.asset_information['agency_creative_2'] = st.text_area(
         label=AGENCY_CREATIVE_LABEL_2,
         value=st.session_state.asset_information.get('agency_creative_2', ''),
-        help='More info to come',
     )
     st.session_state.asset_information['agency_creative_3'] = st.text_area(
         label=AGENCY_CREATIVE_LABEL_3,
         value=st.session_state.asset_information.get('agency_creative_3', ''),
-        help='More info to come',
     )
     st.session_state.asset_information['agency_creative_4'] = st.text_area(
         label=AGENCY_CREATIVE_LABEL_4,
         value=st.session_state.asset_information.get('agency_creative_4', ''),
-        help='More info to come',
     )
     st.session_state.asset_information['agency_creative_5'] = st.text_area(
         label=AGENCY_CREATIVE_LABEL_5,
         value=st.session_state.asset_information.get('agency_creative_5', ''),
-        help='More info to come',
     )
 
     st.session_state.asset_information['notes'] = st.text_area(
         label='Notes',
         value=st.session_state.asset_information.get('notes', ''),
         height=200,
+        help=(
+            'Use this space to record any additional notes. This box will carry over as you '
+            'advance through the submission process.'
+        ),
     )
 
     if (
@@ -385,33 +389,37 @@ def page_four() -> None:
     st.session_state.asset_information['creative_review_1'] = st.text_area(
         label=DEI_CREATIVE_REVIEWS_LABEL_1,
         value=st.session_state.asset_information.get('creative_review_1', ''),
-        help='More info to come',
     )
     st.session_state.asset_information['creative_review_2'] = st.text_area(
         label=DEI_CREATIVE_REVIEWS_LABEL_2,
         value=st.session_state.asset_information.get('creative_review_2', ''),
-        help='More info to come',
+        help=(
+            'Are any of the characters depicted in racist, sexist, ableist, homophobic, '
+            'transphobic, ageist, or fatphobic ways? Are any characters reduced to a generalized '
+            'trait (whether positive or negative) that stems from their marginalized identity?'
+        ),
     )
     st.session_state.asset_information['creative_review_3'] = st.text_area(
         label=DEI_CREATIVE_REVIEWS_LABEL_3,
         value=st.session_state.asset_information.get('creative_review_3', ''),
-        help='More info to come',
     )
     st.session_state.asset_information['creative_review_4'] = st.text_area(
         label=DEI_CREATIVE_REVIEWS_LABEL_4,
         value=st.session_state.asset_information.get('creative_review_4', ''),
-        help='More info to come',
     )
     st.session_state.asset_information['creative_review_5'] = st.text_area(
         label=DEI_CREATIVE_REVIEWS_LABEL_5,
         value=st.session_state.asset_information.get('creative_review_5', ''),
-        help='More info to come',
     )
 
     st.session_state.asset_information['notes'] = st.text_area(
         label='Notes',
         value=st.session_state.asset_information.get('notes', ''),
         height=200,
+        help=(
+            'Use this space to record any additional notes. This box will carry over as you '
+            'advance through the submission process.'
+        ),
     )
 
     if (
@@ -483,6 +491,10 @@ def page_five() -> None:
         label='Notes',
         value=st.session_state.asset_information.get('notes', ''),
         height=200,
+        help=(
+            'Use this space to record any additional notes. This box will carry over as you '
+            'advance through the submission process.'
+        ),
     )
 
     if uploaded_file or asset_url:
