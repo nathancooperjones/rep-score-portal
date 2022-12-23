@@ -8,15 +8,15 @@ altair==4.2.0
     # via
     #   -r requirements.in
     #   streamlit
-attrs==22.1.0
+attrs==22.2.0
     # via jsonschema
 bcrypt==4.0.1
     # via streamlit-authenticator
 blinker==1.5
     # via streamlit
-boto3==1.26.22
+boto3==1.26.35
     # via -r requirements.in
-botocore==1.29.22
+botocore==1.29.35
     # via
     #   boto3
     #   s3transfer
@@ -24,7 +24,7 @@ cachetools==5.2.0
     # via
     #   google-auth
     #   streamlit
-certifi==2022.9.24
+certifi==2022.12.7
     # via requests
 charset-normalizer==2.1.1
     # via requests
@@ -49,7 +49,7 @@ google-auth==2.15.0
     #   google-auth-oauthlib
     #   gspread
     #   gspread-pandas
-google-auth-oauthlib==0.7.1
+google-auth-oauthlib==0.8.0
     # via
     #   gspread
     #   gspread-pandas
@@ -61,7 +61,7 @@ htbuilder==0.6.1
     # via -r requirements.in
 idna==3.4
     # via requests
-importlib-metadata==5.1.0
+importlib-metadata==5.2.0
     # via streamlit
 jinja2==3.1.2
     # via
@@ -77,7 +77,7 @@ markupsafe==2.1.1
     # via jinja2
 more-itertools==9.0.0
     # via htbuilder
-numpy==1.23.5
+numpy==1.24.0
     # via
     #   altair
     #   pandas
@@ -86,7 +86,7 @@ numpy==1.23.5
     #   streamlit
 oauthlib==3.2.2
     # via requests-oauthlib
-packaging==21.3
+packaging==22.0
     # via streamlit
 pandas==1.5.2
     # via
@@ -115,8 +115,6 @@ pyjwt==2.6.0
     # via streamlit-authenticator
 pympler==1.0.1
     # via streamlit
-pyparsing==3.0.9
-    # via packaging
 pyrsistent==0.19.2
     # via jsonschema
 python-dateutil==2.8.2
@@ -126,7 +124,7 @@ python-dateutil==2.8.2
     #   streamlit
 python-decouple==3.6
     # via streamlit-aggrid
-pytz==2022.6
+pytz==2022.7
     # via pandas
 pytz-deprecation-shim==0.1.0.post0
     # via tzlocal
@@ -152,7 +150,7 @@ six==1.16.0
     #   python-dateutil
 smmap==5.0.0
     # via gitdb
-streamlit==1.15.2
+streamlit==1.16.0
     # via
     #   -r requirements.in
     #   extra-streamlit-components

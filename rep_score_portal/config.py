@@ -1,3 +1,9 @@
+TOO_FILTERED_DOWN_ERROR_MESSAGE = (
+    "Hmm... we couldn't find any existing assets with those filters applied. Please try again with "
+    'a different set of filters.'
+)
+
+
 MARKETING_LABEL_1 = (
     'How can DE&I be reflected in our High Value Communities or audience definitions?'
 )
@@ -36,11 +42,11 @@ DEI_CREATIVE_REVIEWS_LABEL_2 = (
     'Could the work be reinforcing negative stereotypes?'
 )
 DEI_CREATIVE_REVIEWS_LABEL_3 = (
-    'What cultural references could we be misappropriating?'
+    'What cultural references could we be appropriating or misrepresenting?'
 )
 DEI_CREATIVE_REVIEWS_LABEL_4 = (
-    'Can we be more inclusive with regard to age, body type, disability, ethnicity, gender, sexual '
-    'orientation?'
+    'Can we be more inclusive with regard to age (older adults), body type (fat characters), '
+    'disability, race/ethnicity, skin tone, gender, sexuality?'
 )
 DEI_CREATIVE_REVIEWS_LABEL_5 = (
     'How can we, and our clients, make choices that lead to more inclusive and equitable work?'

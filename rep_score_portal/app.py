@@ -128,6 +128,10 @@ hide_streamlit_style = """
         .stMultiSelect > div > div > div > div > span > span {
             max-width: 250px;
         }
+
+        div[data-baseweb="calendar"] > div > div > div > div {
+            color: #333333;
+        }
     </style>
 """
 

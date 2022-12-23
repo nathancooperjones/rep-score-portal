@@ -19,8 +19,10 @@ from config import (
     MARKETING_LABEL_2,
     MARKETING_LABEL_3,
     MARKETING_LABEL_4,
+    TOO_FILTERED_DOWN_ERROR_MESSAGE,
 )
 from utils import (
+    create_filters_selectboxes,
     display_progress_bar_asset_tracker,
     edit_colors_of_selectbox,
     fetch_asset_data,
@@ -218,34 +220,26 @@ def view_progress_of_all_available_assets() -> None:
 
     edit_colors_of_selectbox()
 
-    filter_by = st.selectbox(
-        label='Filter tracker by...',
-        options=['None', 'Asset Name', 'Brand', 'Product', 'Content Type', 'Version'],
-        help='Only display assets with the specified attribute',
+    asset_tracker_df = create_filters_selectboxes(
+        df=st.session_state.asset_tracker_df,
+        key_prefix='view_progress_of_all_available_assets',
+        selectbox_label='Filter tracker by...',
+        filter_by_cols=[
+            'Asset Name',
+            'Brand',
+            'Product',
+            'Content Type',
+            'Version',
+            'Date Submitted',
+        ],
+        date_col='Date Submitted',
     )
-
-    if filter_by != 'None':
-        field_selected = st.multiselect(
-            label='Select values to display',
-            options=sorted(st.session_state.asset_tracker_df[filter_by].unique()),
-            default=sorted(st.session_state.asset_tracker_df[filter_by].unique()),
-        )
 
     insert_line_break()
 
-    if filter_by != 'None' and field_selected is not None:
-        asset_tracker_df = st.session_state.asset_tracker_df[
-            st.session_state.asset_tracker_df[filter_by].isin(field_selected)
-        ]
-
-        if len(asset_tracker_df) == 0:
-            st.error(
-                "Hmm... we couldn't find any existing assets with those filters applied. "
-                'Please try again with a different set of filters.'
-            )
-            st.stop()
-    else:
-        asset_tracker_df = st.session_state.asset_tracker_df.copy()
+    if len(asset_tracker_df) == 0:
+        st.error(TOO_FILTERED_DOWN_ERROR_MESSAGE)
+        return
 
     for _, row in asset_tracker_df.iterrows():
         if row['Status'] == 'Uploaded':

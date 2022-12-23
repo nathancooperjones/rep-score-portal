@@ -4,13 +4,20 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
+from config import TOO_FILTERED_DOWN_ERROR_MESSAGE
 from input_output import read_google_spreadsheet
 from utils import (
     check_for_assigned_assets,
+    create_filters_selectboxes,
     edit_colors_of_selectbox,
     get_content_types,
     insert_line_break,
 )
+
+
+GOOD_COLOR = '#A478B8'
+FAIR_COLOR = '#E0C2F2'
+BAD_COLOR = '#F7E7FB'
 
 
 def page_seven() -> None:
@@ -68,7 +75,12 @@ def page_seven() -> None:
         # hacky, I know, but easier to work with down the line when it comes to filtering input
         data_explorer_df['BASELINE'] = data_explorer_df['Baseline'].copy()
 
-        data_explorer_df['Date Submitted'] = pd.to_datetime(data_explorer_df['Date Submitted'])
+        data_explorer_df['Date Submitted'] = (
+            pd
+            .to_datetime(data_explorer_df['Date Submitted'])
+            .dt
+            .date
+        )
 
         data_explorer_df_no_duplicates = (
             data_explorer_df
@@ -110,8 +122,6 @@ def page_seven() -> None:
             .rename(columns={0: 'Score', f'level_{len(color_map_df_index)}': 'Variable'})
         )
 
-        color_map_df['Date Submitted'] = pd.to_datetime(color_map_df['Date Submitted']).dt.date
-
         color_map_df['color'] = _create_color_column(scores=color_map_df['Score'])
 
         st.session_state.data_explorer_df = data_explorer_df
@@ -139,9 +149,9 @@ def _create_color_column(scores: Iterable[Union[str, float]]) -> Iterable[str]:
     return [
         '#8F9193' if str(x) == '' or 'no codeable character' in str(x).lower()  # N/A value
         else '#FFFFFF' if not str(x).replace('.', '', 1).isdigit()  # BASELINE
-        else '#7ED957' if float(x) >= 80
-        else '#FFDE59' if 60 <= float(x) < 80
-        else '#EA3423'
+        else GOOD_COLOR if float(x) >= 80
+        else FAIR_COLOR if 60 <= float(x) < 80
+        else BAD_COLOR
         for x in scores
     ]
 
@@ -150,11 +160,11 @@ def plot_color_maps() -> None:
     """Plot rep score color maps."""
     color_explanation = (
         'In the color maps below, we assign different colors to '
-        '<mark style="background-color:#7ED957;"><strong>GOOD REPRESENTATION</strong> '
+        f'<mark style="background-color:{GOOD_COLOR};"><strong>GOOD REPRESENTATION</strong> '
         '(80 points or higher) </mark>, '
-        '<mark style="background-color:#FFDE59;"><strong>FAIR REPRESENTATION</strong> '
+        f'<mark style="background-color:{FAIR_COLOR};"><strong>FAIR REPRESENTATION</strong> '
         '(60-79 points) </mark>, and '
-        '<mark style="background-color:#EA3423;"><strong>POOR REPRESENTATION</strong> '
+        f'<mark style="background-color:{BAD_COLOR};"><strong>POOR REPRESENTATION</strong> '
         '(under 60 points)</mark>.'
     )
     st.markdown(color_explanation, unsafe_allow_html=True)
@@ -163,10 +173,11 @@ def plot_color_maps() -> None:
 
     st.markdown('Use the filter below to choose which ads you want to include in your portfolio.')
 
-    filter_by = st.selectbox(
-        label='Filter visualization by...',
-        options=[
-            'None',
+    df_to_plot = create_filters_selectboxes(
+        df=st.session_state.color_map_df,
+        key_prefix='plot_color_maps',
+        selectbox_label='Filter score heatmaps by...',
+        filter_by_cols=[
             'Ad Name',
             'Brand',
             'Product',
@@ -174,57 +185,15 @@ def plot_color_maps() -> None:
             'Baseline',
             'Date Submitted',
         ],
-        help='Only display assets with the specified attribute',
+        date_col='Date Submitted',
     )
-
-    field_selected = None
-    min_date = None
-    max_date = None
-
-    if filter_by != 'None':
-        if filter_by == 'Date Submitted':
-            col_1, col_2 = st.columns(2)
-
-            with col_1:
-                min_date = st.date_input(
-                    label='Earliest submitted date to consider',
-                    value=st.session_state.color_map_df['Date Submitted'].min(),
-                )
-
-            with col_2:
-                max_date = st.date_input(label='Latest submitted date to consider')
-        else:
-            field_selected = st.multiselect(
-                label='Choose a field to compare against',
-                options=sorted(st.session_state.color_map_df[filter_by].unique()),
-                default=sorted(st.session_state.color_map_df[filter_by].unique()),
-            )
 
     include_baseline = st.checkbox(label='Include baseline in plot(s)', value=True)
 
     insert_line_break()
 
-    if (
-        filter_by != 'None'
-        and (field_selected is not None or min_date is not None or max_date is not None)
-    ):
-        if filter_by == 'Date Submitted':
-            df_to_plot = st.session_state.color_map_df[
-                (st.session_state.color_map_df['Date Submitted'] >= min_date)
-                & (st.session_state.color_map_df['Date Submitted'] <= max_date)
-            ]
-        else:
-            df_to_plot = st.session_state.color_map_df[
-                st.session_state.color_map_df[filter_by].isin(field_selected)
-            ]
-    else:
-        df_to_plot = st.session_state.color_map_df.copy()
-
     if len(df_to_plot) == 0:
-        st.error(
-            "Hmm... we couldn't find any existing assets with those filters applied. "
-            'Please try again with a different set of filters.'
-        )
+        st.error(TOO_FILTERED_DOWN_ERROR_MESSAGE)
         return
 
     if include_baseline:
@@ -280,7 +249,7 @@ def plot_color_maps() -> None:
         'Baseline',
     ]
 
-    with st.expander(label='Break down by identity', expanded=False):
+    with st.expander(label='Break down by identity', expanded=True):
         insert_line_break()
 
         st.markdown('##### Scores by Identity, Ad Level')
@@ -449,7 +418,28 @@ def display_qualitative_notes() -> None:
         keep='last',
     )
 
-    for _, row in notes_df.iterrows():
+    df_to_plot = create_filters_selectboxes(
+        df=notes_df,
+        key_prefix='display_qualitative_notes',
+        selectbox_label='Filter notes by...',
+        filter_by_cols=[
+            'Ad Name',
+            'Brand',
+            'Product',
+            'Content Type',
+            'Baseline',
+            'Date Submitted',
+        ],
+        date_col='Date Submitted',
+    )
+
+    insert_line_break()
+
+    if len(df_to_plot) == 0:
+        st.error(TOO_FILTERED_DOWN_ERROR_MESSAGE)
+        return
+
+    for _, row in df_to_plot.iterrows():
         with st.expander(f'"{row["Ad Name"]}" Notes', expanded=False):
             notes = 'No notes! 🎉'
 
@@ -466,19 +456,51 @@ def display_qualitative_notes() -> None:
 
 def plot_rep_score_progress() -> None:
     """Plot rep score progress over content type or date submitted."""
-    progress_df = st.session_state.data_explorer_df[
-        st.session_state.data_explorer_df[['Ad Name', 'Brand', 'Product']]
-        .duplicated(keep=False)
-    ]
+    date_strftime_format = '%b %Y'
 
     # remove scores of "No Codeable Characters" from consideration
-    progress_df = progress_df[
-        ~progress_df['Ad Total Score'].str.lower().str.contains('no codeable character')
+    progress_df = st.session_state.data_explorer_df[
+        ~(
+            st.session_state.data_explorer_df['Ad Total Score']
+            .str
+            .lower()
+            .str
+            .contains('no codeable character')
+        )
     ]
+
+    progress_df = _remove_duplicate_assets_for_progress_plots(df=progress_df)
 
     if len(progress_df) == 0:
         st.error('No assets with more than one version scored have been uploaded and assigned!')
         return
+
+    df_to_plot = create_filters_selectboxes(
+        df=progress_df,
+        key_prefix='plot_rep_score_progress',
+        selectbox_label='Filter progress plot by...',
+        filter_by_cols=[
+            'Ad Name',
+            'Brand',
+            'Product',
+            'Content Type',
+            'Baseline',
+            'Date Submitted',
+        ],
+        date_col='Date Submitted',
+    )
+
+    # remove duplicates again, in case they were filtered out
+    df_to_plot = _remove_duplicate_assets_for_progress_plots(df=df_to_plot)
+
+    if len(df_to_plot) == 0:
+        st.error(
+            "Hmm... we couldn't find two or more versions of any asset with those filters applied. "
+            'Please try again with a different set of filters.'
+        )
+        return
+
+    did_we_apply_any_filters = (len(progress_df) != len(df_to_plot))
 
     x_axis = st.selectbox(
         label='Select field to compare against',
@@ -488,7 +510,7 @@ def plot_rep_score_progress() -> None:
 
     insert_line_break()
 
-    progress_df = progress_df[[
+    df_to_plot = df_to_plot[[
         'Content Type',
         'Ad Total Score',
         'Ad Name',
@@ -497,40 +519,50 @@ def plot_rep_score_progress() -> None:
         'Date Submitted',
     ]]
 
-    progress_df['Ad Total Score'] = progress_df['Ad Total Score'].astype(float)
-    progress_df['Date Submitted (Month)'] = (
-        progress_df['Date Submitted']
-        .dt
-        .date
-        .apply(lambda x: x.strftime('%b %Y'))
+    df_to_plot['Ad Total Score'] = df_to_plot['Ad Total Score'].astype(float)
+    df_to_plot['Date Submitted (Month)'] = (
+        df_to_plot['Date Submitted']
+        .apply(lambda x: x.strftime(date_strftime_format))
     )
-    progress_df = progress_df.sort_values(by='Date Submitted').reset_index(drop=True)
+    df_to_plot = df_to_plot.sort_values(by='Date Submitted').reset_index(drop=True)
 
-    date_submitted_month_sorted_order = progress_df['Date Submitted (Month)'].unique().tolist()
+    date_submitted_month_sorted_order = df_to_plot['Date Submitted (Month)'].unique().tolist()
 
-    progress_chart_x_kwargs = {
+    progress_chart_encode_kwargs = {
         'color': 'Ad Name',
         'strokeDash': 'Ad Name',
         'tooltip': ['Ad Name', 'Brand', 'Product', 'Date Submitted', 'Ad Total Score'],
     }
 
-    if x_axis == 'Portfolio':
-        progress_df = (
-            progress_df
-            .groupby('Date Submitted (Month)')
-            .mean(numeric_only=True)
-            .reset_index()
-        )
-        progress_chart_x_kwargs = {
-            'tooltip': ['Ad Total Score'],
-        }
+    x_axis_kwargs = {}
 
     if x_axis == 'Date Submitted' or x_axis == 'Portfolio':
+        x_axis_kwargs = {
+            'scale': alt.Scale(domain=[
+                x.strftime(date_strftime_format) for x in pd.period_range(
+                    start=df_to_plot['Date Submitted'].min(),
+                    end=df_to_plot['Date Submitted'].max(),
+                    freq='1M',
+                )
+            ])
+        }
+
+        if x_axis == 'Portfolio':
+            df_to_plot = (
+                df_to_plot
+                .groupby('Date Submitted (Month)')
+                .mean(numeric_only=True)
+                .reset_index()
+            )
+            progress_chart_encode_kwargs = {
+                'tooltip': ['Ad Total Score'],
+            }
+
         x_axis = 'Date Submitted (Month)'
 
     progress_chart = (
         alt
-        .Chart(progress_df)
+        .Chart(df_to_plot)
         .mark_line(point=True)
         .encode(
             x=alt.X(
@@ -539,10 +571,15 @@ def plot_rep_score_progress() -> None:
                 axis=alt.Axis(
                     labelAngle=-45,
                     labelPadding=5,
-                )
+                ),
+                **x_axis_kwargs,
             ),
-            y='Ad Total Score',
-            **progress_chart_x_kwargs,
+            y=alt.Y(
+                shorthand='Ad Total Score',
+                title=f'{"Filtered " if did_we_apply_any_filters else ""}Ad Total Score',
+                scale=alt.Scale(domain=[0, 100]),
+            ),
+            **progress_chart_encode_kwargs,
         ).properties(
             height=500,
         ).configure_point(
@@ -551,3 +588,8 @@ def plot_rep_score_progress() -> None:
     )
 
     st.altair_chart(progress_chart, use_container_width=True)
+
+
+def _remove_duplicate_assets_for_progress_plots(df: pd.DataFrame) -> pd.DataFrame:
+    """Remove rows in ``df`` sharing duplicate ``Ad Name``, ``Brand``, and ``Product`` values."""
+    return df[df[['Ad Name', 'Brand', 'Product']].duplicated(keep=False)]
