@@ -492,8 +492,8 @@ def page_five() -> None:
         value=st.session_state.asset_information.get('notes', ''),
         height=200,
         help=(
-            'Use this space to record any additional notes. This box will carry over as you '
-            'advance through the submission process.'
+            'Use this space to record any additional notes. This box has carried over as you '
+            'advanced through the submission process.'
         ),
     )
 
