@@ -2,6 +2,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.13.1] - 2022-01-04
+### Fixed
+ - "Asset Information" page to use updated column names
+
 # [0.13.0] - 2022-12-22
 ### Added
  - Asset filters across all tabs in the "Explore Your Data" page, not just for the "Score Heatmap"

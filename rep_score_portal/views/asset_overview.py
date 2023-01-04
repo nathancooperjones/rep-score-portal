@@ -86,7 +86,7 @@ def view_asset_information() -> None:
             'Status',
             'Brand',
             'Product',
-            'Region(s) This Creative Will Air In',
+            'Region / Countries This Creative Will Air In',
             'Content Type',
         ]
 
@@ -121,7 +121,7 @@ def view_asset_information() -> None:
                 'Version',
                 'Brand',
                 'Product',
-                'Region(s) This Creative Will Air In',
+                'Region / Countries This Creative Will Air In',
                 'Content Type',
                 'Point of Contact Email',
                 'Date Submitted',
