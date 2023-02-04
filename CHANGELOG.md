@@ -2,6 +2,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.14.3] - 2022-02-XX
+### Changed
+ - ``secondaryBackgroundColor`` value set in ``.streamlit/config.toml``. Additionally, this is no longer hard-coded anywhere else in the codebase, now dynamically pulling the color code from this single source
+
 # [0.14.2] - 2022-02-04
 ### Added
  - Timeouts and retries to Google Sheets connection attempts made in ``read_google_spreadsheet``
