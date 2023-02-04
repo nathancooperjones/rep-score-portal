@@ -2,6 +2,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.14.2] - 2022-02-04
+### Added
+ - Timeouts and retries to Google Sheets connection attempts made in ``read_google_spreadsheet``
+### Removed
+ - Custom ``server.runOnSave``, ``server.enableCORS``, ``server.enableXsrfProtection``, and ``runner.fastReruns`` settings set in ``.streamlit/config.toml``
+
 # [0.14.1] - 2022-02-03
 ### Changed
  - Upgraded the version of ``streamlit_authenticator`` used to ``>=0.2.0``, restructuring the ``secrets.toml`` file used in the backend of the application

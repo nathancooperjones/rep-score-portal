@@ -5,17 +5,8 @@ maxUploadSize = 2000
 # maxMessageSize = 12000
 maxMessageSize = 2000
 
-runOnSave = false
-
-enableCORS = false
-
-enableXsrfProtection = false
-
 [browser]
 gatherUsageStats = false
-
-[runner]
-fastReruns = true
 
 [theme]
 base="light"

@@ -3,6 +3,7 @@ boto3
 gspread_pandas
 htbuilder
 pandas
+requests
 streamlit~=1.17
 streamlit-aggrid
 streamlit_authenticator>=0.2.0
