@@ -140,7 +140,7 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 st.image('../images/Rep Score Portal Banner.png')
 
 
-def determine_page():
+def determine_page() -> None:
     if st.session_state.get('clear_radio'):
         del st.session_state.clear_radio
 

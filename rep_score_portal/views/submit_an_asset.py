@@ -19,6 +19,7 @@ from config import (
 )
 from input_output import append_new_row_in_asset_tracker, upload_file_to_s3
 from utils import (
+    change_upload_fields_colors,
     display_progress_bar_asset_tracker,
     edit_colors_of_selectbox,
     edit_colors_of_text_area,
@@ -156,6 +157,14 @@ def page_one() -> None:
     """Display the first page for the "Submit an Asset" process."""
     st.image('../images/Stage 1.png', use_column_width=True)
 
+    # set up CSS for the creative brief upload input boxes
+    creative_brief_filename_label = '... or enter a URL to the :blue[CREATIVE BRIEF]'
+
+    change_upload_fields_colors(
+        css_color='#0096DC',
+        filename_label=creative_brief_filename_label,
+    )
+
     st.markdown('## Start the Process')
 
     if st.button('← Previous Page'):
@@ -201,23 +210,24 @@ def page_one() -> None:
     st.write('-----')
 
     st.write(
-        '**Please either upload the creative brief or provide a URL to view your creative brief**'
+        '**Please either upload the :blue[CREATIVE BRIEF] or provide a URL to view your '
+        ':blue[CREATIVE BRIEF]**'
     )
 
     insert_line_break()
 
     creative_brief = st.file_uploader(
-        label='Select the creative brief to upload...',
+        label='Select the :blue[CREATIVE BRIEF] to upload...',
         type=None,
         accept_multiple_files=False,
     )
 
     creative_brief_url = st.text_input(
-        label='... or enter a URL to the creative brief',
+        label=creative_brief_filename_label,
         value=st.session_state.asset_information['creative_brief_filename'],
         help=(
-            'Rather than uploading a creative brief, you can submit a URL to an already-uploaded '
-            'creative brief that our coders can reference instead'
+            'Rather than uploading a :blue[CREATIVE BRIEF], you can submit a URL to an '
+            'already-uploaded :blue[CREATIVE BRIEF] that our coders can reference instead'
         ),
         placeholder='https://...',
     )
@@ -233,16 +243,19 @@ def page_one() -> None:
             or not asset_product
             or not countries_airing
             or not asset_point_of_contact
+        ) and (
+            st.session_state['username']
+            not in st.secrets['login_groups']['asset_submission_inputs_optional']
         ):
             st.error('Please fill out all fields before continuing.')
             st.stop()
 
         if creative_brief and creative_brief_url:
-            st.error('Please either upload a creative brief _or_ provide a URL - not both.')
+            st.error('Please either upload a :blue[CREATIVE BRIEF] _or_ provide a URL - not both.')
             st.stop()
 
         if creative_brief:
-            with st.spinner(text='Uploading creative brief...'):
+            with st.spinner(text='Uploading :blue[CREATIVE BRIEF]...'):
                 creative_brief_filename = upload_file_to_s3(
                     uploaded_file=creative_brief,
                     s3_key='creative_briefs',
@@ -309,6 +322,10 @@ def page_two() -> None:
         or st.session_state.asset_information['marketing_4']
         or st.session_state.asset_information['notes']
         or st.session_state.asset_information['seen_asset_before']
+        or (
+            st.session_state['username']
+            in st.secrets['login_groups']['asset_submission_inputs_optional']
+        )
     ):
         if st.button('Continue to Step 3'):
             st.session_state.progress.append('page_two_complete')
@@ -367,6 +384,10 @@ def page_three() -> None:
         or st.session_state.asset_information['agency_creative_5']
         or st.session_state.asset_information['notes']
         or st.session_state.asset_information['seen_asset_before']
+        or (
+            st.session_state['username']
+            in st.secrets['login_groups']['asset_submission_inputs_optional']
+        )
     ):
         if st.button('Continue to Step 4'):
             st.session_state.progress.append('page_three_complete')
@@ -430,6 +451,10 @@ def page_four() -> None:
         or st.session_state.asset_information['creative_review_5']
         or st.session_state.asset_information['notes']
         or st.session_state.asset_information['seen_asset_before']
+        or (
+            st.session_state['username']
+            in st.secrets['login_groups']['asset_submission_inputs_optional']
+        )
     ):
         if st.button('Continue to Step 5'):
             st.session_state.progress.append('page_four_complete')
@@ -439,6 +464,14 @@ def page_four() -> None:
 def page_five() -> None:
     """Display the fifth page for the "Submit an Asset" process."""
     st.image('../images/Stage 5.png', use_column_width=True)
+
+    # set up CSS for the asset upload input boxes
+    asset_upload_filename_label = '... or enter a URL to the :green[ASSET]'
+
+    change_upload_fields_colors(
+        css_color='#14C896',
+        filename_label=asset_upload_filename_label,
+    )
 
     st.markdown('## Upload Asset')
 
@@ -456,21 +489,24 @@ def page_five() -> None:
 
     st.write('-----')
 
-    st.write('**Please either upload your asset below or provide a URL to view your asset**')
+    st.write(
+        '**Please either upload your :green[ASSET] below or provide a URL to view your '
+        ':green[ASSET]**'
+    )
 
     insert_line_break()
 
     uploaded_file = st.file_uploader(
-        label='Select a file to upload...',
+        label='Select an :green[ASSET] file to upload...',
         type=None,
         accept_multiple_files=False,
     )
 
     asset_url = st.text_input(
-        label='... or enter a URL to the asset',
+        label=asset_upload_filename_label,
         help=(
-            'Rather than uploading an asset, you can submit a URL to an already-uploaded asset '
-            'that our coders can reference instead'
+            'Rather than uploading an :green[ASSET], you can submit a URL to an already-uploaded '
+            ':green[ASSET] that our coders can reference instead'
         ),
         placeholder='https://...',
     )
@@ -497,10 +533,17 @@ def page_five() -> None:
         ),
     )
 
-    if uploaded_file or asset_url:
+    if (
+        uploaded_file
+        or asset_url
+        or (
+            st.session_state['username']
+            in st.secrets['login_groups']['asset_submission_inputs_optional']
+        )
+    ):
         if st.button('Upload!'):
             if uploaded_file and asset_url:
-                st.error('Please either upload an asset _or_ provide a URL - not both.')
+                st.error('Please either upload an :green[ASSET] _or_ provide a URL - not both.')
                 st.stop()
 
             st.session_state.asset_information['content_type'] = asset_content_type
@@ -508,7 +551,7 @@ def page_five() -> None:
             st.session_state.asset_information['notes'] = notes
 
             if uploaded_file:
-                with st.spinner(text='Uploading asset...'):
+                with st.spinner(text='Uploading :green[ASSET]...'):
                     asset_filename = upload_file_to_s3(
                         uploaded_file=uploaded_file,
                         s3_key='uploads',
@@ -519,7 +562,7 @@ def page_five() -> None:
                 asset_filename = asset_url
                 file_uploaded_to_s3 = False
 
-            with st.spinner(text='Setting up asset tracking...'):
+            with st.spinner(text='Setting up :green[ASSET] tracking...'):
                 append_new_row_in_asset_tracker(
                     asset_name=st.session_state.asset_information['name'],
                     username=st.session_state['username'],

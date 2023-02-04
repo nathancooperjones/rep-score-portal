@@ -286,6 +286,38 @@ def create_filters_selectboxes(
     return filtered_df
 
 
+def change_upload_fields_colors(css_color: str, filename_label: str) -> None:
+    """
+    Use custom CSS code to change the colors of both the upload box and filename field needed for
+    files that can be uploading during the "Submit an Asset" process.
+
+    Parameters
+    ----------
+    css_color: str
+        Color to change the upload box and URL field to
+    filename_label: str
+        The ``label`` argument passed to the field for accepting a URL to an already-uploaded file
+
+    """
+    upload_inputs_css = f"""
+        <style>
+            div[data-testid="stFileUploader"] > section {{
+                background-color: {css_color};
+            }}
+
+            div[data-testid="stFileUploader"] > section > div > span {{
+                color: #000000;
+            }}
+
+            input[aria-label="{filename_label}"] {{
+                background-color: {css_color};
+            }}
+        </style>
+    """
+
+    st.markdown(upload_inputs_css, unsafe_allow_html=True)
+
+
 def get_countries_list() -> List[str]:
     """Return a list of all countries."""
     return [

@@ -2,6 +2,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.14.0] - 2022-02-03
+### Changed
+ - Upload-related inputs for both the creative brief and asset within the "Submit an Asset" process have been color-coded to differentiate them from the other fields on the page
+ - Required steps in the "Submit an Asset" process have been removed for select users listed in the ``asset_submission_inputs_optional`` group
+ - "Rep Score Progress" plots on the "Explore Your Data" page now default to the portfolio view upon page load
+ - View names for the "Rep Score Progress" plots on the "Explore Your Data" to be clearer
+ - Streamlit version, now upgraded to ``1.17``
+ - Code is now ``flake8-annotations`` compliant, with this requirement being added to the CI workflow along with import order and docstring linting
+### Fixed
+ - Ad names are now always displayed properly in each "Score Heatmap" plotted on the "Explore Your Data" page. Before, only about half the ad names were displayed due to a spacing bug
+
 # [0.13.1] - 2022-01-04
 ### Fixed
  - "Asset Information" page to use updated column names

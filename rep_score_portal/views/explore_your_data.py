@@ -404,6 +404,10 @@ def _construct_plot(
             titleFontSize=12,
             titleFontWeight=alt.FontWeight('normal'),
         )
+        .configure_axisY(
+            labelFontSize=12,
+            labelLimit=199,
+        )
     )
 
     st.altair_chart(full_plot, use_container_width=True)
@@ -503,8 +507,9 @@ def plot_rep_score_progress() -> None:
     did_we_apply_any_filters = (len(progress_df) != len(df_to_plot))
 
     x_axis = st.selectbox(
-        label='Select field to compare against',
-        options=['Content Type', 'Date Submitted', 'Portfolio'],
+        label='Select a view for the plot',
+        options=['Portfolio', 'Content Type', 'Date Submitted'],
+        format_func=lambda x: x + ' View' if 'Portfolio' in x else f'Individual Ad View (by {x})',
         help='This sets the x-axis of the plot below',
     )
 
