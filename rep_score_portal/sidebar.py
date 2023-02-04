@@ -27,7 +27,7 @@ def construct_sidebar() -> None:
         _, name_display_col_2 = st.columns([0.1, 300])
 
         with name_display_col_2:
-            st.markdown(f'Welcome back, **{st.session_state["username"]}**!')
+            st.markdown(f'Welcome back, **{st.session_state["name"]}**!')
 
         insert_line_break()
 

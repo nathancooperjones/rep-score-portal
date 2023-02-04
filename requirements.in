@@ -5,4 +5,4 @@ htbuilder
 pandas
 streamlit~=1.17
 streamlit-aggrid
-streamlit_authenticator<0.2.0  # for now
+streamlit_authenticator>=0.2.0

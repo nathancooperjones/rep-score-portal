@@ -2,6 +2,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.14.1] - 2022-02-03
+### Changed
+ - Upgraded the version of ``streamlit_authenticator`` used to ``>=0.2.0``, restructuring the ``secrets.toml`` file used in the backend of the application
+
 # [0.14.0] - 2022-02-03
 ### Changed
  - Upload-related inputs for both the creative brief and asset within the "Submit an Asset" process have been color-coded to differentiate them from the other fields on the page
