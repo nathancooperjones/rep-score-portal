@@ -1,3 +1,5 @@
+import copy
+
 import pandas as pd
 import streamlit as st
 import streamlit_authenticator as stauth
@@ -6,6 +8,7 @@ from footer import display_footer
 from sidebar import construct_sidebar
 from utils import (
     fetch_asset_data,
+    insert_line_break,
     reset_session_state_asset_information,
     reset_session_state_progress,
 )
@@ -184,16 +187,14 @@ def determine_page() -> None:
 
 if not st.session_state.get('authentication_status'):
     # this is likely the first time we are running the app - let's double check that
-    usernames = list(st.secrets['logins'].keys())
-    passwords = list(st.secrets['logins'].values())
-
     authenticator = stauth.Authenticate(
-        names=usernames,
-        usernames=usernames,
-        passwords=stauth.Hasher(passwords).generate(),
+        credentials=copy.deepcopy(
+            x=st.secrets['logins']['credentials'].__dict__['__nested_secrets__'],  # oof
+        ),
         cookie_name=st.secrets['authenticator']['cookie_name'],
         key=st.secrets['authenticator']['key'],
-        cookie_expiry_days=7,
+        cookie_expiry_days=st.secrets['authenticator']['cookie_expiry_days'],
+        preauthorized=None,
     )
 
     authenticator.login(form_name='Login', location='main')
@@ -205,6 +206,23 @@ if not st.session_state.get('authentication_status'):
         st.error('The username and/or password entered is incorrect - please try again.')
     elif st.session_state.get('authentication_status') is None:
         st.info('Please enter your username and password, then click the "Login" button.')
+
+    insert_line_break()
+
+    email_subject = 'Trouble Logging Into the Rep Score Portal'
+    email_body = (
+        "Hi Rebecca,%0D%0A%0D%0AI'm having some trouble logging into the Rep Score Portal. Can you "
+        'please help me reset my portal login information?%0D%0A%0D%0AThank you!'
+    )
+
+    contact_html = (f"""
+        <a style="color: #003749;"
+        href="mailto:{st.secrets['authenticator']['contact_email_address']}?subject={email_subject}
+        &body={email_body}">
+        Having issues logging in?</a>
+    """)
+
+    st.markdown(contact_html, unsafe_allow_html=True)
 
 if st.session_state.get('authentication_status'):
     if 'progress' not in st.session_state:

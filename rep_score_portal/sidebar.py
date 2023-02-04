@@ -27,7 +27,7 @@ def construct_sidebar() -> None:
         _, name_display_col_2 = st.columns([0.1, 300])
 
         with name_display_col_2:
-            st.markdown(f'Welcome back, **{st.session_state["username"]}**!')
+            st.markdown(f'Welcome back, **{st.session_state["name"]}**!')
 
         insert_line_break()
 
@@ -79,7 +79,8 @@ def construct_sidebar() -> None:
 
         contact_html = (f"""
             <a style="color: #003749;"
-            href="mailto:rebecca@therepproject.org?subject={email_subject}&body={email_body}">
+            href="mailto:{st.secrets['authenticator']['contact_email_address']}?
+            subject={email_subject}&body={email_body}">
             Having issues?</a>
         """)
 
