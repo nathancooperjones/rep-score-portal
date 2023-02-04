@@ -217,7 +217,8 @@ if not st.session_state.get('authentication_status'):
 
     contact_html = (f"""
         <a style="color: #003749;"
-        href="mailto:rebecca@therepproject.org?subject={email_subject}&body={email_body}">
+        href="mailto:{st.secrets['authenticator']['contact_email_address']}?subject={email_subject}
+        &body={email_body}">
         Having issues logging in?</a>
     """)
 
