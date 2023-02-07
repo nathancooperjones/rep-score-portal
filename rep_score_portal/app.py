@@ -185,6 +185,8 @@ def determine_page() -> None:
         home_page()
 
 
+login_trouble_message_placeholder = None
+
 if not st.session_state.get('authentication_status'):
     # this is likely the first time we are running the app - let's double check that
     authenticator = stauth.Authenticate(
@@ -222,9 +224,14 @@ if not st.session_state.get('authentication_status'):
         Having issues logging in?</a>
     """)
 
-    st.markdown(contact_html, unsafe_allow_html=True)
+    login_trouble_message_placeholder = st.empty()
+    login_trouble_message_placeholder.markdown(contact_html, unsafe_allow_html=True)
 
 if st.session_state.get('authentication_status'):
+    if login_trouble_message_placeholder is not None:
+        # if not ``None``, then assume it is of type ``st.empty()``
+        login_trouble_message_placeholder.empty()
+
     if 'progress' not in st.session_state:
         reset_session_state_progress()
 
@@ -237,5 +244,5 @@ if st.session_state.get('authentication_status'):
 
     determine_page()
 
-# NOTE: anything past this point will and NOT in the ``if`` block above will be displayed regardless
-# of login status
+# NOTE: anything past this point and NOT in the ``if`` block above will be displayed regardless of
+# login status
