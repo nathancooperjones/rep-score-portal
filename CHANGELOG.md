@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Changed
  - Upgraded Streamlit to version ``1.18.1``
  - Enabled static file hosting in Streamlit
+### Fixed
+ - Only displaying unique asset names as options in Step 0 of the "Submit an Asset" page
 
 # [0.14.3] - 2022-02-07
 ### Fixed
