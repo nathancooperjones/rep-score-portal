@@ -55,7 +55,7 @@ def page_zero() -> None:
     if seen_asset_before_status == asset_entered_before_option_str:
         fetch_asset_data()
 
-        options = st.session_state.asset_tracker_df['Asset Name'].tolist()
+        options = st.session_state.asset_tracker_df['Asset Name'].unique().tolist()
 
         if len(options) >= 1:
             selected_asset = st.selectbox(
