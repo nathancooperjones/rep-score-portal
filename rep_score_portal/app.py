@@ -140,7 +140,7 @@ hide_streamlit_style = f"""
 
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-st.image('../images/Rep Score Portal Banner.png')
+st.image('./static/Rep Score Portal Banner.png')
 
 
 def determine_page() -> None:

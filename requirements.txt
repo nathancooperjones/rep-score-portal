@@ -14,9 +14,9 @@ bcrypt==4.0.1
     # via streamlit-authenticator
 blinker==1.5
     # via streamlit
-boto3==1.26.64
+boto3==1.26.70
     # via -r requirements.in
-botocore==1.29.64
+botocore==1.29.70
     # via
     #   boto3
     #   s3transfer
@@ -47,7 +47,7 @@ google-auth==2.16.0
     #   google-auth-oauthlib
     #   gspread
     #   gspread-pandas
-google-auth-oauthlib==0.8.0
+google-auth-oauthlib==1.0.0
     # via
     #   gspread
     #   gspread-pandas
@@ -79,7 +79,7 @@ mdurl==0.1.2
     # via markdown-it-py
 more-itertools==9.0.0
     # via htbuilder
-numpy==1.24.1
+numpy==1.24.2
     # via
     #   altair
     #   pandas
@@ -153,7 +153,7 @@ six==1.16.0
     #   python-dateutil
 smmap==5.0.0
     # via gitdb
-streamlit==1.17.0
+streamlit==1.18.1
     # via
     #   -r requirements.in
     #   extra-streamlit-components
@@ -181,5 +181,5 @@ urllib3==1.26.14
     #   requests
 validators==0.20.0
     # via streamlit
-zipp==3.12.0
+zipp==3.13.0
     # via importlib-metadata
