@@ -5,6 +5,8 @@ maxUploadSize = 2000
 # maxMessageSize = 12000
 maxMessageSize = 2000
 
+enableStaticServing = true
+
 [browser]
 gatherUsageStats = false
 

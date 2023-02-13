@@ -155,7 +155,7 @@ def page_zero() -> None:
 
 def page_one() -> None:
     """Display the first page for the "Submit an Asset" process."""
-    st.image('../images/Stage 1.png', use_column_width=True)
+    st.image('./static/Stage 1.png', use_column_width=True)
 
     # set up CSS for the creative brief upload input boxes
     creative_brief_filename_label = '... or enter a URL to the :blue[CREATIVE BRIEF]'
@@ -277,7 +277,7 @@ def page_one() -> None:
 
 def page_two() -> None:
     """Display the second page for the "Submit an Asset" process."""
-    st.image('../images/Stage 2.png', use_column_width=True)
+    st.image('./static/Stage 2.png', use_column_width=True)
 
     st.markdown('## Infuse DE&I provocations into the Marketing Brief')
 
@@ -334,7 +334,7 @@ def page_two() -> None:
 
 def page_three() -> None:
     """Display the third page for the "Submit an Asset" process."""
-    st.image('../images/Stage 3.png', use_column_width=True)
+    st.image('./static/Stage 3.png', use_column_width=True)
 
     st.markdown('## Infuse DE&I provocations into the Agency Creative Brief')
 
@@ -396,7 +396,7 @@ def page_three() -> None:
 
 def page_four() -> None:
     """Display the fourth page for the "Submit an Asset" process."""
-    st.image('../images/Stage 4.png', use_column_width=True)
+    st.image('./static/Stage 4.png', use_column_width=True)
 
     st.markdown('## DE&I Discussion in the Creative Reviews')
 
@@ -463,7 +463,7 @@ def page_four() -> None:
 
 def page_five() -> None:
     """Display the fifth page for the "Submit an Asset" process."""
-    st.image('../images/Stage 5.png', use_column_width=True)
+    st.image('./static/Stage 5.png', use_column_width=True)
 
     # set up CSS for the asset upload input boxes
     asset_upload_filename_label = '... or enter a URL to the :green[ASSET]'
@@ -604,7 +604,7 @@ def page_six() -> None:
         del st.session_state.asset_tracker_df
         del st.session_state.assigned_user_assets
 
-    st.image('../images/Stage 6.png', use_column_width=True)
+    st.image('./static/Stage 6.png', use_column_width=True)
 
     st.markdown('## Summary')
 

@@ -17,12 +17,16 @@ def construct_sidebar() -> None:
         _, col_2, _ = st.columns([1, 27, 1])
 
         with col_2:
-            if st.secrets['login_logos'].get(st.session_state['username']) == 'Mars Petcare':
-                st.image('../images/Mars Petcare Logo Square.png', use_column_width=True)
-            elif st.secrets['login_logos'].get(st.session_state['username']) == 'ExxonMobil':
-                st.image('../images/ExxonMobil Logo.png', use_column_width=True)
+            user_login_logo = st.secrets['login_logos'].get(st.session_state['username'])
+
+            if user_login_logo == 'Mars Petcare':
+                st.image('./static/Mars Petcare Logo Square.png', use_column_width=True)
+            elif user_login_logo == 'ExxonMobil':
+                st.image('./static/ExxonMobil Logo.png', use_column_width=True)
+            elif user_login_logo == 'BBDO Creative Compass':
+                st.image('./static/BBDO Creative Compass Logo.png', use_column_width=True)
             else:
-                st.image('../images/Mars Logo.png', use_column_width=True)
+                st.image('./static/Mars Logo.png', use_column_width=True)
 
         _, name_display_col_2 = st.columns([0.1, 300])
 

@@ -2,6 +2,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.14.4] - 2022-02-13
+### Added
+ - BBDO Creative Compass logo option in the sidebar
+### Changed
+ - Upgraded Streamlit to version ``1.18.1``
+ - Enabled static file hosting in Streamlit
+
 # [0.14.3] - 2022-02-07
 ### Fixed
  - The "Having issues logging in?" link will now properly disappear as soon as the user is logged in
