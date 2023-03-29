@@ -29,112 +29,116 @@ from views.submit_an_asset import (
 st.set_page_config(page_title='Rep Score Portal', page_icon='🌀')
 
 
-hide_streamlit_style = f"""
+hide_streamlit_style = """
     <style>
-        #MainMenu {{visibility: hidden;}}
-        footer {{
+        #MainMenu {
             visibility: hidden;
-        }}
-        [title='View fullscreen'] {{
+        }
+        footer {
             visibility: hidden;
-        }}
+        }
+        [title='View fullscreen'] {
+            visibility: hidden;
+        }
 
-        h1 > div > a > svg {{
+        h1 > div > a > svg {
             display: none;
-        }}
-        h2 > div > a > svg {{
+        }
+        h2 > div > a > svg {
             display: none;
-        }}
-        h3 > div > a > svg {{
+        }
+        h3 > div > a > svg {
             display: none;
-        }}
-        h4 > div > a > svg {{
+        }
+        h4 > div > a > svg {
             display: none;
-        }}
-        h5 > div > a > svg {{
+        }
+        h5 > div > a > svg {
             display: none;
-        }}
-        h6 > div > a > svg {{
+        }
+        h6 > div > a > svg {
             display: none;
-        }}
+        }
 
-        .stRadio > label {{
+        .stRadio > label {
             font-size: 16px;
-        }}
+        }
 
-        p {{
+        p {
             margin-bottom: 0.75rem;
-        }}
+        }
 
-        @font-face{{
+        @font-face{
             font-family:"LEMON MILK";
             src:url("https://trp-other.s3.amazonaws.com/fonts/LEMONMILK-Medium.otf") format("woff"),
             url("https://trp-other.s3.amazonaws.com/fonts/LEMONMILK-Medium.otf") format("opentype"),
             url("https://trp-other.s3.amazonaws.com/fonts/LEMONMILK-Medium.otf") format("truetype");
-        }}
+        }
 
-        h1,h2,h3,h4,h5,h6 {{
+        h1,h2,h3,h4,h5,h6 {
             font-family: 'LEMON MILK', sans-serif;
-        }}
+        }
 
-        .stProgress > div > div > div {{
-            background-color: gray;
+        .stProgress > div > div > div {
+            background-color: #F89C84;
             height: 1.5rem;
             margin-top: -0.5rem;
-        }}
+        }
 
-        .stProgress > div > div > div > div {{
-            background-color: green;
-        }}
+        .stProgress > div > div > div > div {
+            background-color: #F89C84;
+        }
 
-        div[role="progressbar"] > div > div {{
-            background-color: gray;
-        }}
+        div[role="progressbar"] > div > div {
+            background-color: #FFD4B4;
+        }
 
-        div[role="progressbar"] > div > div > div {{
-            background-color: green;
-        }}
+        div[role="progressbar"] > div > div > div {
+            background-color: #F89C84;
+        }
 
-        .streamlit-expanderHeader {{
+        .streamlit-expanderHeader {
             font-size: 16px;
-            color: {st.get_option('theme.secondaryBackgroundColor')};
+            color: #683474;
             font-weight: bold;
             margin-bottom: 5px;
-        }}
+        }
 
-        .streamlit-expanderContent > div {{
+        .streamlit-expanderContent > div {
             line-height: 1.3rem;
-        }}
+        }
 
-        .stTextArea > div > div {{
+        .stTextArea > div > div {
             background-color: #C8C8C8;
-        }}
+        }
 
-        div.stButton > button:first-child {{
-            background-color: #2A2526;
+        div.stButton > button:first-child {
+            background-color: #683474;
+            border-color: #000000;
             color: #FAF4EB;
-        }}
-        div.stButton > button:focus:not(:active) {{
-            background-color: #2A2526;
+        }
+        div.stButton > button:focus:not(:active) {
+            background-color: #683474;
+            border-color: #000000;
             color: #FAF4EB;
-        }}
+        }
 
-        div.stButton > button:first-child > div > p {{
+        div.stButton > button:first-child > div > p {
             font-size: 20px;
             margin-bottom: 1rem;
-        }}
+        }
 
-        .stTextInput > div > span {{
+        .stTextInput > div > span {
             display: none;
-        }}
+        }
 
-        .stMultiSelect > div > div > div > div > span > span {{
+        .stMultiSelect > div > div > div > div > span > span {
             max-width: 250px;
-        }}
+        }
 
-        div[data-baseweb="calendar"] > div > div > div > div {{
+        div[data-baseweb="calendar"] > div > div > div > div {
             color: #333333;
-        }}
+        }
     </style>
 """
 

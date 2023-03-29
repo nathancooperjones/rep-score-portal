@@ -20,8 +20,8 @@ primaryColor = "#000000"
 backgroundColor = "#FFFFFF"
 
 # Background color used for the sidebar and most interactive widgets.
-secondaryBackgroundColor = "#EA3423"  # original BBDO red
-# secondaryBackgroundColor = "#C0749C"  # Rep Score light purple
+# secondaryBackgroundColor = "#EA3423"  # original BBDO red
+secondaryBackgroundColor = "#C0749C"  # Rep Score light purple
 # secondaryBackgroundColor = "#683474"  # Rep Score dark purple
 # secondaryBackgroundColor = "#F89C84"  # Rep Score orange
 # secondaryBackgroundColor = "#FFD4B4"  # Rep Score tan

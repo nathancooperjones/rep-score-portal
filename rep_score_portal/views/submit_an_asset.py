@@ -466,10 +466,10 @@ def page_five() -> None:
     st.image('./static/Stage 5.png', use_column_width=True)
 
     # set up CSS for the asset upload input boxes
-    asset_upload_filename_label = '... or enter a URL to the :green[ASSET]'
+    asset_upload_filename_label = '... or enter a URL to the :orange[ASSET]'
 
     change_upload_fields_colors(
-        css_color='#14C896',
+        css_color='#FFBD59',
         filename_label=asset_upload_filename_label,
     )
 
@@ -490,14 +490,14 @@ def page_five() -> None:
     st.write('-----')
 
     st.write(
-        '**Please either upload your :green[ASSET] below or provide a URL to view your '
-        ':green[ASSET]**'
+        '**Please either upload your :orange[ASSET] below or provide a URL to view your '
+        ':orange[ASSET]**'
     )
 
     insert_line_break()
 
     uploaded_file = st.file_uploader(
-        label='Select an :green[ASSET] file to upload...',
+        label='Select an :orange[ASSET] file to upload...',
         type=None,
         accept_multiple_files=False,
     )
@@ -505,8 +505,8 @@ def page_five() -> None:
     asset_url = st.text_input(
         label=asset_upload_filename_label,
         help=(
-            'Rather than uploading an :green[ASSET], you can submit a URL to an already-uploaded '
-            ':green[ASSET] that our coders can reference instead'
+            'Rather than uploading an :orange[ASSET], you can submit a URL to an already-uploaded '
+            ':orange[ASSET] that our coders can reference instead'
         ),
         placeholder='https://...',
     )
@@ -543,7 +543,7 @@ def page_five() -> None:
     ):
         if st.button('Upload!'):
             if uploaded_file and asset_url:
-                st.error('Please either upload an :green[ASSET] _or_ provide a URL - not both.')
+                st.error('Please either upload an :orange[ASSET] _or_ provide a URL - not both.')
                 st.stop()
 
             st.session_state.asset_information['content_type'] = asset_content_type
@@ -551,7 +551,7 @@ def page_five() -> None:
             st.session_state.asset_information['notes'] = notes
 
             if uploaded_file:
-                with st.spinner(text='Uploading :green[ASSET]...'):
+                with st.spinner(text='Uploading :orange[ASSET]...'):
                     asset_filename = upload_file_to_s3(
                         uploaded_file=uploaded_file,
                         s3_key='uploads',
@@ -562,7 +562,7 @@ def page_five() -> None:
                 asset_filename = asset_url
                 file_uploaded_to_s3 = False
 
-            with st.spinner(text='Setting up :green[ASSET] tracking...'):
+            with st.spinner(text='Setting up :orange[ASSET] tracking...'):
                 append_new_row_in_asset_tracker(
                     asset_name=st.session_state.asset_information['name'],
                     username=st.session_state['username'],
