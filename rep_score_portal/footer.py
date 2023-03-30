@@ -44,6 +44,6 @@ def display_footer() -> None:
     layout(
         img(
             src='https://trp-other.s3.amazonaws.com/images/BBDO_and_Rep_Logos.png',
-            style=styles(height=px(20)),
+            style=styles(height=px(37)),
         )
     )

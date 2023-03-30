@@ -2,6 +2,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.14.5] - 2022-03-29
+### Changed
+ - Color scheme used across the entire Streamlit app
+ - Upgraded Streamlit to version ``1.20.0``
+### Fixed
+ - Inadvertently hidden axis labels in the "Scores by Identity, Ad Level" plot on the "Explore Your Data" page
+
 # [0.14.4] - 2022-02-13
 ### Added
  - BBDO Creative Compass logo option in the sidebar

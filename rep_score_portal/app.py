@@ -31,7 +31,9 @@ st.set_page_config(page_title='Rep Score Portal', page_icon='🌀')
 
 hide_streamlit_style = """
     <style>
-        #MainMenu {visibility: hidden;}
+        #MainMenu {
+            visibility: hidden;
+        }
         footer {
             visibility: hidden;
         }
@@ -78,26 +80,26 @@ hide_streamlit_style = """
         }
 
         .stProgress > div > div > div {
-            background-color: gray;
+            background-color: #F89C84;
             height: 1.5rem;
             margin-top: -0.5rem;
         }
 
         .stProgress > div > div > div > div {
-            background-color: green;
+            background-color: #F89C84;
         }
 
         div[role="progressbar"] > div > div {
-            background-color: gray;
+            background-color: #FFD4B4;
         }
 
         div[role="progressbar"] > div > div > div {
-            background-color: green;
+            background-color: #F89C84;
         }
 
         .streamlit-expanderHeader {
             font-size: 16px;
-            color: #EA3423;
+            color: #683474;
             font-weight: bold;
             margin-bottom: 5px;
         }
@@ -111,11 +113,13 @@ hide_streamlit_style = """
         }
 
         div.stButton > button:first-child {
-            background-color: #2A2526;
+            background-color: #683474;
+            border-color: #000000;
             color: #FAF4EB;
         }
         div.stButton > button:focus:not(:active) {
-            background-color: #2A2526;
+            background-color: #683474;
+            border-color: #000000;
             color: #FAF4EB;
         }
 

@@ -399,14 +399,14 @@ def _construct_plot(
     full_plot = (
         (chart + text)
         .configure_axis(
-            labelFontSize=15,
+            labelFontSize=14,
             labelFontWeight=alt.FontWeight('bold'),
             titleFontSize=12,
             titleFontWeight=alt.FontWeight('normal'),
         )
         .configure_axisY(
             labelFontSize=12,
-            labelLimit=199,
+            labelLimit=180,
         )
     )
 
