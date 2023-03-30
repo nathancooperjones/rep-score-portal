@@ -168,7 +168,8 @@ def page_one() -> None:
     st.markdown('## Start the Process')
 
     if st.button('← Previous Page'):
-        st.session_state.asset_information.pop('seen_asset_before', None)
+        # reset to default
+        st.session_state.asset_information['seen_asset_before'] = False
 
         remove_elements_from_progress_list(pages_to_remove=['page_zero_complete'])
 

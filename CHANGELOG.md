@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
  - Upgraded Streamlit to version ``1.20.0``
 ### Fixed
  - Inadvertently hidden axis labels in the "Scores by Identity, Ad Level" plot on the "Explore Your Data" page
+ - ``KeyError`` where ``seen_asset_before`` cannot be found in the Streamlit session state in certain edge cases
 
 # [0.14.4] - 2022-02-13
 ### Added
