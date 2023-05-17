@@ -118,9 +118,9 @@ def construct_sidebar() -> None:
 
         with sidebar_col_2:
             # HARD-CODED ``streamlit_authenticator.Authenticate.logout`` method to add injected
-            # logic:
-            # https://github.com/mkhorasani/Streamlit-Authenticator/blob/v0.1.5/streamlit_authenticator/__init__.py#L202  # noqa: E501
-            if st.button('Logout'):
+            # logic into the button action:
+            # https://github.com/mkhorasani/Streamlit-Authenticator/blob/v0.2.2/streamlit_authenticator/authenticate.py#L198  # noqa: E501
+            if st.button('Logout', key='streamlit_authenticator_logout'):
                 st.session_state.authenticator.cookie_manager.delete(
                     st.session_state.authenticator.cookie_name
                 )

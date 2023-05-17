@@ -31,9 +31,6 @@ st.set_page_config(page_title='Rep Score Portal', page_icon='🌀')
 
 hide_streamlit_style = """
     <style>
-        #MainMenu {
-            visibility: hidden;
-        }
         footer {
             visibility: hidden;
         }
@@ -125,7 +122,6 @@ hide_streamlit_style = """
 
         div.stButton > button:first-child > div > p {
             font-size: 20px;
-            margin-bottom: 1rem;
         }
 
         .stTextInput > div > span {

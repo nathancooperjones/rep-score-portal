@@ -97,9 +97,10 @@ def view_asset_information() -> None:
         grid_options = grid_options.build()
 
         # random, but... ¯\_(ツ)_/¯
-        height = 41 + (len(df_to_display) * 28)
+        height = 63 + (len(df_to_display) * 28)
 
-        st.caption('Click a row below to view more details about that asset.')
+        if len(df_to_display) > 1:
+            st.caption('Click a row below to view more details about that asset.')
 
         with warnings.catch_warnings():
             # oof
@@ -113,8 +114,12 @@ def view_asset_information() -> None:
                 enable_enterprise_modules=False,
             )
 
-        if len(data['selected_rows']) > 0:
-            row_selected = data['selected_rows'][0]
+        if len(data['selected_rows']) > 0 or len(df_to_display) == 1:
+            if len(df_to_display) == 1:
+                # auto-select the only possible row - don't make the user have to waste a click
+                row_selected = df_to_display.iloc[0]
+            else:
+                row_selected = data['selected_rows'][0]
 
             non_note_cols_to_display = [
                 'Submitted By',
