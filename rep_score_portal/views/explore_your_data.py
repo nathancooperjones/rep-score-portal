@@ -77,7 +77,7 @@ def page_seven() -> None:
 
         data_explorer_df['Date Submitted'] = (
             pd
-            .to_datetime(data_explorer_df['Date Submitted'])
+            .to_datetime(arg=data_explorer_df['Date Submitted'], format='mixed')
             .dt
             .date
         )

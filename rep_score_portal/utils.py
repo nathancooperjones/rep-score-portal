@@ -184,7 +184,7 @@ def fetch_asset_data() -> None:
 
                 asset_tracker_df['Date Submitted'] = (
                     pd
-                    .to_datetime(asset_tracker_df['Date Submitted'])
+                    .to_datetime(arg=asset_tracker_df['Date Submitted'], format='mixed')
                     .dt
                     .date
                 )
