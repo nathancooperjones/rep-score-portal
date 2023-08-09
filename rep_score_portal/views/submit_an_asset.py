@@ -492,8 +492,8 @@ def page_five() -> None:
     st.write('-----')
 
     st.write(
-        '**Please either upload your :orange[ASSET(S)] below or provide a URL to view your '
-        ':orange[ASSET]** :red[*]'
+        '**Please either upload your :orange[ASSET(S)] below or provide URL(s) to view your '
+        ':orange[ASSET(S)]** :red[*]'
     )
 
     insert_line_break()
@@ -507,7 +507,7 @@ def page_five() -> None:
     asset_url = st.text_input(
         label=asset_upload_filename_label,
         help=(
-            'Rather than uploading an :orange[ASSET], you can submit URL(s) to already-uploaded '
+            'Rather than uploading :orange[ASSET(S)], you can submit URL(s) to already-uploaded '
             ':orange[ASSET(S)] that our coders can reference instead. For multiple URLs, separate '
             'each with a comma.'
         ),
@@ -547,13 +547,13 @@ def page_five() -> None:
             st.session_state.asset_information['notes'] = notes
 
             if uploaded_files:
-                asset_filename = list()
+                asset_filename_list = list()
 
                 with st.spinner(
                     text=f'Uploading :orange[ASSET{"S" if len(uploaded_files) > 1 else ""}]...',
                 ):
                     for uploaded_file in uploaded_files:
-                        asset_filename.append(
+                        asset_filename_list.append(
                             upload_file_to_s3(
                                 uploaded_file=uploaded_file,
                                 s3_key='uploads',
@@ -562,10 +562,10 @@ def page_five() -> None:
 
                         st.toast(body=f'Uploaded {uploaded_file.name}!')
 
-                if len(asset_filename) == 1:
-                    asset_filename = asset_filename[0]
+                if len(asset_filename_list) == 1:
+                    asset_filename = asset_filename_list[0]
                 else:
-                    asset_filename = ', '.join(asset_filename)
+                    asset_filename = ', '.join(asset_filename_list)
 
                 file_uploaded_to_s3 = True
             else:
