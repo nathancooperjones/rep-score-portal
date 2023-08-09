@@ -2,6 +2,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.15.0] - 2022-08-09
+### Added
+ - "Social Media Asset (Singular)" and "Social Media Package (Multiple)" to the content type dropdown when submitting and exploring the data of an asset
+ - "Number of Assets" field to asset tracker spreadsheet when uploading
+### Changed
+ - Most every subsequent submission field when submitting an asset is now optional for all users
+ - Allow for uploading multiple files for a single asset
+ - Required fields when submitting an asset are now marked with a red asterisk
+ - Specific error messages are now hidden to the end user and only displayed in the console
+ - Renamed "Asset Filename" field to "Asset Filename(s)" in asset tracker spreadsheet
+### Fixed
+ - After submitting an asset, hitting the "Submit an Asset" button will now actually let you submit another asset
+
 # [0.14.9] - 2022-07-21
 ### Changed
  - Upgraded Streamlit to version ``1.25.0``
