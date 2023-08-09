@@ -11,9 +11,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
  - Allow for uploading multiple files for a single asset
  - Required fields when submitting an asset are now marked with a red asterisk
  - Specific error messages are now hidden to the end user and only displayed in the console
- - "Asset Filename" field to "Asset Filename(s)" in asset tracker spreadsheet
+ - Renamed "Asset Filename" field to "Asset Filename(s)" in asset tracker spreadsheet
 ### Fixed
- - After submitting an asset, hitting the "Submit an Asset" button will let you submit another asset
+ - After submitting an asset, hitting the "Submit an Asset" button will now actually let you submit another asset
 
 # [0.14.9] - 2022-07-21
 ### Changed
