@@ -108,6 +108,8 @@ def get_content_types() -> List[str]:
         'Rough Cut',
         'Final Cut',
         'Video',
+        'Social Media Asset (Singular)',
+        'Social Media Package (Multiple)',
     ]
 
 

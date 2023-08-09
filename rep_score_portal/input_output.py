@@ -219,6 +219,8 @@ def append_new_row_in_asset_tracker(
     if not isinstance(countries_airing, list):
         countries_airing = [countries_airing]
 
+    num_assets = 1 if ',' not in str(asset_filename) else (str(asset_filename).count(',') + 1)
+
     new_row_df = pd.DataFrame(
         data=[
             {
@@ -232,7 +234,8 @@ def append_new_row_in_asset_tracker(
                 'Version': version,
                 'Point of Contact Email': point_of_contact,
                 'Creative Brief Filename': creative_brief_filename,
-                'Asset Filename': asset_filename,
+                'Asset Filename(s)': asset_filename,
+                'Number of Assets': num_assets,
                 'File Uploaded to S3': file_uploaded_to_s3,
                 'Date Submitted': datetime.today().strftime('%m/%d/%Y'),
                 MARKETING_LABEL_1: marketing_1_notes,

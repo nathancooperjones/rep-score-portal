@@ -28,6 +28,8 @@ from utils import (
     get_countries_list,
     insert_line_break,
     remove_elements_from_progress_list,
+    reset_session_state_asset_information,
+    reset_session_state_progress,
 )
 
 
@@ -41,7 +43,7 @@ def page_zero() -> None:
     )
 
     seen_asset_before_status = st.radio(
-        label='Has a version of this asset been uploaded to the Rep Score Portal before?',
+        label='Has a version of this asset been uploaded to the Rep Score Portal before? :red[*]',
         options=[
             'No, a past version of this asset HAS NOT been uploaded to the portal before.',
             asset_entered_before_option_str,
@@ -176,23 +178,23 @@ def page_one() -> None:
         st.experimental_rerun()
 
     asset_name = st.text_input(
-        label='Asset Name',
+        label='Asset Name :red[*]',
         value=st.session_state.asset_information['name'],
         placeholder='Ex: Pierre',
         help='Provide the name of the advertisement or other piece of content.',
     )
     asset_brand = st.text_input(
-        label='Brand',
+        label='Brand :red[*]',
         value=st.session_state.asset_information['brand'],
         placeholder='Ex: Mars',
     )
     asset_product = st.text_input(
-        label='Product',
+        label='Product :red[*]',
         value=st.session_state.asset_information['product'],
         placeholder="Ex: M&M's",
     )
     countries_airing = st.multiselect(
-        label='Region / Countries This Creative Will Air In',
+        label='Region / Countries This Creative Will Air In :red[*]',
         options=get_countries_list(),
         default=st.session_state.asset_information['countries_airing'],
         help=(
@@ -201,7 +203,7 @@ def page_one() -> None:
         ),
     )
     asset_point_of_contact = st.text_input(
-        label='Point of Contact Email',
+        label='Point of Contact Email :red[*]',
         value=st.session_state.asset_information['point_of_contact'],
         placeholder='Ex: example@example.com',
         autocomplete='email',
@@ -244,11 +246,8 @@ def page_one() -> None:
             or not asset_product
             or not countries_airing
             or not asset_point_of_contact
-        ) and (
-            st.session_state['username']
-            not in st.secrets['login_groups']['asset_submission_inputs_optional']
         ):
-            st.error('Please fill out all fields before continuing.')
+            st.error('Please fill out all required fields before continuing.')
             st.stop()
 
         if creative_brief and creative_brief_url:
@@ -261,6 +260,8 @@ def page_one() -> None:
                     uploaded_file=creative_brief,
                     s3_key='creative_briefs',
                 )
+
+                st.toast(body=f'Uploaded {creative_brief.name}!')
         else:
             creative_brief_filename = creative_brief_url
 
@@ -316,21 +317,21 @@ def page_two() -> None:
         ),
     )
 
-    if (
-        st.session_state.asset_information['marketing_1']
-        or st.session_state.asset_information['marketing_2']
-        or st.session_state.asset_information['marketing_3']
-        or st.session_state.asset_information['marketing_4']
-        or st.session_state.asset_information['notes']
-        or st.session_state.asset_information['seen_asset_before']
-        or (
-            st.session_state['username']
-            in st.secrets['login_groups']['asset_submission_inputs_optional']
-        )
-    ):
-        if st.button('Continue to Step 3'):
-            st.session_state.progress.append('page_two_complete')
-            st.experimental_rerun()
+    # if (
+    #     st.session_state.asset_information['marketing_1']
+    #     or st.session_state.asset_information['marketing_2']
+    #     or st.session_state.asset_information['marketing_3']
+    #     or st.session_state.asset_information['marketing_4']
+    #     or st.session_state.asset_information['notes']
+    #     or st.session_state.asset_information['seen_asset_before']
+    #     or (
+    #         st.session_state['username']
+    #         in st.secrets['login_groups']['asset_submission_inputs_optional']
+    #     )
+    # ):
+    if st.button('Continue to Step 3'):
+        st.session_state.progress.append('page_two_complete')
+        st.experimental_rerun()
 
 
 def page_three() -> None:
@@ -377,22 +378,22 @@ def page_three() -> None:
         ),
     )
 
-    if (
-        st.session_state.asset_information['agency_creative_1']
-        or st.session_state.asset_information['agency_creative_2']
-        or st.session_state.asset_information['agency_creative_3']
-        or st.session_state.asset_information['agency_creative_4']
-        or st.session_state.asset_information['agency_creative_5']
-        or st.session_state.asset_information['notes']
-        or st.session_state.asset_information['seen_asset_before']
-        or (
-            st.session_state['username']
-            in st.secrets['login_groups']['asset_submission_inputs_optional']
-        )
-    ):
-        if st.button('Continue to Step 4'):
-            st.session_state.progress.append('page_three_complete')
-            st.experimental_rerun()
+    # if (
+    #     st.session_state.asset_information['agency_creative_1']
+    #     or st.session_state.asset_information['agency_creative_2']
+    #     or st.session_state.asset_information['agency_creative_3']
+    #     or st.session_state.asset_information['agency_creative_4']
+    #     or st.session_state.asset_information['agency_creative_5']
+    #     or st.session_state.asset_information['notes']
+    #     or st.session_state.asset_information['seen_asset_before']
+    #     or (
+    #         st.session_state['username']
+    #         in st.secrets['login_groups']['asset_submission_inputs_optional']
+    #     )
+    # ):
+    if st.button('Continue to Step 4'):
+        st.session_state.progress.append('page_three_complete')
+        st.experimental_rerun()
 
 
 def page_four() -> None:
@@ -444,22 +445,22 @@ def page_four() -> None:
         ),
     )
 
-    if (
-        st.session_state.asset_information['creative_review_1']
-        or st.session_state.asset_information['creative_review_2']
-        or st.session_state.asset_information['creative_review_3']
-        or st.session_state.asset_information['creative_review_4']
-        or st.session_state.asset_information['creative_review_5']
-        or st.session_state.asset_information['notes']
-        or st.session_state.asset_information['seen_asset_before']
-        or (
-            st.session_state['username']
-            in st.secrets['login_groups']['asset_submission_inputs_optional']
-        )
-    ):
-        if st.button('Continue to Step 5'):
-            st.session_state.progress.append('page_four_complete')
-            st.experimental_rerun()
+    # if (
+    #     st.session_state.asset_information['creative_review_1']
+    #     or st.session_state.asset_information['creative_review_2']
+    #     or st.session_state.asset_information['creative_review_3']
+    #     or st.session_state.asset_information['creative_review_4']
+    #     or st.session_state.asset_information['creative_review_5']
+    #     or st.session_state.asset_information['notes']
+    #     or st.session_state.asset_information['seen_asset_before']
+    #     or (
+    #         st.session_state['username']
+    #         in st.secrets['login_groups']['asset_submission_inputs_optional']
+    #     )
+    # ):
+    if st.button('Continue to Step 5'):
+        st.session_state.progress.append('page_four_complete')
+        st.experimental_rerun()
 
 
 def page_five() -> None:
@@ -467,7 +468,7 @@ def page_five() -> None:
     st.image('./static/Stage 5.png', use_column_width=True)
 
     # set up CSS for the asset upload input boxes
-    asset_upload_filename_label = '... or enter a URL to the :orange[ASSET]'
+    asset_upload_filename_label = '... or enter URL(s) to the :orange[ASSET(S)]'
 
     change_upload_fields_colors(
         css_color='#FFBD59',
@@ -491,23 +492,24 @@ def page_five() -> None:
     st.write('-----')
 
     st.write(
-        '**Please either upload your :orange[ASSET] below or provide a URL to view your '
-        ':orange[ASSET]**'
+        '**Please either upload your :orange[ASSET(S)] below or provide a URL to view your '
+        ':orange[ASSET]** :red[*]'
     )
 
     insert_line_break()
 
-    uploaded_file = st.file_uploader(
-        label='Select an :orange[ASSET] file to upload...',
+    uploaded_files = st.file_uploader(
+        label='Select :orange[ASSET] file(s) to upload...',
         type=None,
-        accept_multiple_files=False,
+        accept_multiple_files=True,
     )
 
     asset_url = st.text_input(
         label=asset_upload_filename_label,
         help=(
-            'Rather than uploading an :orange[ASSET], you can submit a URL to an already-uploaded '
-            ':orange[ASSET] that our coders can reference instead'
+            'Rather than uploading an :orange[ASSET], you can submit URL(s) to already-uploaded '
+            ':orange[ASSET(S)] that our coders can reference instead. For multiple URLs, separate '
+            'each with a comma.'
         ),
         placeholder='https://...',
     )
@@ -515,11 +517,11 @@ def page_five() -> None:
     st.write('-----')
 
     asset_content_type = st.selectbox(
-        label='Content Type',
+        label='Content Type :red[*]',
         options=get_content_types(),
     )
     asset_version = st.number_input(
-        label='Version',
+        label='Version :red[*]',
         value=st.session_state.asset_information['version'],
         min_value=1,
     )
@@ -534,16 +536,9 @@ def page_five() -> None:
         ),
     )
 
-    if (
-        uploaded_file
-        or asset_url
-        or (
-            st.session_state['username']
-            in st.secrets['login_groups']['asset_submission_inputs_optional']
-        )
-    ):
+    if uploaded_files or asset_url:
         if st.button('Upload!'):
-            if uploaded_file and asset_url:
+            if uploaded_files and asset_url:
                 st.error('Please either upload an :orange[ASSET] _or_ provide a URL - not both.')
                 st.stop()
 
@@ -551,12 +546,26 @@ def page_five() -> None:
             st.session_state.asset_information['version'] = asset_version
             st.session_state.asset_information['notes'] = notes
 
-            if uploaded_file:
-                with st.spinner(text='Uploading :orange[ASSET]...'):
-                    asset_filename = upload_file_to_s3(
-                        uploaded_file=uploaded_file,
-                        s3_key='uploads',
-                    )
+            if uploaded_files:
+                asset_filename = list()
+
+                with st.spinner(
+                    text=f'Uploading :orange[ASSET{"S" if len(uploaded_files) > 1 else ""}]...',
+                ):
+                    for uploaded_file in uploaded_files:
+                        asset_filename.append(
+                            upload_file_to_s3(
+                                uploaded_file=uploaded_file,
+                                s3_key='uploads',
+                            )
+                        )
+
+                        st.toast(body=f'Uploaded {uploaded_file.name}!')
+
+                if len(asset_filename) == 1:
+                    asset_filename = asset_filename[0]
+                else:
+                    asset_filename = ', '.join(asset_filename)
 
                 file_uploaded_to_s3 = True
             else:
@@ -651,6 +660,9 @@ def page_six() -> None:
     st.text(upload_notes)
 
     insert_line_break()
+
+    reset_session_state_progress()
+    reset_session_state_asset_information()
 
     if st.button('Back to home page'):
         st.session_state.refresh_app = True
