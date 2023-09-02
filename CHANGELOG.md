@@ -2,6 +2,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.15.1] - 2022-09-02
+### Added
+ - "Presence Average (50)", "Prominence Average (10)", and "Stereotypes Average (40)" scores to the tooltip in the "Explore Your Data" overall scores color maps
+### Changed
+ - "Good, fair, and poor representation" wording to "high, medium, and low representation"
+ - Checkbox in "Explore Your Data" page to a toggle
+ - Upgraded Streamlit to version ``1.26.0``
+
 # [0.15.0] - 2022-08-09
 ### Added
  - "Social Media Asset (Singular)" and "Social Media Package (Multiple)" to the content type dropdown when submitting and exploring the data of an asset

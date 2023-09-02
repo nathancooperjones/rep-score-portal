@@ -15,9 +15,9 @@ from utils import (
 )
 
 
-GOOD_COLOR = '#A478B8'
-FAIR_COLOR = '#E0C2F2'
-BAD_COLOR = '#F7E7FB'
+HIGH_COLOR = '#A478B8'
+MEDIUM_COLOR = '#E0C2F2'
+LOW_COLOR = '#F7E7FB'
 
 
 def page_seven() -> None:
@@ -68,6 +68,9 @@ def page_seven() -> None:
             'TOTAL (Disability)': 'DISABILITY',
             'TOTAL (50+)': 'AGE',
             'TOTAL (Fat)': 'BODY SIZE',
+            'Presence Average (50)': 'Presence Avg (50)',
+            'Prominence Average (10)': 'Prominence Avg (10)',
+            'Stereotypes Average (40)': 'Stereotypes Avg (40)',
         })
 
         data_explorer_df = data_explorer_df.replace('#N/A', '').replace('N/A', '')
@@ -81,6 +84,9 @@ def page_seven() -> None:
             .dt
             .date
         )
+
+        for col in ['Presence Avg (50)', 'Prominence Avg (10)', 'Stereotypes Avg (40)']:
+            data_explorer_df[col] = pd.to_numeric(arg=data_explorer_df[col], errors='coerce')
 
         data_explorer_df_no_duplicates = (
             data_explorer_df
@@ -96,6 +102,9 @@ def page_seven() -> None:
             'Baseline',
             'Date Submitted',
             'Qual Notes',
+            'Presence Avg (50)',
+            'Prominence Avg (10)',
+            'Stereotypes Avg (40)',
         ]
 
         color_map_df = (
@@ -108,6 +117,9 @@ def page_seven() -> None:
                 'BASELINE',
                 'Date Submitted',
                 'Qual Notes',
+                'Presence Avg (50)',
+                'Prominence Avg (10)',
+                'Stereotypes Avg (40)',
                 'GENDER',
                 'RACE',
                 'LGBTQ+ ',
@@ -149,9 +161,9 @@ def _create_color_column(scores: Iterable[Union[str, float]]) -> Iterable[str]:
     return [
         '#8F9193' if str(x) == '' or 'no codeable character' in str(x).lower()  # N/A value
         else '#FFFFFF' if not str(x).replace('.', '', 1).isdigit()  # BASELINE
-        else GOOD_COLOR if float(x) >= 80
-        else FAIR_COLOR if 60 <= float(x) < 80
-        else BAD_COLOR
+        else HIGH_COLOR if float(x) >= 80
+        else MEDIUM_COLOR if 60 <= float(x) < 80
+        else LOW_COLOR
         for x in scores
     ]
 
@@ -160,11 +172,11 @@ def plot_color_maps() -> None:
     """Plot rep score color maps."""
     color_explanation = (
         'In the color maps below, we assign different colors to '
-        f'<mark style="background-color:{GOOD_COLOR};"><strong>GOOD REPRESENTATION</strong> '
+        f'<mark style="background-color:{HIGH_COLOR};"><strong>HIGH REPRESENTATION</strong> '
         '(80 points or higher) </mark>, '
-        f'<mark style="background-color:{FAIR_COLOR};"><strong>FAIR REPRESENTATION</strong> '
+        f'<mark style="background-color:{MEDIUM_COLOR};"><strong>MEDIUM REPRESENTATION</strong> '
         '(60-79 points) </mark>, and '
-        f'<mark style="background-color:{BAD_COLOR};"><strong>POOR REPRESENTATION</strong> '
+        f'<mark style="background-color:{LOW_COLOR};"><strong>LOW REPRESENTATION</strong> '
         '(under 60 points)</mark>.'
     )
     st.markdown(color_explanation, unsafe_allow_html=True)
@@ -188,7 +200,7 @@ def plot_color_maps() -> None:
         date_col='Date Submitted',
     )
 
-    include_baseline = st.checkbox(label='Include baseline in plot(s)', value=True)
+    include_baseline = st.toggle(label='Include baseline in plot(s)', value=True)
 
     insert_line_break()
 
@@ -208,16 +220,31 @@ def plot_color_maps() -> None:
         df_to_plot=overall_df_to_plot,
         x_sort=['Ad Total Score', 'Baseline'],
         display_y_axis=True,
+        tooltip=[
+            'Ad Name',
+            'Brand',
+            'Product',
+            'Presence Avg (50)',
+            'Prominence Avg (10)',
+            'Stereotypes Avg (40)',
+            'Variable',
+            'Score',
+        ],
     )
 
     insert_line_break()
 
     st.markdown('##### Overall Scores, Portfolio Level')
     _construct_plot(
-        df_to_plot=overall_portfolio_df_to_plot,
-        x_sort=['Ad Total Score', 'Baseline'],
+        df_to_plot=overall_portfolio_df_to_plot.rename(columns={'Score': 'Ad Total Score'}),
         display_y_axis=False,
-        tooltip=['Variable', 'Score'],
+        tooltip=[
+            'Presence Avg (50)',
+            'Prominence Avg (10)',
+            'Stereotypes Avg (40)',
+            'Ad Total Score',
+        ],
+        score_col_name='Ad Total Score',
         height=200,
     )
 
@@ -297,6 +324,12 @@ def _create_portfolio_df(df: pd.DataFrame) -> pd.DataFrame:
 
             * Ad Name
 
+            * Presence Avg (50)
+
+            * Prominence Avg (10)
+
+            * Stereotypes Avg (40)
+
             * Variable
 
             * Score
@@ -305,7 +338,13 @@ def _create_portfolio_df(df: pd.DataFrame) -> pd.DataFrame:
 
     """
     portfolio_df = df[df['Variable'] != 'BASELINE']
-    portfolio_df = portfolio_df[['Variable', 'Score']]
+    portfolio_df = portfolio_df[[
+        'Presence Avg (50)',
+        'Prominence Avg (10)',
+        'Stereotypes Avg (40)',
+        'Variable',
+        'Score',
+    ]]
     portfolio_df['Score'] = pd.to_numeric(portfolio_df['Score'], errors='coerce')
     portfolio_df = portfolio_df.dropna()
     portfolio_df = portfolio_df.groupby('Variable').mean().apply(round, args=(1,)).reset_index()
@@ -330,6 +369,7 @@ def _construct_plot(
     x_sort: Iterable[str] = None,
     display_y_axis: bool = True,
     tooltip: Iterable[str] = ['Ad Name', 'Brand', 'Product', 'Variable', 'Score'],
+    score_col_name: str = 'Score',
     height: Optional[int] = None,
 ) -> None:
     """
@@ -338,12 +378,15 @@ def _construct_plot(
     Parameters
     ----------
     df_to_plot: pd.DataFrame
-        Pandas DataFrame to plot with columns ``Variable``, ``Ad Name``, ``Brand``, ``Product``, and
-        ``Score``
+        Pandas DataFrame to plot with columns "Variable", "Ad Name", and ``score_col_name``
     x_sort: list
         Desired sort of the x-axis, if any
+    display_y_axis: bool
+        Whether or not to display the y-axis
     tooltip: list
         Tooltip to be displayed on cell hover
+    score_col_name: str
+        Name of the final score column to display in the box's text
     height: int
         Optional height property to pass to the chart. If not provided, the height will be the
         default value set by ``altair.Chart``
@@ -394,7 +437,7 @@ def _construct_plot(
     if height:
         chart = chart.properties(height=height)
 
-    text = base.mark_text().encode(text='Score', tooltip=tooltip)
+    text = base.mark_text().encode(text=score_col_name, tooltip=tooltip)
 
     full_plot = (
         (chart + text)
