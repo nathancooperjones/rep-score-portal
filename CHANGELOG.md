@@ -2,7 +2,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
-# [0.15.1] - 2022-09-02
+# [0.15.1] - 2022-09-03
 ### Added
  - "Presence Average (50)", "Prominence Average (10)", and "Stereotypes Average (40)" scores to the tooltip in the "Explore Your Data" overall scores color maps
 ### Changed

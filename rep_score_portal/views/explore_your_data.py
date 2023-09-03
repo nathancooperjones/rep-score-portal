@@ -68,9 +68,9 @@ def page_seven() -> None:
             'TOTAL (Disability)': 'DISABILITY',
             'TOTAL (50+)': 'AGE',
             'TOTAL (Fat)': 'BODY SIZE',
-            'Presence Average (50)': 'Presence Avg (50)',
-            'Prominence Average (10)': 'Prominence Avg (10)',
-            'Stereotypes Average (40)': 'Stereotypes Avg (40)',
+            'Presence Average (50)': 'Presence Avg (50pts)',
+            'Prominence Average (10)': 'Prominence Avg (10pts)',
+            'Stereotypes Average (40)': 'Stereotypes Avg (40pts)',
         })
 
         data_explorer_df = data_explorer_df.replace('#N/A', '').replace('N/A', '')
@@ -85,7 +85,7 @@ def page_seven() -> None:
             .date
         )
 
-        for col in ['Presence Avg (50)', 'Prominence Avg (10)', 'Stereotypes Avg (40)']:
+        for col in ['Presence Avg (50pts)', 'Prominence Avg (10pts)', 'Stereotypes Avg (40pts)']:
             data_explorer_df[col] = pd.to_numeric(arg=data_explorer_df[col], errors='coerce')
 
         data_explorer_df_no_duplicates = (
@@ -102,9 +102,9 @@ def page_seven() -> None:
             'Baseline',
             'Date Submitted',
             'Qual Notes',
-            'Presence Avg (50)',
-            'Prominence Avg (10)',
-            'Stereotypes Avg (40)',
+            'Presence Avg (50pts)',
+            'Prominence Avg (10pts)',
+            'Stereotypes Avg (40pts)',
         ]
 
         color_map_df = (
@@ -117,9 +117,9 @@ def page_seven() -> None:
                 'BASELINE',
                 'Date Submitted',
                 'Qual Notes',
-                'Presence Avg (50)',
-                'Prominence Avg (10)',
-                'Stereotypes Avg (40)',
+                'Presence Avg (50pts)',
+                'Prominence Avg (10pts)',
+                'Stereotypes Avg (40pts)',
                 'GENDER',
                 'RACE',
                 'LGBTQ+ ',
@@ -224,9 +224,9 @@ def plot_color_maps() -> None:
             'Ad Name',
             'Brand',
             'Product',
-            'Presence Avg (50)',
-            'Prominence Avg (10)',
-            'Stereotypes Avg (40)',
+            'Presence Avg (50pts)',
+            'Prominence Avg (10pts)',
+            'Stereotypes Avg (40pts)',
             'Variable',
             'Score',
         ],
@@ -239,9 +239,9 @@ def plot_color_maps() -> None:
         df_to_plot=overall_portfolio_df_to_plot.rename(columns={'Score': 'Ad Total Score'}),
         display_y_axis=False,
         tooltip=[
-            'Presence Avg (50)',
-            'Prominence Avg (10)',
-            'Stereotypes Avg (40)',
+            'Presence Avg (50pts)',
+            'Prominence Avg (10pts)',
+            'Stereotypes Avg (40pts)',
             'Ad Total Score',
         ],
         score_col_name='Ad Total Score',
@@ -324,11 +324,11 @@ def _create_portfolio_df(df: pd.DataFrame) -> pd.DataFrame:
 
             * Ad Name
 
-            * Presence Avg (50)
+            * Presence Avg (50pts)
 
-            * Prominence Avg (10)
+            * Prominence Avg (10pts)
 
-            * Stereotypes Avg (40)
+            * Stereotypes Avg (40pts)
 
             * Variable
 
@@ -339,9 +339,9 @@ def _create_portfolio_df(df: pd.DataFrame) -> pd.DataFrame:
     """
     portfolio_df = df[df['Variable'] != 'BASELINE']
     portfolio_df = portfolio_df[[
-        'Presence Avg (50)',
-        'Prominence Avg (10)',
-        'Stereotypes Avg (40)',
+        'Presence Avg (50pts)',
+        'Prominence Avg (10pts)',
+        'Stereotypes Avg (40pts)',
         'Variable',
         'Score',
     ]]
