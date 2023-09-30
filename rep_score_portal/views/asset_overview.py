@@ -45,7 +45,7 @@ def home_page() -> None:
 
     if not st.session_state.get('hacky_experimental_rerun_for_asset_overview_first_page_load'):
         st.session_state.hacky_experimental_rerun_for_asset_overview_first_page_load = True
-        st.experimental_rerun()
+        st.rerun()
 
 
 def view_asset_information() -> None:

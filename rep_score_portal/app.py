@@ -152,7 +152,7 @@ def determine_page() -> None:
     if st.session_state.get('refresh_app'):
         del st.session_state.refresh_app
 
-        st.experimental_rerun()
+        st.rerun()
 
     fetch_asset_data()
 

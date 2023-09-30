@@ -152,7 +152,7 @@ def page_zero() -> None:
             )
 
         st.session_state.progress.append('page_zero_complete')
-        st.experimental_rerun()
+        st.rerun()
 
 
 def page_one() -> None:
@@ -175,7 +175,7 @@ def page_one() -> None:
 
         remove_elements_from_progress_list(pages_to_remove=['page_zero_complete'])
 
-        st.experimental_rerun()
+        st.rerun()
 
     asset_name = st.text_input(
         label='Asset Name :red[*]',
@@ -274,7 +274,7 @@ def page_one() -> None:
 
         st.session_state.progress.append('page_one_complete')
 
-        st.experimental_rerun()
+        st.rerun()
 
 
 def page_two() -> None:
@@ -288,7 +288,7 @@ def page_two() -> None:
     if st.button('← Previous Page'):
         remove_elements_from_progress_list(pages_to_remove=['page_one_complete'])
 
-        st.experimental_rerun()
+        st.rerun()
 
     st.session_state.asset_information['marketing_1'] = st.text_area(
         label=MARKETING_LABEL_1,
@@ -331,7 +331,7 @@ def page_two() -> None:
     # ):
     if st.button('Continue to Step 3'):
         st.session_state.progress.append('page_two_complete')
-        st.experimental_rerun()
+        st.rerun()
 
 
 def page_three() -> None:
@@ -345,7 +345,7 @@ def page_three() -> None:
     if st.button('← Previous Page'):
         remove_elements_from_progress_list(pages_to_remove=['page_two_complete'])
 
-        st.experimental_rerun()
+        st.rerun()
 
     st.session_state.asset_information['agency_creative_1'] = st.text_area(
         label=AGENCY_CREATIVE_LABEL_1,
@@ -393,7 +393,7 @@ def page_three() -> None:
     # ):
     if st.button('Continue to Step 4'):
         st.session_state.progress.append('page_three_complete')
-        st.experimental_rerun()
+        st.rerun()
 
 
 def page_four() -> None:
@@ -407,7 +407,7 @@ def page_four() -> None:
     if st.button('← Previous Page'):
         remove_elements_from_progress_list(pages_to_remove=['page_three_complete'])
 
-        st.experimental_rerun()
+        st.rerun()
 
     st.session_state.asset_information['creative_review_1'] = st.text_area(
         label=DEI_CREATIVE_REVIEWS_LABEL_1,
@@ -460,7 +460,7 @@ def page_four() -> None:
     # ):
     if st.button('Continue to Step 5'):
         st.session_state.progress.append('page_four_complete')
-        st.experimental_rerun()
+        st.rerun()
 
 
 def page_five() -> None:
@@ -482,7 +482,7 @@ def page_five() -> None:
     if st.button('← Previous Page'):
         remove_elements_from_progress_list(pages_to_remove=['page_four_complete'])
 
-        st.experimental_rerun()
+        st.rerun()
 
     st.write(
         'Use this portal to upload your content (advertisement, storyboard, working cut, '
@@ -605,7 +605,7 @@ def page_five() -> None:
                 )
 
             st.session_state.progress.append('page_five_complete')
-            st.experimental_rerun()
+            st.rerun()
 
 
 def page_six() -> None:
@@ -668,4 +668,4 @@ def page_six() -> None:
         st.session_state.refresh_app = True
         st.session_state.clear_radio = True
 
-        st.experimental_rerun()
+        st.rerun()

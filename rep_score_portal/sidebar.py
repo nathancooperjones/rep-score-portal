@@ -106,7 +106,7 @@ def construct_sidebar() -> None:
 
                     st.session_state.refresh_app = True
 
-                    st.experimental_rerun()
+                    st.rerun()
             else:
                 if st.button('Refresh'):
                     st.session_state.refresh_app = True
@@ -118,7 +118,7 @@ def construct_sidebar() -> None:
                     if isinstance(st.session_state.get('assigned_user_assets'), list):
                         del st.session_state.assigned_user_assets
 
-                    st.experimental_rerun()
+                    st.rerun()
 
         with sidebar_col_2:
             # HARD-CODED ``streamlit_authenticator.Authenticate.logout`` method to add injected

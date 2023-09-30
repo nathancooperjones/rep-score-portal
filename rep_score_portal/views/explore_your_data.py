@@ -153,7 +153,7 @@ def page_seven() -> None:
 
     if not st.session_state.get('hacky_experimental_rerun_for_explore_data_first_page_load'):
         st.session_state.hacky_experimental_rerun_for_explore_data_first_page_load = True
-        st.experimental_rerun()
+        st.rerun()
 
 
 def _create_color_column(scores: Iterable[Union[str, float]]) -> Iterable[str]:
