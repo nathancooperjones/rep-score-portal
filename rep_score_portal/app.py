@@ -12,7 +12,7 @@ from utils import (
     reset_session_state_progress,
 )
 from views.asset_overview import home_page
-from views.explore_your_data import page_seven
+from views.explore_your_data import explore_your_data_landing_page
 from views.submit_an_asset import (
     # flake8... 🤦‍♂️
     page_one,
@@ -142,7 +142,6 @@ st.image('./static/Rep Score Portal Banner.png')
 def determine_page() -> None:
     if st.session_state.get('clear_radio'):
         del st.session_state.clear_radio
-        del st.session_state.sidebar_radio
 
         st.session_state.sidebar_radio = 'Asset Overview'
 
@@ -165,7 +164,7 @@ def determine_page() -> None:
         else:
             page_zero()
     elif st.session_state.get('sidebar_radio') == 'Explore Your Data':
-        page_seven()
+        explore_your_data_landing_page()
     else:
         if 'page_two_complete' in st.session_state.progress:
             reset_session_state_progress()
