@@ -167,9 +167,6 @@ def _display_submit_an_asset_page_progress(
     highlight_one = False
     highlight_two = False
     highlight_three = False
-    highlight_four = False
-    highlight_five = False
-    highlight_six = False
 
     if st.session_state.get('sidebar_radio') == 'Submit an Asset':
         if (
@@ -187,29 +184,11 @@ def _display_submit_an_asset_page_progress(
             and 'page_three_complete' not in st.session_state.progress
         ):
             highlight_three = True
-        elif (
-            'page_three_complete' in st.session_state.progress
-            and 'page_four_complete' not in st.session_state.progress
-        ):
-            highlight_four = True
-        elif (
-            'page_four_complete' in st.session_state.progress
-            and 'page_five_complete' not in st.session_state.progress
-        ):
-            highlight_five = True
-        elif (
-            'page_five_complete' in st.session_state.progress
-            and 'page_six_complete' not in st.session_state.progress
-        ):
-            highlight_six = True
 
     navigation_string = (f"""
         <p{' style="color:#fff;"><strong' if highlight_one else ''}>1. Start the Process{'</strong>' if highlight_one else ''}</p>
-        <p{' style="color:#fff;"><strong' if highlight_two else ''}>2. DEI Checklist: Marketing Brief{'</strong>' if highlight_two else ''}</p>
-        <p{' style="color:#fff;"><strong' if highlight_three else ''}>3. DEI Checklist: Agency Creative Brief{'</strong>' if highlight_three else ''}</p>
-        <p{' style="color:#fff;"><strong' if highlight_four else ''}>4. DEI Checklist: Creative Reviews{'</strong>' if highlight_four else ''}</p>
-        <p{' style="color:#fff;"><strong' if highlight_five else ''}>5. Upload Asset{'</strong>' if highlight_five else ''}</p>
-        <p{' style="color:#fff;"><strong' if highlight_six else ''}>6. Summary{'</strong>' if highlight_six else ''}</p>
+        <p{' style="color:#fff;"><strong' if highlight_two else ''}>2. Upload Asset{'</strong>' if highlight_two else ''}</p>
+        <p{' style="color:#fff;"><strong' if highlight_three else ''}>3. Summary{'</strong>' if highlight_three else ''}</p>
     """)  # noqa: E501
 
     with submit_an_asset_pages_navigation_container:

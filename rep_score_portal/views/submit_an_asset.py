@@ -55,7 +55,8 @@ def page_zero() -> None:
     )
 
     if seen_asset_before_status == asset_entered_before_option_str:
-        fetch_asset_data()
+        if not hasattr(st.session_state, 'asset_tracker_df'):
+            fetch_asset_data()
 
         options = st.session_state.asset_tracker_df['Asset Name'].unique().tolist()
 
@@ -281,192 +282,6 @@ def page_two() -> None:
     """Display the second page for the "Submit an Asset" process."""
     st.image('./static/Stage 2.png', use_column_width=True)
 
-    st.markdown('## Infuse DE&I provocations into the Marketing Brief')
-
-    edit_colors_of_text_area()
-
-    if st.button('← Previous Page'):
-        remove_elements_from_progress_list(pages_to_remove=['page_one_complete'])
-
-        st.rerun()
-
-    st.session_state.asset_information['marketing_1'] = st.text_area(
-        label=MARKETING_LABEL_1,
-        value=st.session_state.asset_information.get('marketing_1', ''),
-    )
-    st.session_state.asset_information['marketing_2'] = st.text_area(
-        label=MARKETING_LABEL_2,
-        value=st.session_state.asset_information.get('marketing_2', ''),
-    )
-    st.session_state.asset_information['marketing_3'] = st.text_area(
-        label=MARKETING_LABEL_3,
-        value=st.session_state.asset_information.get('marketing_3', ''),
-    )
-    st.session_state.asset_information['marketing_4'] = st.text_area(
-        label=MARKETING_LABEL_4,
-        value=st.session_state.asset_information.get('marketing_4', ''),
-    )
-
-    st.session_state.asset_information['notes'] = st.text_area(
-        label='Notes',
-        value=st.session_state.asset_information.get('notes', ''),
-        height=200,
-        help=(
-            'Use this space to record any additional notes. This box will carry over as you '
-            'advance through the submission process.'
-        ),
-    )
-
-    # if (
-    #     st.session_state.asset_information['marketing_1']
-    #     or st.session_state.asset_information['marketing_2']
-    #     or st.session_state.asset_information['marketing_3']
-    #     or st.session_state.asset_information['marketing_4']
-    #     or st.session_state.asset_information['notes']
-    #     or st.session_state.asset_information['seen_asset_before']
-    #     or (
-    #         st.session_state['username']
-    #         in st.secrets['login_groups']['asset_submission_inputs_optional']
-    #     )
-    # ):
-    if st.button('Continue to Step 3'):
-        st.session_state.progress.append('page_two_complete')
-        st.rerun()
-
-
-def page_three() -> None:
-    """Display the third page for the "Submit an Asset" process."""
-    st.image('./static/Stage 3.png', use_column_width=True)
-
-    st.markdown('## Infuse DE&I provocations into the Agency Creative Brief')
-
-    edit_colors_of_text_area()
-
-    if st.button('← Previous Page'):
-        remove_elements_from_progress_list(pages_to_remove=['page_two_complete'])
-
-        st.rerun()
-
-    st.session_state.asset_information['agency_creative_1'] = st.text_area(
-        label=AGENCY_CREATIVE_LABEL_1,
-        value=st.session_state.asset_information.get('agency_creative_1', ''),
-    )
-    st.session_state.asset_information['agency_creative_2'] = st.text_area(
-        label=AGENCY_CREATIVE_LABEL_2,
-        value=st.session_state.asset_information.get('agency_creative_2', ''),
-    )
-    st.session_state.asset_information['agency_creative_3'] = st.text_area(
-        label=AGENCY_CREATIVE_LABEL_3,
-        value=st.session_state.asset_information.get('agency_creative_3', ''),
-    )
-    st.session_state.asset_information['agency_creative_4'] = st.text_area(
-        label=AGENCY_CREATIVE_LABEL_4,
-        value=st.session_state.asset_information.get('agency_creative_4', ''),
-    )
-    st.session_state.asset_information['agency_creative_5'] = st.text_area(
-        label=AGENCY_CREATIVE_LABEL_5,
-        value=st.session_state.asset_information.get('agency_creative_5', ''),
-    )
-
-    st.session_state.asset_information['notes'] = st.text_area(
-        label='Notes',
-        value=st.session_state.asset_information.get('notes', ''),
-        height=200,
-        help=(
-            'Use this space to record any additional notes. This box will carry over as you '
-            'advance through the submission process.'
-        ),
-    )
-
-    # if (
-    #     st.session_state.asset_information['agency_creative_1']
-    #     or st.session_state.asset_information['agency_creative_2']
-    #     or st.session_state.asset_information['agency_creative_3']
-    #     or st.session_state.asset_information['agency_creative_4']
-    #     or st.session_state.asset_information['agency_creative_5']
-    #     or st.session_state.asset_information['notes']
-    #     or st.session_state.asset_information['seen_asset_before']
-    #     or (
-    #         st.session_state['username']
-    #         in st.secrets['login_groups']['asset_submission_inputs_optional']
-    #     )
-    # ):
-    if st.button('Continue to Step 4'):
-        st.session_state.progress.append('page_three_complete')
-        st.rerun()
-
-
-def page_four() -> None:
-    """Display the fourth page for the "Submit an Asset" process."""
-    st.image('./static/Stage 4.png', use_column_width=True)
-
-    st.markdown('## DE&I Discussion in the Creative Reviews')
-
-    edit_colors_of_text_area()
-
-    if st.button('← Previous Page'):
-        remove_elements_from_progress_list(pages_to_remove=['page_three_complete'])
-
-        st.rerun()
-
-    st.session_state.asset_information['creative_review_1'] = st.text_area(
-        label=DEI_CREATIVE_REVIEWS_LABEL_1,
-        value=st.session_state.asset_information.get('creative_review_1', ''),
-    )
-    st.session_state.asset_information['creative_review_2'] = st.text_area(
-        label=DEI_CREATIVE_REVIEWS_LABEL_2,
-        value=st.session_state.asset_information.get('creative_review_2', ''),
-        help=(
-            'Are any of the characters depicted in racist, sexist, ableist, homophobic, '
-            'transphobic, ageist, or fatphobic ways? Are any characters reduced to a generalized '
-            'trait (whether positive or negative) that stems from their marginalized identity?'
-        ),
-    )
-    st.session_state.asset_information['creative_review_3'] = st.text_area(
-        label=DEI_CREATIVE_REVIEWS_LABEL_3,
-        value=st.session_state.asset_information.get('creative_review_3', ''),
-    )
-    st.session_state.asset_information['creative_review_4'] = st.text_area(
-        label=DEI_CREATIVE_REVIEWS_LABEL_4,
-        value=st.session_state.asset_information.get('creative_review_4', ''),
-    )
-    st.session_state.asset_information['creative_review_5'] = st.text_area(
-        label=DEI_CREATIVE_REVIEWS_LABEL_5,
-        value=st.session_state.asset_information.get('creative_review_5', ''),
-    )
-
-    st.session_state.asset_information['notes'] = st.text_area(
-        label='Notes',
-        value=st.session_state.asset_information.get('notes', ''),
-        height=200,
-        help=(
-            'Use this space to record any additional notes. This box will carry over as you '
-            'advance through the submission process.'
-        ),
-    )
-
-    # if (
-    #     st.session_state.asset_information['creative_review_1']
-    #     or st.session_state.asset_information['creative_review_2']
-    #     or st.session_state.asset_information['creative_review_3']
-    #     or st.session_state.asset_information['creative_review_4']
-    #     or st.session_state.asset_information['creative_review_5']
-    #     or st.session_state.asset_information['notes']
-    #     or st.session_state.asset_information['seen_asset_before']
-    #     or (
-    #         st.session_state['username']
-    #         in st.secrets['login_groups']['asset_submission_inputs_optional']
-    #     )
-    # ):
-    if st.button('Continue to Step 5'):
-        st.session_state.progress.append('page_four_complete')
-        st.rerun()
-
-
-def page_five() -> None:
-    """Display the fifth page for the "Submit an Asset" process."""
-    st.image('./static/Stage 5.png', use_column_width=True)
-
     # set up CSS for the asset upload input boxes
     asset_upload_filename_label = '... or enter URL(s) to the :orange[ASSET(S)]'
 
@@ -604,17 +419,17 @@ def page_five() -> None:
                     notes=st.session_state.asset_information['notes'],
                 )
 
-            st.session_state.progress.append('page_five_complete')
+            st.session_state.progress.append('page_two_complete')
             st.rerun()
 
 
-def page_six() -> None:
+def page_three() -> None:
     """Display the final page for the "Submit an Asset" process."""
     if isinstance(st.session_state.get('asset_tracker_df'), pd.DataFrame):
         del st.session_state.asset_tracker_df
         del st.session_state.assigned_user_assets
 
-    st.image('./static/Stage 6.png', use_column_width=True)
+    st.image('./static/Stage 3.png', use_column_width=True)
 
     st.markdown('## Summary')
 
@@ -661,10 +476,10 @@ def page_six() -> None:
 
     insert_line_break()
 
-    reset_session_state_progress()
-    reset_session_state_asset_information()
-
     if st.button('Back to home page'):
+        reset_session_state_progress()
+        reset_session_state_asset_information()
+
         st.session_state.refresh_app = True
         st.session_state.clear_radio = True
 

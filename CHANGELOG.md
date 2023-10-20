@@ -2,11 +2,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
-# [0.15.2] - 2022-09-30
+# [0.16.0] - 2023-10-20
+### Removed
+ - DEI checklist questions when submitting an asset
+ - Duplicate calls to the asset tracker spreadsheet after submitting an asset
+
+# [0.15.2] - 2023-09-30
 ### Changed
  - Upgraded Streamlit to version ``1.27.0``
 
-# [0.15.1] - 2022-09-03
+# [0.15.1] - 2023-09-03
 ### Added
  - "Presence Average (50)", "Prominence Average (10)", and "Stereotypes Average (40)" scores to the tooltip in the "Explore Your Data" overall scores color maps
 ### Changed
@@ -14,7 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
  - Checkbox in "Explore Your Data" page to a toggle
  - Upgraded Streamlit to version ``1.26.0``
 
-# [0.15.0] - 2022-08-09
+# [0.15.0] - 2023-08-09
 ### Added
  - "Social Media Asset (Singular)" and "Social Media Package (Multiple)" to the content type dropdown when submitting and exploring the data of an asset
  - "Number of Assets" field to asset tracker spreadsheet when uploading
@@ -27,27 +32,27 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
  - After submitting an asset, hitting the "Submit an Asset" button will now actually let you submit another asset
 
-# [0.14.9] - 2022-07-21
+# [0.14.9] - 2023-07-21
 ### Changed
  - Upgraded Streamlit to version ``1.25.0``
 ### Fixed
  - ``pd.to_datetime`` warning
 
-# [0.14.8] - 2022-07-19
+# [0.14.8] - 2023-07-19
 ### Added
  - Esso UK logo
 
-# [0.14.7] - 2022-07-12
+# [0.14.7] - 2023-07-12
 ### Added
  - Mobil New Zealand logo
 
-# [0.14.6] - 2022-05-17
+# [0.14.6] - 2023-05-17
 ### Changed
  - Upgraded Streamlit to version ``1.22.0``
 ### Fixed
  - Number of visible rows in the "Asset Information" tab table
 
-# [0.14.5] - 2022-03-29
+# [0.14.5] - 2023-03-29
 ### Changed
  - Color scheme used across the entire Streamlit app
  - Upgraded Streamlit to version ``1.20.0``
@@ -55,7 +60,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
  - Inadvertently hidden axis labels in the "Scores by Identity, Ad Level" plot on the "Explore Your Data" page
  - ``KeyError`` where ``seen_asset_before`` cannot be found in the Streamlit session state in certain edge cases
 
-# [0.14.4] - 2022-02-13
+# [0.14.4] - 2023-02-13
 ### Added
  - BBDO Creative Compass logo option in the sidebar
 ### Changed
@@ -64,21 +69,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
  - Only displaying unique asset names as options in Step 0 of the "Submit an Asset" page
 
-# [0.14.3] - 2022-02-07
+# [0.14.3] - 2023-02-07
 ### Fixed
  - The "Having issues logging in?" link will now properly disappear as soon as the user is logged in
 
-# [0.14.2] - 2022-02-04
+# [0.14.2] - 2023-02-04
 ### Added
  - Timeouts and retries to Google Sheets connection attempts made in ``read_google_spreadsheet``
 ### Removed
  - Custom ``server.runOnSave``, ``server.enableCORS``, ``server.enableXsrfProtection``, and ``runner.fastReruns`` settings set in ``.streamlit/config.toml``
 
-# [0.14.1] - 2022-02-03
+# [0.14.1] - 2023-02-03
 ### Changed
  - Upgraded the version of ``streamlit_authenticator`` used to ``>=0.2.0``, restructuring the ``secrets.toml`` file used in the backend of the application
 
-# [0.14.0] - 2022-02-03
+# [0.14.0] - 2023-02-03
 ### Changed
  - Upload-related inputs for both the creative brief and asset within the "Submit an Asset" process have been color-coded to differentiate them from the other fields on the page
  - Required steps in the "Submit an Asset" process have been removed for select users listed in the ``asset_submission_inputs_optional`` group
@@ -89,7 +94,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
  - Ad names are now always displayed properly in each "Score Heatmap" plotted on the "Explore Your Data" page. Before, only about half the ad names were displayed due to a spacing bug
 
-# [0.13.1] - 2022-01-04
+# [0.13.1] - 2023-01-04
 ### Fixed
  - "Asset Information" page to use updated column names
 

@@ -7,7 +7,6 @@ import streamlit_authenticator as stauth
 from footer import display_footer
 from sidebar import construct_sidebar
 from utils import (
-    fetch_asset_data,
     insert_line_break,
     reset_session_state_asset_information,
     reset_session_state_progress,
@@ -16,10 +15,7 @@ from views.asset_overview import home_page
 from views.explore_your_data import page_seven
 from views.submit_an_asset import (
     # flake8... 🤦‍♂️
-    page_five,
-    page_four,
     page_one,
-    page_six,
     page_three,
     page_two,
     page_zero,
@@ -146,6 +142,7 @@ st.image('./static/Rep Score Portal Banner.png')
 def determine_page() -> None:
     if st.session_state.get('clear_radio'):
         del st.session_state.clear_radio
+        del st.session_state.sidebar_radio
 
         st.session_state.sidebar_radio = 'Asset Overview'
 
@@ -154,16 +151,8 @@ def determine_page() -> None:
 
         st.rerun()
 
-    fetch_asset_data()
-
     if st.session_state.get('sidebar_radio') == 'Submit an Asset':
-        if 'page_five_complete' in st.session_state.progress:
-            page_six()
-        elif 'page_four_complete' in st.session_state.progress:
-            page_five()
-        elif 'page_three_complete' in st.session_state.progress:
-            page_four()
-        elif 'page_two_complete' in st.session_state.progress:
+        if 'page_two_complete' in st.session_state.progress:
             page_three()
         elif 'page_one_complete' in st.session_state.progress:
             page_two()
@@ -178,7 +167,7 @@ def determine_page() -> None:
     elif st.session_state.get('sidebar_radio') == 'Explore Your Data':
         page_seven()
     else:
-        if 'page_five_complete' in st.session_state.progress:
+        if 'page_two_complete' in st.session_state.progress:
             reset_session_state_progress()
             reset_session_state_asset_information()
 
