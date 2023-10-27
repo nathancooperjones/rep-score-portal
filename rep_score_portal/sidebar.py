@@ -1,3 +1,5 @@
+import uuid
+
 import pandas as pd
 import streamlit as st
 
@@ -98,25 +100,37 @@ def construct_sidebar() -> None:
 
         sidebar_col_1, sidebar_col_2 = st.columns(2)
 
+        # hack to avoid infinite refreshing and starting over upon pressing these buttons, present
+        # in Streamlit 1.28.0 but not 1.27.0 for some reason ¯\_(ツ)_/¯
+        if not st.session_state.get('start_over_button_key'):
+            st.session_state.start_over_button_key = uuid.uuid4()
+
+        if not st.session_state.get('refresh_button_key'):
+            st.session_state.refresh_button_key = uuid.uuid4()
+
         with sidebar_col_1:
             if st.session_state.get('sidebar_radio') == 'Submit an Asset':
-                if st.button('Start over'):
+                if st.button(label='Start over', key=st.session_state.start_over_button_key):
                     reset_session_state_progress()
                     reset_session_state_asset_information()
 
                     st.session_state.refresh_app = True
 
+                    st.session_state.start_over_button_key = uuid.uuid4()
+
                     st.rerun()
             else:
-                if st.button('Refresh'):
-                    st.session_state.refresh_app = True
-
+                if st.button(label='Refresh', key=st.session_state.refresh_button_key):
                     if isinstance(st.session_state.get('asset_tracker_df'), pd.DataFrame):
                         del st.session_state.asset_tracker_df
                     if isinstance(st.session_state.get('data_explorer_df'), pd.DataFrame):
                         del st.session_state.data_explorer_df
                     if isinstance(st.session_state.get('assigned_user_assets'), list):
                         del st.session_state.assigned_user_assets
+
+                    st.session_state.refresh_app = True
+
+                    st.session_state.refresh_button_key = uuid.uuid4()
 
                     st.rerun()
 

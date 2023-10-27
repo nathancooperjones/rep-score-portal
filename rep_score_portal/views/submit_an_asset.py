@@ -178,6 +178,15 @@ def page_one() -> None:
 
         st.rerun()
 
+    dei_resources_html = (f"""
+        <p>You can find a list of DEI resources
+        <a style="color: #003749;" target="_blank"
+        href="https://docs.google.com/document/d/1-qoCQNzHGivQk_uDtr-AheiDGFPdJDLryZme81U5254/">
+        here</a>.</p>
+    """)
+
+    st.markdown(dei_resources_html, unsafe_allow_html=True)
+
     asset_name = st.text_input(
         label='Asset Name :red[*]',
         value=st.session_state.asset_information['name'],
@@ -295,7 +304,7 @@ def page_two() -> None:
     edit_colors_of_text_area()
 
     if st.button('← Previous Page'):
-        remove_elements_from_progress_list(pages_to_remove=['page_four_complete'])
+        remove_elements_from_progress_list(pages_to_remove=['page_one_complete'])
 
         st.rerun()
 
