@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 # [0.16.0] - 2023-10-28
 ### Changed
  - Upgraded Streamlit to version ``1.28.0``
+ - Dockerfile to use Python 3.11 instead of 3.9
 ### Removed
  - DEI checklist questions when submitting an asset, now a link to a separate resource
  - Duplicate calls to pull down asset tracker spreadsheet after submitting an asset
