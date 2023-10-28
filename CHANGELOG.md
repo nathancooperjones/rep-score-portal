@@ -2,9 +2,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
-# [0.16.0] - 2023-10-20
+# [0.16.0] - 2023-10-28
+### Changed
+ - Upgraded Streamlit to version ``1.28.0``
 ### Removed
- - DEI checklist questions when submitting an asset
+ - DEI checklist questions when submitting an asset, now a link to a separate resource
  - Duplicate calls to pull down asset tracker spreadsheet after submitting an asset
 
 # [0.15.2] - 2023-09-30

@@ -178,7 +178,7 @@ def page_one() -> None:
 
         st.rerun()
 
-    dei_resources_html = (f"""
+    dei_resources_html = ("""
         <p>You can find a list of DEI resources
         <a style="color: #003749;" target="_blank"
         href="https://docs.google.com/document/d/1-qoCQNzHGivQk_uDtr-AheiDGFPdJDLryZme81U5254/">
