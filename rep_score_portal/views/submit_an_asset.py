@@ -170,7 +170,7 @@ def page_one() -> None:
 
     st.markdown('## Start the Process')
 
-    if st.button('← Previous Page'):
+    if st.button(label='← Previous Page', key='page_one_previous_page'):
         # reset to default
         st.session_state.asset_information['seen_asset_before'] = False
 
@@ -181,7 +181,7 @@ def page_one() -> None:
     dei_resources_html = ("""
         <p>You can find a list of DEI resources
         <a style="color: #003749;" target="_blank"
-        href="https://docs.google.com/document/d/1-qoCQNzHGivQk_uDtr-AheiDGFPdJDLryZme81U5254/">
+        href="https://drive.google.com/file/d/1BIV123cWgiGRgKVvl-enGRTp37hA9Jqr/">
         here</a>.</p>
     """)
 
@@ -303,7 +303,7 @@ def page_two() -> None:
 
     edit_colors_of_text_area()
 
-    if st.button('← Previous Page'):
+    if st.button(label='← Previous Page', key='page_two_previous_page'):
         remove_elements_from_progress_list(pages_to_remove=['page_one_complete'])
 
         st.rerun()

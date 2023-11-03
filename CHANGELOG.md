@@ -2,9 +2,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
-# [0.16.0] - 2023-10-28
+# [0.16.0] - 2023-11-03
 ### Changed
- - Upgraded Streamlit to version ``1.28.0``
+ - Upgraded Streamlit to version ``1.28.1``
  - Dockerfile to use Python 3.11 instead of 3.9
 ### Removed
  - DEI checklist questions when submitting an asset, now a link to a separate resource
