@@ -174,27 +174,12 @@ def view_progress_of_all_available_assets() -> None:
         if (
             'page_one_complete' not in st.session_state.progress
         ):
-            progress_value = ((0/6) / 3)
+            progress_value = ((0/2) / 3)
         elif (
             'page_one_complete' in st.session_state.progress
             and 'page_two_complete' not in st.session_state.progress
         ):
-            progress_value = ((1/6) / 3)
-        elif (
-            'page_two_complete' in st.session_state.progress
-            and 'page_three_complete' not in st.session_state.progress
-        ):
-            progress_value = ((2/6) / 3)
-        elif (
-            'page_three_complete' in st.session_state.progress
-            and 'page_four_complete' not in st.session_state.progress
-        ):
-            progress_value = ((3/6) / 3)
-        elif (
-            'page_four_complete' in st.session_state.progress
-            and 'page_five_complete' not in st.session_state.progress
-        ):
-            progress_value = ((4/6) / 3)
+            progress_value = ((1/2) / 3)
         else:
             progress_value = ((1/3))
 

@@ -20,7 +20,7 @@ MEDIUM_COLOR = '#E0C2F2'
 LOW_COLOR = '#F7E7FB'
 
 
-def page_seven() -> None:
+def explore_your_data_landing_page() -> None:
     """Display the "Explore Your Data" page."""
     st.markdown('## Explore Your Data')
 
