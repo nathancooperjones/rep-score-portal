@@ -128,6 +128,7 @@ def explore_your_data_landing_page() -> None:
                 'BODY SIZE',
                 'Ad Total Score',
             ]]
+            .drop_duplicates(subset=['Ad Name'], keep='last')  # Altair limitation, oof :(
             .set_index(color_map_df_index)
             .stack()
             .reset_index()
