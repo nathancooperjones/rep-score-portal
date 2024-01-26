@@ -2,6 +2,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project uses [Semantic Versioning](http://semver.org/).
 
+# [0.16.2] - 2024-01-26
+### Changed
+ - Upgraded Streamlit to version ``1.30.0``
+ - Upgraded Streamlit-Authenticator to version ``0.3.1``
+
 # [0.16.1] - 2023-12-07
 ### Changed
  - Upgraded Streamlit to version ``1.29.0``

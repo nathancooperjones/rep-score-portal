@@ -4,6 +4,6 @@ gspread_pandas
 htbuilder
 pandas
 requests
-streamlit~=1.29
+streamlit~=1.30
 streamlit-aggrid
-streamlit_authenticator>=0.2.0
+streamlit_authenticator~=0.3.0

@@ -137,11 +137,18 @@ def construct_sidebar() -> None:
         with sidebar_col_2:
             # HARD-CODED ``streamlit_authenticator.Authenticate.logout`` method to add injected
             # logic into the button action:
-            # https://github.com/mkhorasani/Streamlit-Authenticator/blob/v0.2.2/streamlit_authenticator/authenticate.py#L198  # noqa: E501
+            # https://github.com/mkhorasani/Streamlit-Authenticator/blob/v0.3.1/streamlit_authenticator/authenticate.py#L260  # noqa: E501
             if st.button('Logout', key='streamlit_authenticator_logout'):
                 st.session_state.authenticator.cookie_manager.delete(
                     st.session_state.authenticator.cookie_name
                 )
+
+                (
+                    st
+                    .session_state
+                    .authenticator
+                    .credentials['usernames'][st.session_state['username']]['logged_in']
+                ) = False
 
                 # injected logic - wipe all data from the previous session
                 for key in st.session_state.keys():

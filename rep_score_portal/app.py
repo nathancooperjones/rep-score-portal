@@ -140,6 +140,9 @@ st.image('./static/Rep Score Portal Banner.png')
 
 
 def determine_page() -> None:
+    # TODO: with the introduction of ``st.switch_page`` and the ability to customize the sidebar
+    # to hide page names, can we finally make this a multi-page app in the future?
+    # https://docs.streamlit.io/library/api-reference/control-flow/st.switch_page
     if st.session_state.get('clear_radio'):
         del st.session_state.clear_radio
 
@@ -187,7 +190,15 @@ if not st.session_state.get('authentication_status'):
         preauthorized=None,
     )
 
-    authenticator.login(form_name='Login', location='main')
+    authenticator.login(
+        location='main',
+        fields={
+            'Form name': 'Login',
+            'Username': 'Username',
+            'Password': 'Password',
+            'Login': 'Login',
+        },
+    )
 
     if 'authenticator' not in st.session_state:
         st.session_state.authenticator = authenticator
