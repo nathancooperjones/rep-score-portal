@@ -31,6 +31,8 @@ def construct_sidebar() -> None:
                 st.image('./static/Mobil New Zealand Logo.png', use_column_width=True)
             elif user_login_logo == 'Esso UK Logo':
                 st.image('./static/Esso_UK_Logo.png', use_column_width=True)
+            elif user_login_logo == 'ExxonMobil Mexico':
+                st.image('./static/ExxonMobil_Mexico_Logo.png', use_column_width=True)
             else:
                 st.image('./static/Mars Logo.png', use_column_width=True)
 
